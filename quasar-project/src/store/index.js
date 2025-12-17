@@ -1,6 +1,6 @@
-import { store } from 'quasar/wrappers'
-import { createStore } from 'vuex'
-import ApplyStore from './ApplyStore';
+import { store } from "quasar/wrappers";
+import { createStore } from "vuex";
+import ApplyStore from "./ApplyStore";
 
 // import example from './module-example'
 
@@ -20,5 +20,5 @@ export default store(function (/* { ssrContext } */) {
     },
   });
 
-  return Store
-})
+  return Store;
+});

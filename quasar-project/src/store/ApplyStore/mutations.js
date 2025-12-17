@@ -14,6 +14,11 @@ export default {
   ////////////////////////////////////////////
 
   ////////////////////////////////////////////
+
+  GET_IRLIST(state, getList){
+    state.getList = getList;
+  },
+
   GET_EmpDept(state, getForm) {
     state.getForm = getForm;
   },
@@ -91,6 +96,14 @@ export default {
     state.getQAForm = getQAForm;
   },
 
+  GET_HEADFORM(state, getHead){
+    state.getHead = getHead;
+  },
+
+  GET_UNIFORM(state, getRiskUni){
+    state.getRiskUni = getRiskUni;
+  },
+
   GET_QAIR(state, getQACon) {
     state.getQACon = getQACon;
   },
@@ -99,12 +112,28 @@ export default {
     state.getQA = getQA;
   },
 
+  GET_QAACTION(state, getQAAction) {
+    state.getQAAction = getQAAction;
+  },
+
+  ADD_QAACTION(state, getQAAction) {
+    state.getQAAction = getQAAction;
+  },
+
   SET_DEPARTMENTS(state, data) {
     state.departments = data; //
   },
 
-  GET_ACTION(state, getActionItem) {
-    state.getActionItem = getActionItem;
+  SET_DEPTLIST(state, deptList) {
+    state.deptList = deptList; //
+  },
+
+  GET_CORRECTIVE(state, getcorrective) {
+    state.getcorrective = getcorrective;
+  },
+
+  GET_RISK(state, getRiskData) {
+    state.getRiskData = getRiskData;
   },
 
   GET_PENREMARKS(state, getRemarks) {
@@ -122,13 +151,69 @@ export default {
   },
   ////////////////////////////////////////////
 
+  ///////// PRIMARYTABLE //////////////
+  GET_PRIM(state, getPrimary) {
+    state.getPrimary = getPrimary;
+  },
+
+  GET_EMPLOYEE(state, getEmployee) {
+    state.getEmployee = getEmployee;
+  },
+
+  GET_ACTION(state, getActionItem) {
+    state.getActionItem = getActionItem;
+  },
+
+  GET_REVACTION(state, getReturnReviewAction) {
+    state.getReturnReviewAction = getReturnReviewAction;
+  },
+
+  GET_RETURNACTION(state, getReturnAction) {
+    state.getReturnAction = getReturnAction;
+  },
+
+  GET_APACTION(state, getAPAction) {
+    state.getAPAction = getAPAction;
+  },
+
+  GET_RCA(state, getRCA) {
+    state.getRCA = getRCA;
+  },
+
+  GET_RETURNRCA(state, getReturnRCA) {
+    state.getReturnRCA = getReturnRCA;
+  },
+
+  GET_RETURNREVIEWRCA(state, getReturnReviewRCA) {
+    state.getReturnReviewRCA = getReturnReviewRCA;
+  },
+  ///////////////////////////////////
+
+  ///////// SECONDARYTABLE //////////////
+  GET_SEC(state, getSecondary) {
+    state.getSecondary = getSecondary;
+  },
+  ///////////////////////////////////
+
   ///////// HRTABLE //////////////
+  GET_HRFORM(state, getHR) {
+    state.getHR = getHR;
+  },
+
   GET_FORM(state, getForm) {
     state.getForm = getForm;
   },
 
-  SET_EMPLOYEES(state, data) {
-    state.employees = data; // Assuming `data` is an array of department objects
+  GET_DIV(state, getDiv) {
+    state.getDiv = getDiv;
+  },
+
+  GET_AREA(state, getArea){
+    state.getArea = getArea;
+  },
+
+  GET_ACCESS(state, getAccess){
+    state.getAccess = getAccess;
   },
   ////////////////////////////////////////////
 
@@ -158,6 +243,14 @@ export default {
 
   GET_SUBJECTFORM(state, getSubject) {
     state.getSubject = getSubject;
+  },
+
+  GET_RISKCHILDFORM(state, getRiskChild) {
+    state.getRiskChild = getRiskChild;
+  },
+
+  GET_ALLRISKFORM(state, getAllRisk) {
+    state.getAllRisk = getAllRisk;
   },
 
   GET_RISKFORM(state, getRisk) {

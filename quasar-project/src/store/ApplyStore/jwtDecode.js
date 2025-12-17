@@ -17,6 +17,15 @@ export function jwtDecode(token) {
   const DeptCode = decodedToken.DeptCode;
   const FullName = decodedToken.FullName;
   const Department_Description = decodedToken.Department_Description;
+  const AreaCode = decodedToken.AreaCode;
 
-  return { EmployeeCode, DeptCode, UERMEmail, FirstName, FullName, Department_Description};
+  return {
+    EmployeeCode,
+    DeptCode,
+    UERMEmail,
+    FirstName,
+    FullName,
+    Department_Description,
+    AreaCode
+  };
 }

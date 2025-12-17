@@ -38,6 +38,8 @@ const routes = [
     path: "/auth-loading",
     component: () => import("components/LoadingPage/AuthLoading.vue"),
   },
+
+
   {
     path: "/",
     component: () => import("layouts/HRAdmin.vue"),
@@ -59,6 +61,10 @@ const routes = [
         component: () => import("pages/HRTable.vue"),
       },
       {
+        path: "/PrimaryTable",
+        component: () => import("pages/PrimaryTab.vue"),
+      },
+      {
         path: "/AuditTable",
         component: () => import("pages/AuditTab.vue"),
       },
@@ -76,6 +82,7 @@ const routes = [
       },
     ],
   },
+
   {
     path: "/LogoutPage",
     component: () => import("components/LoadingPage/LogoutPage.vue"),

@@ -3,208 +3,504 @@
     <template v-slot:body-cell-viewIR="props">
       <q-td>
         <q-btn
+          flat
+          rounded
           push
-          @click="viewIReport(props.row.IRNo)"
+          @click="viewIReport(props.row.iRNo)"
           :ripple="{ center: true }"
-          color="accent"
           icon="description"
-          class="text-black text-bold text-center shadow-5"
-        />
+          class="bg-accent text-black text-bold text-center shadow-5"
+          style="border-radius: 20px; width: 125px"
+          >
+            <q-tooltip class="bg-info text-white">
+              View Report Details
+            </q-tooltip>
+          </q-btn>
 
-        <q-dialog full-width full-height v-model="IRDialog" persistent>
-          <q-card class="DirectorDialog">
-            <q-card-section class="DirectorIR">
-              <div class="row items-center justify-between">
-                <div class="DirectorText">INCIDENT REPORT</div>
+          <q-dialog maximized v-model="IRDialog" persistent>
+            <div class="QADialog">
+              <q-card class="contentFormQA">
+                <q-card-section class="q-mb-sm row items-center justify-between">
+                <div
+                  class="text-secondary text-weight-bold"
+                  style="font-size: 25px; color: #002b5c"
+                >
+                  INCIDENT REPORT INFORMATION
+                </div>
+
                 <q-btn
-                  style="margin-left: 25px"
-                  round
-                  push
+                  flat
                   icon="close"
-                  class="bg-accent text-black"
+                  style="
+                    color: #003566;
+                    background-color: rgba(22, 110, 204, 0.1);
+                  "
                   @click="IRDialog = false"
                   v-close-popup
-                />
-              </div>
-            </q-card-section>
+                >
+                  <q-tooltip class="bg-info text-white"> Close Form </q-tooltip>
+                </q-btn>
+                </q-card-section>
 
-            <q-card-section>
-              <q-list>
-                <q-item v-for="(ird, index) in IRDirectorDetailss" :key="index">
-                  <q-item-section class="custom-item-section">
-                    <q-item-section class="Directorlist">
-                      <div class="DirectorTextlist">INCIDENT INFORMATION</div>
-                    </q-item-section>
+                <q-card-section style="border: 2px solid #6b7c93">
 
-                    <q-item-section class="DirectorDes">
+                  <div class="row q-col-gutter-md q-mx-lg">
+                    <div class="col-6">
                       <div
-                        style="display: flex; justify-content: space-between"
+                        class="text-weight-bold"
+                        style="font-size: 15px; color: #03254b"
                       >
-                        <div><b>INCIDENT REPORT NUMBER:</b> {{ ird.IRNo }}</div>
-                        <div>
-                          <b>INCIDENT REPORT DATE CREATED:</b>
-                          {{ FormatDate(ird.DateTimeCreated) }}
-                        </div>
+                        Incident Report Number
                       </div>
+
+                      <q-input
+                        rounded
+                        outlined
+                        :model-value="IRDirectorDetailss.iRNo"
+                        disable
+                      />
+                    </div>
+                    <div class="col-6">
                       <div
-                        style="display: flex; justify-content: space-between"
+                        class="text-weight-bold"
+                        style="font-size: 15px; color: #03254b"
                       >
-                        <div>
-                          <b>PRIMARY(DEPARTMENT):</b> {{ ird.PrimaryDept }}
-                        </div>
-                        <div>
-                          <b>SECONDARY(DEPARTMENT/S):</b>
-                          {{ ird.DeptCodeInvDescriptions }}
-                        </div>
+                        Date Report Created
                       </div>
-                    </q-item-section>
 
-                    <q-item-section class="DirectorDes">
-                      <div>
-                        <b>SUBJECT OF THE INCIDENT:</b> {{ ird.SubjectName }}
-                      </div>
-                      <div>
-                        <b>LOCATION OF THE INCIDENT:</b> {{ ird.SubjectLoc }}
-                      </div>
-                      <div
-                        style="
-                          background-color: #ffc619;
-                          height: 2px;
-                          margin: 5px 0;
-                        "
-                      ></div>
-                      <div
-                        style="display: flex; justify-content: space-between"
-                      >
-                        <div>
-                          <b>DATE OF THE INCIDENT:</b>
-                          {{ FormatDate(ird.SubjectDate) }}
+                      <q-input
+                        rounded
+                        outlined
+                        :model-value="FormatDateIR(IRDirectorDetailss.dateTimeCreated)"
+                        disable
+                      />
+                    </div>
+                  </div>
+
+                  <q-separator class="formseparatorWhite" />
+
+                  <div class="QADesContent">
+                    <div class="QAFixDesign">
+                      <div class="QADes1">
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                        >
+                          General Information
                         </div>
-                        <div>
-                          <b>TIME OF THE INCIDENT:</b>
-                          {{ FormatTime(ird.SubjectTime) }}
+                        <div
+                          class="q-mb-sm"
+                          style="font-size: 15px; color: #737373"
+                        >
+                          This section contains essential details regarding the
+                          incident, including the date, time, location,
+                          individuals involved, and the nature of the incident.
+                        </div>
+                        <q-separator class="formseparatorYellow" />
+
+                        <div class="row q-col-gutter-md q-mx-lg">
+                          <div class="col-6">
+                            <div
+                              class="text-weight-bold"
+                              style="font-size: 15px; color: #03254b"
+                            >
+                              Primary (Department/s)
+                            </div>
+
+                            <span v-if="!IRDirectorDetailss.primaryDept">
+                              <q-input
+                                rounded
+                                outlined
+                                label="Not Assigned"
+                                disable
+                              />
+                            </span>
+                            <span v-else
+                              ><q-input
+                                rounded
+                                outlined
+                                :model-value="IRDirectorDetailss.primaryDept"
+                                disable
+                              />
+                            </span>
+                          </div>
+                          <div class="col-6">
+                            <div
+                              class="text-weight-bold"
+                              style="font-size: 15px; color: #03254b"
+                            >
+                              Secondary (Department/s)
+                            </div>
+
+                            <span v-if="!IRDirectorDetailss.deptCodeInvDescriptions">
+                              <q-input
+                                rounded
+                                outlined
+                                label="Not Assigned"
+                                disable
+                              />
+                            </span>
+                            <span v-else>
+                              <q-input
+                                rounded
+                                outlined
+                                :model-value="
+                                  IRDirectorDetailss.deptCodeInvDescriptions
+                                "
+                                disable
+                              />
+                            </span>
+                          </div>
+                        </div>
+
+                        <div class="row q-col-gutter-md q-mx-lg q-mt-xs">
+                          <div class="col-6">
+                            <div
+                              class="text-weight-bold"
+                              style="font-size: 15px; color: #03254b"
+                            >
+                              Subject of the Incident
+                            </div>
+
+                            <span v-if="IRDirectorDetailss.subjectSpecificExam">
+                              <q-input
+                                rounded
+                                outlined
+                                :model-value="
+                                  IRDirectorDetailss.subjectName +
+                                  ' - ' +
+                                  IRDirectorDetailss.subjectSpecificExam
+                                "
+                                disable
+                              />
+                            </span>
+                            <span
+                              v-else-if="
+                                IRDirectorDetailss.subjectSpecificExam === null
+                              "
+                            >
+                              <q-input
+                                rounded
+                                outlined
+                                :model-value="IRDirectorDetailss.subjectName"
+                                disable
+                              />
+                            </span>
+                          </div>
+
+                          <div class="col-6">
+                            <div
+                              class="text-weight-bold"
+                              style="font-size: 15px; color: #03254b"
+                            >
+                              Location of the Incident
+                            </div>
+
+                            <q-input
+                              rounded
+                              outlined
+                              :model-value="IRDirectorDetailss.subjectLoc"
+                              disable
+                            />
+                          </div>
+                        </div>
+
+                        <div class="row q-col-gutter-md q-mx-lg q-mt-xs">
+                          <div class="col-6">
+                            <div
+                              class="text-weight-bold"
+                              style="font-size: 15px; color: #03254b"
+                            >
+                              Date of the Incident
+                            </div>
+
+                            <q-input
+                              rounded
+                              outlined
+                              :model-value="FormatDate(IRDirectorDetailss.subjectDate)"
+                              disable
+                            />
+                          </div>
+
+                          <div class="col-6">
+                            <div
+                              class="text-weight-bold"
+                              style="font-size: 15px; color: #03254b"
+                            >
+                              Time of the Incident
+                            </div>
+
+                            <q-input
+                              rounded
+                              outlined
+                              :model-value="FormatTime(IRDirectorDetailss.subjectTime)"
+                              disable
+                            />
+                          </div>
                         </div>
                       </div>
-                    </q-item-section>
+                    </div>
+                  </div>
 
-                    <q-item-section class="DirectorDes">
-                      <div><b>NARRATIVE DESCRIPTION OF THE INCIDENT</b></div>
-                      <q-separator
-                        style="
-                          background-color: #ffc619;
-                          height: 2px;
-                          margin: 5px 0;
-                        "
-                      ></q-separator>
-                      <div>
-                        <p>{{ ird.SubjectNote }}</p>
-                      </div>
-                    </q-item-section>
+                  <q-separator class="formseparatorWhite" />
 
-                    <q-item-section class="DirectorDes">
-                      <div><b>POSSIBLE CAUSES OF THE INCIDENT</b></div>
-                      <q-separator
-                        style="
-                          background-color: #ffc619;
-                          height: 2px;
-                          margin: 5px 0;
-                        "
-                      ></q-separator>
-                      <div>
-                        <p>{{ ird.SubjectCause }}</p>
-                      </div>
-                    </q-item-section>
+                  <div class="QADesContent">
+                    <div class="QAFixDesign">
+                      <div class="QADes1">
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                        >
+                          Attached File
+                        </div>
+                        <div
+                          class="q-mb-sm"
+                          style="font-size: 15px; color: #737373"
+                        >
+                          The attached files support the accurate review and
+                          proper documentation of this incident report.
+                        </div>
+                        <q-separator class="formseparatorYellow" />
 
-                    <q-item-section class="DirectorDes">
-                      <div><b>IMMEDIATE RESPONSE</b></div>
-                      <q-separator
-                        style="
-                          background-color: #ffc619;
-                          height: 2px;
-                          margin: 5px 0;
-                        "
-                      ></q-separator>
-                      <div>
-                        <p>{{ ird.SubjectResponse }}</p>
+                        <div
+                          v-if="
+                            IRDirectorDetailss.subjectFile &&
+                            IRDirectorDetailss.subjectFile.length
+                          "
+                          class="QAFileDes column flex-center"
+                        >
+                          <div
+                            style="
+                              display: flex;
+                              align-items: center;
+                              gap: 8px;
+                              background: #e3f2fd;
+                              padding: 8px;
+                              border-radius: 4px;
+                            "
+                            @click.stop="
+                              viewPDF(
+                                IRDirectorDetailss.subjectFile,
+                                IRDirectorDetailss.subjectFileName
+                              )
+                            "
+                          >
+                            <q-icon
+                              name="description"
+                              class="text-h3"
+                              color="red"
+                            ></q-icon>
+
+                            <div class="text-dark text-left text-subtitle1">
+                              {{ IRDirectorDetailss.subjectFileName }}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="QAFileDes column flex-center" v-else>
+                          <div
+                            class="text-subtitle1 items-center text-weight-bold text-dark"
+                          >
+                            <i>~ NO FILE ATTACHED ~</i>
+                          </div>
+                        </div>
                       </div>
-                    </q-item-section>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-card-section>
-          </q-card>
-        </q-dialog>
+                    </div>
+                  </div>
+
+                  <q-separator class="formseparatorWhite" />
+
+                  <div class="QADesContent">
+                    <div class="QAFixDesign">
+                      <div class="QADes1">
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                        >
+                          Narrative Description of the Incident
+                        </div>
+                        <div
+                          class="q-mb-sm"
+                          style="font-size: 15px; color: #737373"
+                        >
+                          Provided detailed of how the incident transpired,
+                          including the sequence of events, contributing factors,
+                          and individuals involved.
+                        </div>
+                        <q-separator class="formseparatorYellow" />
+                        <div class="q-mx-xl">
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            :model-value="IRDirectorDetailss.subjectNote"
+                            disable
+                            input-class="q-pa-md"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <q-separator class="formseparatorWhite" />
+
+                  <div class="QADesContent">
+                    <div class="QAFixDesign">
+                      <div class="QADes1">
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                        >
+                          Possible Causes of the Incident
+                        </div>
+                        <div
+                          class="q-mb-sm"
+                          style="font-size: 15px; color: #737373"
+                        >
+                          Possible reason on the perspective of the Informant.
+                        </div>
+                        <q-separator class="formseparatorYellow" />
+                        <div class="q-mx-xl">
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            :model-value="IRDirectorDetailss.subjectCause"
+                            disable
+                            input-class="q-pa-md"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <q-separator class="formseparatorWhite" />
+
+                  <div class="QADesContent">
+                    <div class="QAFixDesign">
+                      <div class="QADes1">
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                        >
+                          Immediate Response
+                        </div>
+                        <div
+                          class="q-mb-sm"
+                          style="font-size: 15px; color: #737373"
+                        >
+                          Action taken by the concerned department or by the
+                          Informant to ease the incident.
+                        </div>
+                        <q-separator class="formseparatorYellow" />
+                        <div class="q-mx-xl">
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            :model-value="IRDirectorDetailss.subjectResponse"
+                            disable
+                            input-class="q-pa-md"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </q-card-section>
+              </q-card>
+            </div>
+          </q-dialog>
       </q-td>
     </template>
 
-    <template v-slot:body-cell-QA="props">
+    <!-- <template v-slot:body-cell-QA="props">
       <q-td :props="props">
-        <span class="text-dark text-bold text-center">
-          {{ props.row.MainFullName }}
+        <span class="text-bold text-center text-uppercase">
+          {{ props.row.mainFullName }}
         </span>
         <br />
         <span
-          v-if="props.row.TransferFullName !== null"
-          class="text-dark text-bold text-center"
+          v-if="props.row.transferFullName !== null"
+          class="text-bold text-center text-uppercase"
         >
           REDIRECTED TO:
           <b style="background: #ffc619">{{ props.row.TransferFullName }}</b>
         </span>
       </q-td>
+    </template> -->
+
+    <template v-slot:body-cell-subject="props">
+      <q-td :props="props">
+        <span
+          v-if="!props.row.subjectSpecificExam"
+          class="text-bold text-center text-uppercase"
+        >
+          {{ props.row.subjectName }}
+        </span>
+        <span
+          v-if="props.row.subjectSpecificExam"
+          class="text-bold text-center text-uppercase"
+        >
+          {{ props.row.subjectName }} - {{ props.row.subjectSpecificExam }}
+        </span>
+      </q-td>
     </template>
 
-    <template v-slot:body-cell-QAreco="props">
+    <template v-slot:body-cell-hrRef="props">
       <q-td>
         <q-btn
-          v-if="props.row.lostRec === null"
-          @click="lostRecommendation(props.row.IRNo)"
-          icon="recommend"
+          :disable="props.row.hrReferral !== null"
+          @click="HRRecommendation(props.row.iRNo)"
+          icon="healing"
           class="bg-positive text-white text-bold text-center"
+          style="border-radius: 20px; width: 125px"
         >
         </q-btn>
 
-        <q-btn
-          :disable="props.row.lostRec !== null"
-          v-if="props.row.lostRec !== null"
-          @click="lostRecommendation(props.row.IRNo)"
-          icon="recommend"
-          class="bg-dark text-white text-bold text-center"
-        >
-        </q-btn>
-
-        <q-dialog v-model="setLostRecovery" persistent>
-          <q-card class="DirectorRECOM">
-            <q-card-section class="DirectorREC">
-              <div class="row items-center justify-between">
-                <div class="DirectorRECText">RECOMMENDATION</div>
+        <q-dialog v-model="setHRRecom" persistent>
+          <q-card class="IRCON">
+            <q-card-section class="q-mb-sm row items-center justify-between">
+              <div
+                class="text-secondary text-weight-bold"
+                style="font-size: 25px; color: #002b5c"
+              >
+                RECOMMENDATION
               </div>
-            </q-card-section>
-            <q-card-section>
-              <q-input
-                outlined
-                v-model="IrNo"
-                label="IRNo."
-                style="display: none"
-              />
-              <div>IS LOST RECOVERY RECOMMENDED?</div>
-            </q-card-section>
-            <q-separator
-              style="background-color: #d5d7da; height: 2px; margin: 8px 0"
-            ></q-separator>
-            <q-card-actions align="right">
               <q-btn
-                push
-                label="NO"
-                color="secondary"
-                @click="submitLostRecommendation(2, 'NOT APPLICABLE')"
+                flat
+                icon="close"
+                style="color: #166ecc; background-color: rgba(22, 110, 204, 0.1)"
+                @click="setHRRecom = false"
+                v-close-popup
               />
-              <q-btn
-                push
-                label="YES"
-                color="accent"
-                class="text-black"
-                @click="submitLostRecommendation(1, 'APPLICABLE')"
-              />
+            </q-card-section>
+
+            <q-separator class="formseparatorBlue" />
+
+            <q-card-actions
+              align="center"
+              class="q-mt-md column items-center justify-center"
+              style="text-align: center;"
+            >
+              <div class="q-mb-sm q-pa-sm" style="font-size: 18px; color: #000000">
+                Is this incident report (IR) something that should be referred to HR?
+              </div>
+
+              <div class="row q-gutter-xxl justify-center">
+                <q-btn
+                  flat
+                  rounded
+                  push
+                  label="NO"
+                  class="buttonCancelDesign text-info"
+                  @click="submitHRRecommendation(2)"
+                />
+
+                <q-btn
+                  flat
+                  rounded
+                  push
+                  label="YES"
+                  class="buttonSaveDesign bg-accent text-black"
+                  @click="submitHRRecommendation(1)"
+                />
+              </div>
             </q-card-actions>
           </q-card>
         </q-dialog>
@@ -243,10 +539,16 @@ export default {
       IRDirectorDetailss: [],
       IRDialog: false,
 
-      setLostRecovery: false,
-      lostRec: null,
+      setHRRecom: false,
+      HRRec: null,
       QAReferral: null,
       waitplease: false,
+
+      pdfDisplayDialog: false,
+      pdfUrl: null,
+      maximizedToggle: null,
+      subjectFileName: null,
+      iRNo: "",
     };
   },
 
@@ -259,7 +561,17 @@ export default {
 
     FormatDate(SubjectDate) {
       const date = new Date(SubjectDate);
-      const options = { year: "numeric", month: "short", day: "2-digit" };
+      const options = { year: "numeric", month: "long", day: "2-digit" };
+      const formattedDate = date
+        .toLocaleDateString("en-US", options)
+        .toUpperCase()
+        .replace(/\s/g, " ");
+      return formattedDate;
+    },
+
+    FormatDateIR(DateTimeCreated) {
+      const date = new Date(DateTimeCreated);
+      const options = { year: "numeric", month: "long", day: "2-digit" };
       const formattedDate = date
         .toLocaleDateString("en-US", options)
         .toUpperCase()
@@ -295,29 +607,33 @@ export default {
         console.error("Error inserting data:", error);
       }
     },
+
+    viewPDF(subjectFile) {
+      this.pdfUrl = "data:application/pdf;base64," + subjectFile;
+      this.pdfDisplayDialog = true;
+    },
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    lostRecommendation(IRNo) {
-      this.setLostRecovery = true;
+    HRRecommendation(IRNo) {
+      this.setHRRecom = true;
       this.IrNo = IRNo; // Ensure consistency with this.IrNo
     },
 
-    onCancelLostReco() {
-      this.setLostRecovery = false;
+    onCancelHRRecom() {
+      this.setHRRecom = false;
     },
 
-    async submitLostRecommendation(lostRec, FinancialLiability) {
+    async submitHRRecommendation(HRRec) {
       try {
-        const lostRecom = {
+        const HRData = {
           IRNo: this.IrNo,
-          lostRec: lostRec,
-          FinancialLiability: FinancialLiability,
+          HRRec: HRRec
         };
         this.waitplease = true;
-        this.onCancelLostReco();
+        this.onCancelHRRecom();
         await this.$store.dispatch(
-          "ApplyStore/addLostRecommendation",
-          lostRecom
+          "ApplyStore/addHRRecommendation",
+          HRData
         );
 
         setTimeout(() => {

@@ -11,33 +11,34 @@
   >
     <div class="q-pa-md row items-start" style="position: relative; z-index: 1">
       <div class="logcards">
-        <div class="text-center">
-          <img
-            src="../assets/IRLogo.png"
-            class="custom-image"
-            style="margin-top: 10px; width: 45%; height: 40%"
-          />
-          <div class="textwel">WELCOME</div>
-          <div class="textdash">Please log in to the Admin Dashboard.</div>
+        <div class="text-h3 text-secondary text-bold q-mb-sm text-center ">
+          WELCOME
         </div>
+
+        <div class="text-dark q-mb-sm text-center" style="font-size: 16px; margin-top: 15px">
+          This site is for admin members to report every progress of
+          information that has been obtained.
+        </div>
+
         <q-card-section>
-          <q-form @submit.prevent="login" class="form">
+          <q-form class="q-gutter-xs q-mb-sm custom-border1" @submit.prevent="login">
             <q-input
+              rounded
               outlined
               v-model.trim="EmployeeCode"
               label="Employee Number"
-              style="width: 90%; margin-left: 25px"
             >
               <template v-slot:prepend>
                 <q-icon name="person"></q-icon>
               </template>
             </q-input>
+
             <q-input
+              rounded
               outlined
               v-model="WebPassword"
               label="Password"
               :type="showPassword ? 'text' : 'password'"
-              style="width: 90%; margin-left: 25px"
             >
               <template v-slot:prepend>
                 <q-icon name="lock"></q-icon>
@@ -55,21 +56,30 @@
                 ></q-icon>
               </template>
             </q-input>
+
             <q-btn
-              type="submit"
-              push
-              :ripple="{ center: true }"
-              class="btnlogin shadow-12"
               label="LOGIN"
-              color="primary"
+              color="accent"
               icon="login"
+              unelevated
+              rounded
+              type="submit"
+              class="full-width q-py-sm q-mt-md text-subtitle1 text-black text-bold"
             />
           </q-form>
         </q-card-section>
+
+        <div class="text-center">
+          <img
+            src="../assets/FINALPOST.png"
+            class="custom-image"
+            style="margin-top: 10px; width: 35%; height: 40%"
+          />
+        </div>
       </div>
     </div>
     <img
-      src="../assets/uermmmci.png"
+      src="../assets/BUILDING.png"
       style="
         position: absolute;
         top: 0;
@@ -93,6 +103,7 @@ export default {
       showPassword: false,
     };
   },
+
   computed: {
     ...mapGetters({ getUser: "ApplyStore/getUser" }),
   },
@@ -104,7 +115,6 @@ export default {
           EmployeeCode: this.EmployeeCode,
           WebPassword: this.WebPassword,
         };
-
         if (!this.validateNOTE()) {
           // Changed 'validateLOGIN' to 'validateNOTE'
           this.$q.notify({
@@ -161,33 +171,27 @@ export default {
 .logcards {
   border-bottom: 1em solid #ffc619;
   border-top: 1em solid #0f4d91;
-  background-color: #f2f5f8;
-  padding: 1em;
+  background-color: #e8f0fe;
+  padding: 55px;
   width: 450px; /* Optional: set a max-width for the card */
   height: 550px;
+  border-radius: 10%;
 }
 .textwel {
   font-weight: bold;
   font-family: Arial Black;
   display: flex;
-  color: #0f4d91;
-  font-size: 35px;
+  color: #002b5c;
+  font-size: 45px;
   justify-content: center;
 }
 .textdash {
-  font-weight: bold;
+  font-weight: normal;
   display: flex;
-  color: #0f4d91;
-  font-size: 18px;
+  color: #002b5c;
+  font-size: 15px;
   justify-content: center;
   margin-left: 5px;
-}
-.btnlogin {
-  justify-content: center;
-  width: 90%; /* Optional: set a max-width for the card */
-  margin-left: 25px;
-  height: 50px;
-  font-weight: bold;
-  font-size: 20px;
+  margin-bottom: 8px;
 }
 </style>

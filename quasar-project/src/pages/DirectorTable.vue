@@ -1,52 +1,62 @@
 <template>
-  <div id="q-app" style="min-height: 100vh; position: relative; z-index: 1">
-    <div class="q-pa-sm row items-start q-gutter-xs">
-      <div class="my-card">
-        <q-card-section
-          class="bg-primary text-white"
-          style="
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-          "
+  <div
+    id="q-app"
+    style="min-height: 100vh; position: relative; z-index: 1;"
+  >
+      <div
+        class="row items-center justify-between q-ma-lg q-mb-md bg-white q-pa-sm rounded-borders shadow-1"
+        style="border-radius: 10px"
+      >
+        <div>
+          <div class="text-primary text-weight-bold" style="font-size: 30px">
+            DIRECTORS & VPS MODULE
+          </div>
+          <div style="font-size: 18px; color: #333333">
+            Incident Report Details
+          </div>
+        </div>
+      </div>
+
+      <q-card-section
+        class="row q-mb-sm bg-white q-ma-lg q-pa-md rounded-borders shadow-1"
+        style="border-radius: 10px"
+      >
+        <div
+          v-if="loading"
+          class="fixed-full flex flex-center column q-gutter-md"
+          style="background-color: rgba(255, 255, 255, 0.7); z-index: 9999"
         >
-          <div class="IRQHText">INCIDENT REPORT</div>
-          <div
-            class="q-gutter-md row"
-            style="display: flex; align-items: center"
-          >
+          <q-spinner-ball size="150px" color="primary" />
+          <div class="text-subtitle1 text-primary">Please wait...</div>
+        </div>
+
+        <q-card-section class="column fit full-width">
+
+          <div class="row items-end justify-end q-gutter-md q-pa-sm">
             <q-input
-              dark
-              dense
-              standout
               v-model="searchContent"
-              input-class="text-right"
-              class="q-ml-md"
-              style="background-color: #f3f4f7; border-radius: 0.4em"
+              label="SEARCH "
+              dense
+              outlined
+              rounded
             >
               <template v-slot:append>
-                <q-icon name="search" style="color: black"></q-icon>
+                <q-icon name="search" color="info" />
               </template>
             </q-input>
           </div>
+
+            <DirectorTable
+            v-show="showTable"
+            :rows="filteredDisAll"
+            :pagination="{ rowsPerPage: 11 }"
+            :columns="disColumns"
+            row-key="IRNo"
+            :loading="loading"
+            :getDirectors="getDirectors"
+            />
         </q-card-section>
-        <q-spinner-ball
-          class="spinner"
-          v-if="loading"
-          size="150px"
-          color="primary"
-        ></q-spinner-ball>
-        <DirectorTable
-          v-show="showTable"
-          :rows="filteredDisAll"
-          :pagination="{ rowsPerPage: 8 }"
-          :columns="disColumns"
-          row-key="IRNo"
-          :loading="loading"
-          :getDirectors="getDirectors"
-        />
-      </div>
-    </div>
+      </q-card-section>
   </div>
   <img
     src="../assets/OMBRE-GRAY.jpg"
@@ -80,21 +90,21 @@ export default {
           align: "left",
           field: "id",
         },
-        { name: "IRNo", label: "IRNUMBER", align: "left", field: "IRNo" },
+        { name: "IRNo", label: "IR NUMBER", align: "left", field: "iRNo" },
         {
           name: "departmentNumber",
           label: "INCIDENT RESPONDER (DEPARTMENT)",
           align: "left",
-          field: "Department_Description",
+          field: "department_Description",
         },
         {
           name: "subject",
           label: "SUBJECT OF THE INCIDENT",
           align: "left",
-          field: "SubjectName",
+          field: "subjectName",
         },
-        { name: "QA", label: "QA INCHARGE", align: "left", field: "id" },
-        { name: "QAreco", label: "LOST RECOVERY", align: "left", field: "id" },
+        // { name: "QA", label: "QA IN CHARGE", align: "left", field: "id" },
+        { name: "hrRef", label: "HR REFFERAL", align: "left", field: "id" },
       ],
     };
   },
@@ -224,14 +234,99 @@ export default {
 
 /* ///////////////////////////////////////IRDETAILS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
-.custom-item-section {
-  border: 1px solid #ffffff; /* Border style */
-  border-radius: 1px; /* Border radius */
-  padding: 5px; /* Optional padding */
+.QADialog {
+  background-image: url("../assets/BGCORE.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #f4f7fc;
+  padding-top: 20px;
+  padding-bottom: 40px;
+  min-height: 100vh;
+}
+.contentFormQA {
+  border: 2px solid #f0f2f5;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 25px;
+  padding: 20px;
+  background-color: #ffffff;
+  width: 1100px;
+  height: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.formseparatorYellow {
+  background-color: #ffc619;
+  height: 2px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.formseparatorBlue {
+  background-color: #6b7c93;
+  height: 2px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.formseparatorWhite {
+  background-color: #fff;
+  height: 2px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.QADes {
+  font-size: 15px;
+  border: 0.1em solid #ffffff;
+}
+
+.QAFileDes {
+  padding: 8px;
+  margin-top: 5px;
+  font-size: 15px;
+  border: 0.1em solid #003566;
+  background-color: #e3f2fd;
+}
+
+.IRCON {
+  background-color: #ffffff;
+  height: 250px;
+  width: 550px;
+}
+
+.buttonCancelDesign {
+  color: #166ecc;
+  background-color: rgba(22, 110, 204, 0.1);
+  font-size: 15px;
+  font-weight: bold;
+  margin: 5px;
+  box-shadow: #000000;
+  border-radius: 20px;
+  width: 130px;
+  border: 2px solid #166ecc;
+}
+
+.buttonSaveDesign {
+  border-color: #ffc412;
+  font-size: 15px;
+  margin: 5px;
+  box-shadow: #000000;
+  border-radius: 20px;
+  font-weight: bold;
+  width: 130px;
+  border: 2px solid #ffc412;
+}
+
+/* .custom-item-section {
+  border: 1px solid #d5d7da;
+  border-radius: 1px;
+  padding: 5px;
 }
 .DirectorDialog {
   background-color: #ffffff;
-  max-height: 100%; /* You can adjust the units based on your preference, 'vw' for viewport width */
+  max-height: 100%;
   border: 0.2em solid #f3f4f7;
 }
 .DirectorIR {
@@ -259,7 +354,7 @@ export default {
   margin-top: 5px;
   width: 98%;
   font-size: 15px;
-  border: 0.1em solid #cacaca;
+  border: 0.1em solid #ffffff;
 }
 .DirectorTextlist {
   font-weight: bold;
@@ -268,6 +363,91 @@ export default {
   font-size: 20px;
   justify-content: center;
 }
+
+.DirectorTitlelist {
+  height: 40%;
+  width: 100%;
+  padding: 8px;
+  border: 0.1em solid #cacaca;
+  background-color: #003566;
+}
+.DirectorTextlist {
+  font-weight: bold;
+  display: flex;
+  color: #ffc619;
+  font-size: 22px;
+  justify-content: center;
+}
+.DirectorDesContent {
+  border: 0.1em solid #cacaca;
+  margin-top: 5px;
+}
+.DirectorDesign {
+  width: 70%;
+  margin: 5px;
+  font-size: 15px;
+  background-color: #ffffff;
+}
+.DirectorDesign2 {
+  width: 25%;
+  margin: 5px;
+  font-size: 15px;
+  background-color: #ffffff;
+}
+.DirectorFixDesign {
+  width: 99.5%;
+  margin: 5px;
+  font-size: 15px;
+  background-color: #ffffff;
+}
+.DirectorFileDes {
+  padding: 8px;
+  margin-top: 5px;
+  font-size: 15px;
+  border: 0.1em solid #003566;
+  background-color: #e3f2fd;
+}
+.DirectorFixDesign {
+  width: 99.5%;
+  margin: 5px;
+  font-size: 15px;
+  background-color: #ffffff;
+}
+.DirectorIRND {
+  font-weight: bold;
+  display: flex;
+  color: #ffc619;
+  font-size: 20px;
+  justify-content: center;
+}
+.DirectorDes1 {
+  padding: 8px;
+  margin: 5px;
+  font-size: 15px;
+  border: 0.1em solid #ffffff;
+}
+.DirectorText {
+  font-weight: bold;
+  font-style: roboto;
+  display: flex;
+  color: #ffc619;
+  font-size: 30px;
+  justify-content: center;
+}
+.DirectorVGT {
+  font-weight: bold;
+  display: flex;
+  color: #ffc619;
+  font-size: 20px;
+  justify-content: center;
+}
+.Directorlist {
+  height: 30%;
+  width: 100%;
+  margin-top: 15px;
+  border: 0.1em solid #cacaca;
+  background-color: #003566;
+} */
 
 /* ///////////////////////////////////////lOST RECOMMENDATION////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 

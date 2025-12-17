@@ -95,27 +95,44 @@
                     <q-tabs
                       v-model="tab"
                       dense
-                      class="text-primary bg-warning"
-                      active-color="primary"
-                      indicator-color="primary"
+                      indicator-color="warning"
                       align="justify"
+                      class="tab-container"
                     >
                       <q-tab
-                        style="font-size: larger; border: 0.5px solid #f3f4f7"
+                        :class="
+                          tab === 'repIncident'
+                            ? 'text-primary disAuditRisk'
+                            : 'text-primary disAllAudit'
+                        "
                         name="repIncident"
                         label="REPORTABLE INCIDENT DETAILS"
                       ></q-tab>
                       <q-tab
-                        style="font-size: larger; border: 0.5px solid #f3f4f7"
+                        :class="
+                          tab === 'repChild'
+                            ? 'text-primary disAuditRisk'
+                            : 'text-primary disAllAudit'
+                        "
+                        name="repChild"
+                        label="REPORTABLE INCIDENT CHILDREN"
+                      ></q-tab>
+                      <q-tab
+                        :class="
+                          tab === 'riskDic'
+                            ? 'text-primary disAuditRisk'
+                            : 'text-primary disAllAudit'
+                        "
                         name="riskDic"
                         label="RISK DICTIONARY"
                       ></q-tab>
+                      <div class="AuditRisk"></div>
                     </q-tabs>
 
                     <q-separator></q-separator>
 
                     <q-tab-panels v-model="tab" animated>
-                      <q-tab-panel name="repIncident">
+                      <q-tab-panel name="repIncident" class="BorderDesign">
                         <div class="row justify-between">
                           <div>
                             <q-btn-dropdown
@@ -132,12 +149,12 @@
                               <q-list>
                                 <q-item
                                   v-for="option in disAllDomain"
-                                  :key="option.DomainCode"
+                                  :key="option.domainCode"
                                   clickable
                                   @click="selectSubjectCode(option)"
                                 >
                                   <q-item-section>
-                                    {{ option.RiskDomain }}
+                                    {{ option.riskDomain }}
                                   </q-item-section>
                                 </q-item>
                               </q-list>
@@ -172,18 +189,19 @@
                             :ripple="{ center: true }"
                             icon="add_card"
                             color="accent"
-                            label="REPORTABLE INCIDENT"
+                            label="CREATE REPORTABLE INCIDENT"
                             class="text-black text-bold text-center shadow-5"
-                            style="width: 220px"
+                            style="width: 280px"
                           />
+
                           <q-dialog v-model="SubIncident" persistent>
                             <q-card
                               class="bg-warning"
-                              style="height: 63%; width: 40%"
+                              style="height: 75%; width: 40%"
                             >
                               <q-card-section
                                 class="bg-accent"
-                                style="height: 13%"
+                                style="height: 10%"
                               >
                                 <div class="RiskText">
                                   ADD REPORTABLE INCIDENT
@@ -201,7 +219,27 @@
                                     <span class="text-red">*</span></template
                                   >
                                 </q-input>
+
                                 <q-select
+                                  outlined
+                                  use-input
+                                  clearable
+                                  v-model="SubjectRiskCode"
+                                  label-slot
+                                  :options="disAllDomain"
+                                  @filter="FilterFn"
+                                  emit-value
+                                  map-options
+                                  :option-value="(option) => option"
+                                  :option-label="(option) => option.riskDomain"
+                                >
+                                  <template v-slot:label>
+                                    RISK DOMAIN
+                                    <span class="text-red">*</span>
+                                  </template>
+                                </q-select>
+
+                                <!-- <q-select
                                   outlined
                                   use-input
                                   clearable
@@ -212,32 +250,47 @@
                                   emit-value
                                   map-options
                                   :option-value="(option) => option"
-                                  :option-label="(option) => option.Risk"
+                                  :option-label="(option) => option.risk"
                                 >
                                   <template v-slot:label>
-                                    RISK CODE
+                                    RISK
                                     <span class="text-red">*</span>
                                   </template>
-                                </q-select>
+                                </q-select> -->
+
                                 <q-select
                                   use-input
                                   square
                                   outlined
+                                  clearable
                                   v-model="EmployeeCode"
                                   :options="disQA"
                                   label-slot
                                   emit-value
                                   map-options
                                   :option-value="
-                                    (option) => option.EmployeeCode
+                                    (option) => option.employeeCode
                                   "
-                                  :option-label="(option) => option.FullName"
+                                  :option-label="(option) => option.fullName"
                                 >
                                   <template v-slot:label
                                     >QA IN-CHARGE
                                     <span class="text-red">*</span></template
                                   >
                                 </q-select>
+
+                                <q-input
+                                  square
+                                  outlined
+                                  type="textarea"
+                                  v-model="SubjectReptDescription"
+                                  label-slot
+                                >
+                                  <template v-slot:label
+                                    >SUBJECT DEFINITION
+                                    <span class="text-red">*</span></template
+                                  >
+                                </q-input>
 
                                 <q-select
                                   v-model="SubjectPolicy"
@@ -254,34 +307,32 @@
                                   use-input
                                   square
                                   outlined
+                                  clearable
                                   v-model="SecondaryQA"
                                   :options="disQA"
                                   label="SECONDARY QA"
                                   emit-value
                                   map-options
                                   :option-value="
-                                    (option) => option.EmployeeCode
+                                    (option) => option.employeeCode
                                   "
-                                  :option-label="(option) => option.FullName"
+                                  :option-label="(option) => option.fullName"
                                 />
                               </q-card-section>
-                              <q-card-actions
-                                align="right"
-                                class="footer-actions"
-                              >
+                              <q-card-actions class="footer-actions-reportable">
                                 <q-btn
                                   push
                                   label="CANCEL"
                                   @click="onCancelRisk"
                                   color="secondary"
-                                  class="button1"
+                                  class="button1 left-btn"
                                 ></q-btn>
                                 <q-btn
                                   push
                                   label="SAVE"
                                   @click="submitRisk"
                                   color="accent text-black"
-                                  class="button1"
+                                  class="button1 right-btn"
                                 ></q-btn>
                               </q-card-actions>
                             </q-card>
@@ -307,7 +358,7 @@
                           </q-dialog>
                         </q-card-section>
 
-                        <div>
+                        <div style="max-height: 600px; overflow-y: auto">
                           <q-markup-table class="custom-q-table">
                             <thead>
                               <tr>
@@ -336,10 +387,206 @@
                       </q-tab-panel>
 
                       <!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-                      <!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+                      <q-tab-panel name="repChild" class="BorderDesign">
+                        <div class="row justify-between">
+                          <div>
+                            <q-btn-dropdown
+                              v-model="dropdownRI"
+                              push
+                              class="filtertab"
+                              dense
+                              icon="sort"
+                              text-color="white"
+                              dropdown-icon="change_history"
+                              label="FILTER REPORTABLE INCIDENT"
+                              style="width: 40ch; height: 44px"
+                            >
+                              <q-list>
+                                <q-item
+                                  v-for="option in disAllSubject"
+                                  :key="option.subjectCode"
+                                  clickable
+                                  @click="selectRiskChildCode(option)"
+                                >
+                                  <q-item-section>
+                                    {{ option.subjectName }}
+                                  </q-item-section>
+                                </q-item>
+                              </q-list>
+                            </q-btn-dropdown>
+                          </div>
+
+                          <div>
+                            <q-input
+                              color="secondary"
+                              label-color="secondary"
+                              outlined
+                              dense
+                              v-model="searchRiskChild"
+                              label="SEARCH"
+                              style="width: 35ch; height: 44px; margin-top: 2px"
+                            >
+                              <template v-slot:append>
+                                <q-icon name="search" color="secondary" />
+                              </template>
+                            </q-input>
+                          </div>
+                        </div>
+
+                        <q-card-section
+                          class="bg-secondary row justify-end"
+                          style="
+                            border-top: 0.1em solid #d5d7da;
+                            margin-top: 15px;
+                          "
+                        >
+                          <q-btn
+                            @click="incidentChildren"
+                            :ripple="{ center: true }"
+                            icon="add_card"
+                            color="accent"
+                            label="CREATE RI CHILDREN"
+                            class="text-black text-bold text-center shadow-5"
+                            style="width: 280px"
+                          />
+
+                          <q-dialog v-model="ChilIncident" persistent>
+                            <q-card
+                              class="bg-warning"
+                              style="height: 75%; width: 40%"
+                            >
+                              <q-card-section
+                                class="bg-accent"
+                                style="height: 10%"
+                              >
+                                <div class="RiskText">
+                                  ADD REPORTABLE INCIDENT CHILDREN
+                                </div>
+                              </q-card-section>
+
+                              <q-card-section class="q-gutter-md">
+                                <q-select
+                                  outlined
+                                  use-input
+                                  clearable
+                                  v-model="SubjectCode"
+                                  :options="disAllSubject"
+                                  label="REPORTABLE INCIDENT"
+                                  @filter="FilterFnChil"
+                                  emit-value
+                                  map-options
+                                  :option-value="(option) => option"
+                                  :option-label="(option) => option.subjectName"
+                                />
+                                <q-input
+                                  square
+                                  outlined
+                                  v-model="SubjectSpecificExam"
+                                  label-slot
+                                >
+                                  <template v-slot:label
+                                    >SPECIFIC EXAMPLE
+                                    <span class="text-red">*</span></template
+                                  >
+                                </q-input>
+
+                                <q-select
+                                  use-input
+                                  square
+                                  outlined
+                                  clearable
+                                  v-model="PrimaryChilQA"
+                                  :options="disQA"
+                                  label="SECONDARY QA"
+                                  emit-value
+                                  map-options
+                                  :option-value="
+                                    (option) => option.employeeCode
+                                  "
+                                  :option-label="(option) => option.fullName"
+                                />
+                                <q-input
+                                  square
+                                  outlined
+                                  type="textarea"
+                                  v-model="SubjectReptChilDescription"
+                                  label="SUBJECT DEFINITION"
+                                />
+                              </q-card-section>
+
+                              <q-card-actions class="footer-actions-reportable">
+                                <q-btn
+                                  push
+                                  label="CANCEL"
+                                  @click="onCancelRiskChil"
+                                  color="secondary"
+                                  class="button1 left-btn"
+                                ></q-btn>
+                                <q-btn
+                                  push
+                                  label="SAVE"
+                                  @click="submitRiskChild"
+                                  color="accent text-black"
+                                  class="button1 right-btn"
+                                ></q-btn>
+                              </q-card-actions>
+                            </q-card>
+                          </q-dialog>
+                        </q-card-section>
+
+                        <div style="max-height: 600px; overflow-y: auto">
+                          <q-markup-table class="custom-q-table">
+                            <thead>
+                              <tr>
+                                <th
+                                  v-for="column in disRiskChildColumns"
+                                  :key="column.name"
+                                  class="custom-header"
+                                >
+                                  {{ column.label }}
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr
+                                v-for="row in filteredDisRiskChild"
+                                :key="row.id"
+                              >
+                                <td
+                                  v-for="column in disRiskChildColumns"
+                                  :key="column.name"
+                                  class="custom-cell"
+                                >
+                                  {{ row[column.field] }}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </q-markup-table>
+                        </div>
+                        <q-dialog
+                          v-model="waiting"
+                          persistent
+                          content-class="non-transparent-dialog"
+                        >
+                          <div class="risk-card">
+                            <q-card-section>
+                              <div class="spinner-container">
+                                <q-spinner-facebook
+                                  size="200px"
+                                ></q-spinner-facebook>
+                                <div class="risk-wait">
+                                  Doing something. Please wait...
+                                </div>
+                              </div>
+                            </q-card-section>
+                          </div>
+                        </q-dialog>
+                      </q-tab-panel>
+
                       <!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
 
-                      <q-tab-panel name="riskDic">
+                      <q-tab-panel name="riskDic" class="BorderDesign">
                         <div class="row justify-between">
                           <div>
                             <q-btn-dropdown
@@ -356,12 +603,12 @@
                               <q-list>
                                 <q-item
                                   v-for="option in disAllDomain"
-                                  :key="option.DomainCode"
+                                  :key="option.domainCode"
                                   clickable
                                   @click="selectRickDics(option)"
                                 >
                                   <q-item-section>
-                                    {{ option.RiskDomain }}
+                                    {{ option.riskDomain }}
                                   </q-item-section>
                                 </q-item>
                               </q-list>
@@ -483,7 +730,8 @@
                             </div>
                           </q-dialog>
                         </q-card-section>
-                        <div>
+
+                        <div style="max-height: 600px; overflow-y: auto">
                           <q-markup-table class="custom-q-table">
                             <thead>
                               <tr>
@@ -541,13 +789,13 @@
             <q-td>
               <q-btn
                 push
-                @click="viewIReport(props.row.IRNo)"
+                @click="viewIReport(props.row.iRNo)"
                 :ripple="{ center: true }"
                 color="accent"
                 icon="description"
                 class="text-black text-bold text-center shadow-5"
               />
-              <q-dialog full-width full-height v-model="IRDialog" persistent>
+              <q-dialog maximized v-model="IRDialog" persistent>
                 <q-card class="ADDialog">
                   <q-card-section class="ADIR">
                     <div class="row items-center justify-between">
@@ -563,54 +811,143 @@
                       />
                     </div>
                   </q-card-section>
-                  <q-card-section>
-                    <q-list>
-                      <q-item v-for="(ird, index) in IRQADetailss" :key="index">
-                        <q-item-section class="custom-item-section">
-                          <q-item-section class="ADlist">
-                            <div class="ADTextlist">INCIDENT INFORMATION</div>
-                          </q-item-section>
 
-                          <q-item-section class="ADDes">
-                            <div
-                              style="
-                                display: flex;
-                                justify-content: space-between;
-                              "
-                            >
-                              <div>
-                                <b>INCIDENT REPORT NUMBER:</b> {{ ird.IRNo }}
-                              </div>
-                              <div>
-                                <b>INCIDENT REPORT DATE CREATED:</b>
-                                {{ FormatDate(ird.DateTimeCreated) }}
+                  <q-item-section class="custom-item-section">
+                    <div style="padding: 20px">
+                      <div class="ADTitlelist">
+                        <div class="ADTextlist">INCIDENT INFORMATION</div>
+                      </div>
+
+                      <div class="ADDesContent">
+                        <div
+                          style="display: flex; justify-content: space-between"
+                        >
+                          <div class="ADDesign">
+                            <div class="ADDes">
+                              <b>INCIDENT REPORT NUMBER:</b>
+                              {{ IRQADetailss.iRNo }}
+                              <br />
+                              <b>INCIDENT REPORT DATE CREATED:</b>
+                              {{ FormatDateIR(IRQADetailss.dateTimeCreated) }}
+                              <br />
+                              <div
+                                style="
+                                  background-color: #ffc619;
+                                  height: 2px;
+                                  margin: 5px 0;
+                                "
+                              ></div>
+                              <div
+                                style="
+                                  display: flex;
+                                  justify-content: space-between;
+                                "
+                              >
+                                <div>
+                                  <b>PRIMARY(DEPARTMENT):</b>
+                                  {{ IRQADetailss.primaryDept }}
+                                </div>
+                                <div>
+                                  <b>SECONDARY(DEPARTMENT/S):</b>
+                                  {{ IRQADetailss.deptCodeInvDescriptions }}
+                                </div>
                               </div>
                             </div>
+                          </div>
+
+                          <div class="ADDesign2">
                             <div
-                              style="
-                                display: flex;
-                                justify-content: space-between;
+                              v-if="
+                                IRQADetailss.subjectFile &&
+                                IRQADetailss.subjectFile.length
                               "
+                              class="ADFileDes column flex-center"
                             >
-                              <div>
-                                <b>PRIMARY(DEPARTMENT):</b>
-                                {{ ird.PrimaryDept }}
+                              <div class="text-black text-bold text-center">
+                                ATTACHED FILE
                               </div>
-                              <div>
-                                <b>SECONDARY(DEPARTMENT/S):</b>
-                                {{ ird.DeptCodeInvDescriptions }}
+                              <div
+                                style="
+                                  display: flex;
+                                  align-items: center;
+                                  gap: 8px;
+                                  background: #e3f2fd;
+                                  padding: 8px;
+                                  border-radius: 4px;
+                                "
+                                @click.stop="viewPDF(IRQADetailss.subjectFile)"
+                              >
+                                <q-icon
+                                  name="description"
+                                  class="text-h3"
+                                  color="red"
+                                ></q-icon>
+                                <div class="text-dark text-left text-subtitle1">
+                                  {{ IRQADetailss.subjectFileName }}
+                                </div>
                               </div>
                             </div>
-                          </q-item-section>
 
-                          <q-item-section class="ADDes">
-                            <div>
+                            <div class="ADFileDes column flex-center" v-else>
+                              <div class="text-black text-bold text-center">
+                                ATTACHED FILE
+                              </div>
+                              <div
+                                style="
+                                  text-align: center;
+                                  font-size: 30px;
+                                  color: #a9a9a9;
+                                "
+                              >
+                                <p><i>~NO FILE ATTACHED~</i></p>
+                              </div>
+                            </div>
+
+                            <q-dialog v-model="pdfDisplayDialog" persistent>
+                              <q-card style="width: 90vw; max-width: 1100px">
+                                <div class="bg-primary text-white">
+                                  <div class="ADIRND">
+                                    ATTACHED FILES CONTENT
+                                  </div>
+                                  <q-btn
+                                    icon="close"
+                                    flat
+                                    round
+                                    dense
+                                    @click="closepdf"
+                                    class="absolute-top-right"
+                                  />
+                                </div>
+                                <q-card-section>
+                                  <iframe
+                                    v-if="pdfUrl"
+                                    :src="pdfUrl"
+                                    width="100%"
+                                    height="600px"
+                                    style="border: none"
+                                  ></iframe>
+                                </q-card-section>
+                              </q-card>
+                            </q-dialog>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="ADDesContent">
+                        <div class="ADFixDesign">
+                          <div class="ADDes1">
+                            <div v-if="IRQADetailss.subjectSpecificExam">
                               <b>SUBJECT OF THE INCIDENT:</b>
-                              {{ ird.SubjectName }}
+                              {{ IRQADetailss.subjectName }} -
+                              {{ IRQADetailss.subjectSpecificExam }}
                             </div>
-                            <div>
-                              <b>LOCATION OF THE INCIDENT:</b>
-                              {{ ird.SubjectLoc }}
+                            <div
+                              v-else-if="
+                                IRQADetailss.subjectSpecificExam === null
+                              "
+                            >
+                              <b>SUBJECT OF THE INCIDENT:</b>
+                              {{ IRQADetailss.subjectName }}
                             </div>
                             <div
                               style="
@@ -619,6 +956,10 @@
                                 margin: 5px 0;
                               "
                             ></div>
+                            <div>
+                              <b>LOCATION OF THE INCIDENT:</b>
+                              {{ IRQADetailss.subjectLoc }}
+                            </div>
                             <div
                               style="
                                 display: flex;
@@ -627,16 +968,20 @@
                             >
                               <div>
                                 <b>DATE OF THE INCIDENT:</b>
-                                {{ FormatDate(ird.SubjectDate) }}
+                                {{ FormatDate(IRQADetailss.subjectDate) }}
                               </div>
                               <div>
                                 <b>TIME OF THE INCIDENT:</b>
-                                {{ FormatTime(ird.SubjectTime) }}
+                                {{ FormatTime(IRQADetailss.subjectTime) }}
                               </div>
                             </div>
-                          </q-item-section>
+                          </div>
+                        </div>
+                      </div>
 
-                          <q-item-section class="ADDes">
+                      <div class="ADDesContent">
+                        <div class="ADFixDesign">
+                          <div class="ADDes1">
                             <div>
                               <b>NARRATIVE DESCRIPTION OF THE INCIDENT</b>
                             </div>
@@ -648,11 +993,15 @@
                               "
                             ></q-separator>
                             <div>
-                              <p>{{ ird.SubjectNote }}</p>
+                              <p>{{ IRQADetailss.subjectNote }}</p>
                             </div>
-                          </q-item-section>
+                          </div>
+                        </div>
+                      </div>
 
-                          <q-item-section class="ADDes">
+                      <div class="ADDesContent">
+                        <div class="ADFixDesign">
+                          <div class="ADDes1">
                             <div><b>POSSIBLE CAUSES OF THE INCIDENT</b></div>
                             <q-separator
                               style="
@@ -662,11 +1011,15 @@
                               "
                             ></q-separator>
                             <div>
-                              <p>{{ ird.SubjectCause }}</p>
+                              <p>{{ IRQADetailss.subjectCause }}</p>
                             </div>
-                          </q-item-section>
+                          </div>
+                        </div>
+                      </div>
 
-                          <q-item-section class="ADDes">
+                      <div class="ADDesContent">
+                        <div class="ADFixDesign">
+                          <div class="ADDes1">
                             <div><b>IMMEDIATE RESPONSE</b></div>
                             <q-separator
                               style="
@@ -676,24 +1029,69 @@
                               "
                             ></q-separator>
                             <div>
-                              <p>{{ ird.SubjectResponse }}</p>
+                              <p>{{ IRQADetailss.subjectResponse }}</p>
                             </div>
-                          </q-item-section>
+                          </div>
+                        </div>
+                      </div>
 
-                          <q-item-section class="ADDes" v-if="ird.ActionItem">
-                            <q-item-section class="ADlist">
-                              <div class="ADTextlist">
-                                ROOT CAUSE ANALYSIS (RCA) ACTION ITEMS
-                              </div>
-                            </q-item-section>
-                            <q-item-section v-if="ird.ActionItem">
-                              <div><b>ACTION DETAILS:</b></div>
+                      <div class="ADlist">
+                        <div class="ADVGT">
+                          ROOT CAUSE ANALYSIS (RCA) ACTION ITEMS
+                        </div>
+                      </div>
+
+                      <div
+                        class="ADDesContent"
+                        v-if="
+                          IRQADetailss.actionItem &&
+                          IRQADetailss.actionItem.length
+                        "
+                      >
+                        <div class="ADFixDesign">
+                          <div class="ADDes1">
+                            <div
+                              v-for="(item, index) in IRQADetailss.actionItem"
+                              :key="index"
+                            >
+                              <p>
+                                <b>Action Item {{ index + 1 }}:</b> {{ item }}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="ADDesContent" v-else>
+                        <div class="ADFixDesign">
+                          <div class="ADDes1">
+                            <div
+                              style="
+                                text-align: center;
+                                font-size: 30px;
+                                color: #a9a9a9;
+                              "
+                            >
+                              <p><i>~ACTION DETAILS IS EMPTY~</i></p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="ADlist">
+                        <div class="ADVGT">HUMAN RESOURCES(HR) NOTES</div>
+                      </div>
+
+                      <div class="ADDesContent">
+                        <div class="ADFixDesign">
+                          <div class="ADDes1">
+                            <div v-if="IRQADetailss.newHRNote">
+                              <div><b>NOTE:</b></div>
                               <div>
-                                <p>{{ ird.ActionItem }}</p>
+                                <p>{{ IRQADetailss.newHRNote }}</p>
                               </div>
-                            </q-item-section>
-                            <q-item-section v-else>
-                              <div><b>ACTION DETAILS:</b></div>
+                            </div>
+                            <div v-else>
                               <div
                                 style="
                                   text-align: center;
@@ -701,28 +1099,14 @@
                                   color: #a9a9a9;
                                 "
                               >
-                                <p><i>~ACTION DETAILS IS EMPTY~</i></p>
+                                <p><i>~HR NOTE IS EMPTY~</i></p>
                               </div>
-                            </q-item-section>
-                          </q-item-section>
-
-                          <q-item-section class="ADDes" v-if="ird.newHRNote">
-                            <q-item-section class="ADlist">
-                              <div class="ADTextlist">
-                                HUMAN RESOURCES(HR) NOTES
-                              </div>
-                            </q-item-section>
-                            <q-item-section>
-                              <div><b>NOTE:</b></div>
-                              <div>
-                                <p>{{ ird.newHRNote }}</p>
-                              </div>
-                            </q-item-section>
-                          </q-item-section>
-                        </q-item-section>
-                      </q-item>
-                    </q-list>
-                  </q-card-section>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </q-item-section>
                 </q-card>
               </q-dialog>
             </q-td>
@@ -730,7 +1114,10 @@
           <!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
           <template v-slot:body-cell-QA="props">
             <q-td :props="props">
-              <span class="text-dark text-bold text-center">
+              <span class="text-dark text-bold text-center">{{
+                props.row.mainFullName
+              }}</span>
+              <!-- <span class="text-dark text-bold text-center">
                 {{ props.row.MainFullName }}
               </span>
               <br />
@@ -742,14 +1129,14 @@
                 <b style="background: #ffc619">{{
                   props.row.TransferFullName
                 }}</b>
-              </span>
+              </span> -->
             </q-td>
           </template>
           <!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
           <template v-slot:body-cell-note="props">
             <q-td :props="props">
               <q-btn
-                @click="noteTab(props.row.IRNo)"
+                @click="noteTab(props.row.iRNo)"
                 push
                 icon="note"
                 :ripple="{ center: true }"
@@ -861,7 +1248,7 @@
                             <p>{{ note.newNote }}</p>
                           </div>
                           <div class="ADANPolicy text-right">
-                            {{ FormatDate(note.DateTime) }}
+                            {{ FormatDate(note.dateTimeCreated) }}
                           </div>
                         </q-item-section>
 
@@ -869,7 +1256,7 @@
                           <q-btn
                             icon="edit"
                             color="accent"
-                            @click="editNote(note.Id)"
+                            @click="editNote(note.id)"
                           />
                           <q-dialog v-model="editNoteDialog" persistent>
                             <q-card class="ADENDia">
@@ -911,7 +1298,7 @@
                                   label="SAVE"
                                   color="accent"
                                   class="text-black"
-                                  @click.prevent="confirmEdit(note.IRNo)"
+                                  @click.prevent="confirmEdit(note.iRNo)"
                                 />
                               </q-card-actions>
                             </q-card>
@@ -920,7 +1307,7 @@
                             class="q-mt-sm"
                             icon="delete"
                             color="negative"
-                            @click="deleteNote(note.Id, note.IRNo)"
+                            @click="deleteNote(note.id, note.iRNo)"
                           />
                         </q-item-section>
                       </q-item>
@@ -966,8 +1353,8 @@
             <q-td>
               <q-btn
                 push
-                @click="editIRAudit(props.row.IRNo, false)"
-                v-if="props.row.AuditStatus === true"
+                @click="editIRAudit(props.row.iRNo, false)"
+                v-if="props.row.auditStatus === true"
                 :ripple="{ center: true }"
                 style="width: 100px"
                 class="bg-positive text-white text-bold text-center shadow-5"
@@ -976,7 +1363,7 @@
               <q-btn
                 push
                 :disable="props.row.AuditStatus === false"
-                v-if="props.row.AuditStatus === false"
+                v-if="props.row.auditStatus === false"
                 :ripple="{ center: true }"
                 style="width: 100px"
                 class="bg-negative text-white text-bold text-center shadow-5"
@@ -1091,18 +1478,18 @@ export default {
           align: "left",
           field: "id",
         },
-        { name: "IRNo", label: "IR NUMBER ", align: "left", field: "IRNo" },
+        { name: "IRNo", label: "IRNUMBER ", align: "left", field: "iRNo" },
         {
           name: "departmentNumber",
           label: "INCIDENT RESPONDER (DEPARTMENT)",
           align: "left",
-          field: "Department_Description",
+          field: "department_Description",
         },
         {
           name: "subject",
           label: "SUBJECT OF THE INCIDENT",
           align: "left",
-          field: "SubjectName",
+          field: "subjectName",
         },
         { name: "QA", label: "QA IN-CHARGE", align: "left", field: "id" },
         { name: "note", label: "POLICY", align: "center" },
@@ -1110,7 +1497,7 @@ export default {
           name: "auditstatus",
           label: "STATUS",
           align: "left",
-          field: "AuditStatus",
+          field: "auditStatus",
         },
       ],
       auditStats: [
@@ -1130,38 +1517,45 @@ export default {
 
       disQA: [],
       disSubColumns: [
-        {
-          name: "domain",
-          label: "RISK DOMAIN",
-          align: "left",
-          field: "RiskDomain",
-        },
-        { name: "risk", label: "RISK", align: "left", field: "Risk" },
-        {
-          name: "description",
-          label: "RISK DESCRIPTION",
-          align: "left",
-          field: "RiskDescription",
-        },
+        // {
+        //   name: "domain",
+        //   label: "RISK DOMAIN",
+        //   align: "left",
+        //   field: "riskDomain",
+        // },
+        // { name: "risk", label: "RISK", align: "left", field: "risk" },
+        // {
+        //   name: "description",
+        //   label: "RISK DESCRIPTION",
+        //   align: "left",
+        //   field: "riskDescription",
+        // },
         {
           name: "subjectcode",
           label: "REPORTABLE INCIDENT CODE",
           align: "left",
-          field: "SubjectCode",
+          field: "subjectCode",
         },
         {
           name: "subject",
           label: "REPORTABLE INCIDENT",
           align: "left",
-          field: "SubjectName",
+          field: "subjectName",
         },
-        { name: "qa", label: "QA IN-CHARGE", align: "left", field: "QAName" },
+        {
+          name: "subjectDescription",
+          label: "REPORTABLE INCIDENT DEFINITION",
+          align: "left",
+          field: "subjectReptDescription",
+        },
+        { name: "qa", label: "QA IN-CHARGE", align: "left", field: "qAName" },
       ],
       EmployeeCode: "",
       SecondaryQA: "",
       SubjectPolicy: [],
       SubjectRiskCode: "",
       SubjectName: "",
+      SubjectReptDescription: "",
       waiting: false,
       isAddRiskOpen: true,
       isRiskDetailsOpen: false,
@@ -1176,26 +1570,61 @@ export default {
           name: "domain",
           label: "RISK DOMAIN",
           align: "left",
-          field: "RiskDomain",
+          field: "riskDomain",
         },
         {
           name: "riskCode",
           label: "RISK CODE",
           align: "left",
-          field: "RiskCode",
+          field: "riskCode",
         },
-        { name: "risk", label: "RISK", align: "left", field: "Risk" },
+        { name: "risk", label: "RISK", align: "left", field: "risk" },
         {
           name: "description",
           label: "RISK DESCRIPTION",
           align: "left",
-          field: "RiskDescription",
+          field: "riskDescription",
         },
       ],
       DomainCode: "",
       RiskDomain: "",
       Risk: "",
       RiskDescription: "",
+
+      ChilIncident: false,
+      SubjectCode: null,
+      SubjectSpecificExam: "",
+      PrimaryChilQA: null,
+      SubjectReptChilDescription: "",
+      disAllRiskChild: [],
+      dropdownRI: false,
+      selectedRiskChild: null,
+      searchRiskChild: "",
+      disRiskChildColumns: [
+        {
+          name: "subjectchilcode",
+          label: "REPORTABLE CHILD CODE",
+          align: "left",
+          field: "subjectChilCode",
+        },
+        {
+          name: "subjectspecexam",
+          label: "SPECIFIC EXAMPLE",
+          align: "left",
+          field: "subjectSpecificExam",
+        },
+        {
+          name: "subject",
+          label: "REPORTABLE INCIDENT",
+          align: "left",
+          field: "subjectName",
+        },
+      ],
+
+      pdfDisplayDialog: false,
+      pdfUrl: null,
+      maximizedToggle: null,
+      subjectFileName: null,
     };
   },
 
@@ -1203,10 +1632,12 @@ export default {
     ...mapGetters({
       getForm: "ApplyStore/getForm",
       getSubject: "ApplyStore/getSubject",
+      getRiskChild: "ApplyStore/getRiskChild",
       getQA: "ApplyStore/getQA",
+      getAllRisk: "ApplyStore/getAllRisk",
       getRisk: "ApplyStore/getRisk",
       getAudit: "ApplyStore/getAudit",
-      getQAForm: "ApplyStore/getQAForm",
+      getHR: "ApplyStore/getHR",
     }),
 
     filteredDisAll() {
@@ -1216,7 +1647,7 @@ export default {
       if (selectedStatus && typeof selectedStatus === "object") {
         const { value: statusValue } = selectedStatus;
         filteredData = filteredData.filter(
-          (item) => item.AuditStatus === statusValue
+          (item) => item.auditStatus === statusValue
         );
       }
       if (searchQuery && typeof searchQuery === "string") {
@@ -1236,9 +1667,9 @@ export default {
       let filteredSub = [...disAllSubject];
 
       if (selectedSubject && typeof selectedSubject === "object") {
-        const { DomainCode: statusValue } = selectedSubject;
+        const { domainCode: statusValue } = selectedSubject;
         filteredSub = filteredSub.filter(
-          (item) => item.DomainCode === statusValue
+          (item) => item.domainCode === statusValue
         );
       }
 
@@ -1259,9 +1690,9 @@ export default {
       let filteredRisk = [...disAllRisk];
 
       if (selectedRiskDomain && typeof selectedRiskDomain === "object") {
-        const { DomainCode: statusValue } = selectedRiskDomain;
+        const { domainCode: statusValue } = selectedRiskDomain;
         filteredRisk = filteredRisk.filter(
-          (item) => item.DomainCode === statusValue
+          (item) => item.domainCode === statusValue
         );
       }
 
@@ -1277,6 +1708,29 @@ export default {
 
       return filteredRisk;
     },
+
+    filteredDisRiskChild() {
+      const { disAllRiskChild, selectedRiskChild, searchRiskChild } = this;
+      let filteredRiskChild = [...disAllRiskChild];
+
+      if (selectedRiskChild && typeof selectedRiskChild === "object") {
+        const { subjectCode: statusValue } = selectedRiskChild;
+        filteredRiskChild = filteredRiskChild.filter(
+          (item) => item.subjectCode === statusValue
+        );
+      }
+
+      if (searchRiskChild && typeof searchRiskChild === "string") {
+        const query = searchRiskChild.toLowerCase();
+        filteredRiskChild = filteredRiskChild.filter((item) =>
+          Object.values(item).some(
+            (val) =>
+              typeof val === "string" && val.toLowerCase().includes(query)
+          )
+        );
+      }
+      return filteredRiskChild;
+    },
   },
 
   mounted() {
@@ -1290,6 +1744,7 @@ export default {
   created() {
     this.getInc();
     this.getSubjecttab();
+    this.getRiskchildtab();
     this.getDomainOption();
     this.getRiskTable();
     this.getQAtrans();
@@ -1314,6 +1769,15 @@ export default {
       }
     },
 
+    async getRiskchildtab() {
+      try {
+        await this.$store.dispatch("ApplyStore/disRiskChildTab");
+        this.disAllRiskChild = this.getRiskChild;
+      } catch (error) {
+        console.error("Error Displaying data:", error);
+      }
+    },
+
     async getDomainOption() {
       try {
         await this.$store.dispatch("ApplyStore/disDomainCode");
@@ -1326,7 +1790,7 @@ export default {
     async getRiskTable() {
       try {
         await this.$store.dispatch("ApplyStore/disRiskTab");
-        this.disAllRisk = this.getRisk;
+        this.disAllRisk = this.getAllRisk;
       } catch (error) {
         console.error("Error Displaying data:", error);
       }
@@ -1343,18 +1807,35 @@ export default {
 
     /////////////////////////////////////////////////////////////////////////REPORTABLE INCIDENT ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    //  RISK FILTER IN REPORTABLE  //
+    // FilterFn(val, update) {
+    //   if (val === "") {
+    //     update(() => {
+    //       this.disAllRisk = this.getAllRisk;
+    //     });
+    //     return;
+    //   }
+
+    //   update(() => {
+    //     const needle = val.toLowerCase();
+    //     this.disAllRisk = this.getAllRisk.filter((option) => {
+    //       return option.risk.toLowerCase().indexOf(needle) > -1;
+    //     });
+    //   });
+    // },
+
     FilterFn(val, update) {
       if (val === "") {
         update(() => {
-          this.disAllRisk = this.getRisk;
+          this.disAllDomain = this.getRisk;
         });
         return;
       }
 
       update(() => {
         const needle = val.toLowerCase();
-        this.disAllRisk = this.getRisk.filter((option) => {
-          return option.Risk.toLowerCase().indexOf(needle) > -1;
+        this.disAllDomain = this.getRisk.filter((option) => {
+          return option.riskDomain.toLowerCase().indexOf(needle) > -1;
         });
       });
     },
@@ -1376,6 +1857,7 @@ export default {
       this.SubjectName = "";
       this.SubjectPolicy = [];
       this.SubjectRiskCode = "";
+      this.SubjectReptDescription = "";
       this.EmployeeCode = "";
       this.SecondaryQA = "";
       this.SubIncident = false;
@@ -1424,12 +1906,94 @@ export default {
         const riskdata = {
           SubjectName: this.SubjectName,
           SubjectPolicy: this.getPlainArray(this.SubjectPolicy),
-          SubjectRiskCode: this.SubjectRiskCode.RiskCode,
+          SubjectRiskCode: this.SubjectRiskCode.domainCode,
+          SubjectReptDescription: this.SubjectReptDescription,
           EmployeeCode: this.EmployeeCode,
           SecondaryQA: this.SecondaryQA,
         };
         this.onCancelRisk();
         await this.$store.dispatch("ApplyStore/addSubjectDetails", riskdata);
+      } catch (error) {
+        console.error("Error inserting data:", error);
+      }
+    },
+
+    //////////////////////////////////////////////////////////////////// REPORTABLE INCIDENT CHILDREN  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    incidentChildren() {
+      this.ChilIncident = true;
+    },
+
+    FilterFnChil(val, update) {
+      if (val === "") {
+        update(() => {
+          this.disAllSubject = this.getSubject;
+        });
+        return;
+      }
+
+      update(() => {
+        const needle = val.toLowerCase();
+        this.disAllSubject = this.getSubject.filter((option) => {
+          return option.subjectName.toLowerCase().indexOf(needle) > -1;
+        });
+      });
+    },
+
+    onCancelRiskChil() {
+      (this.SubjectCode = ""),
+        (this.SubjectSpecificExam = ""),
+        (this.PrimaryChilQA = null),
+        (this.SubjectReptChilDescription = ""),
+        (this.ChilIncident = false);
+    },
+
+    validateRiskChil() {
+      return this.SubjectSpecificExam;
+    },
+
+    async submitRiskChild() {
+      try {
+        if (!this.validateRiskChil()) {
+          this.$q.notify({
+            type: "negative",
+            message: "ALL ITEMS ARE REQUIRED",
+            position: "top",
+            timeout: 1000,
+            progress: true,
+          });
+          return;
+        }
+        this.waiting = true;
+        await this.saveRiskChil();
+        this.getRiskchildtab();
+        setTimeout(() => {
+          this.waiting = false;
+        }, 2000);
+        this.$q.notify({
+          color: "green-8",
+          position: "top",
+          message: "SUCCESS ADDING REPORTABLE CHILDREN",
+          icon: "check",
+          iconColor: "white",
+          timeout: 3000,
+          progress: true,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    async saveRiskChil() {
+      try {
+        const riskChilddata = {
+          SubjectCode: this.SubjectCode ? this.SubjectCode.subjectCode : null,
+          SubjectSpecificExam: this.SubjectSpecificExam,
+          SubjectReptChilDescription: this.SubjectReptChilDescription,
+          PrimaryChilQA: this.PrimaryChilQA,
+        };
+        this.onCancelRiskChil();
+        await this.$store.dispatch("ApplyStore/addRiskChild", riskChilddata);
       } catch (error) {
         console.error("Error inserting data:", error);
       }
@@ -1444,6 +2008,11 @@ export default {
     async selectSubjectCode(option) {
       this.selectedSubject = option;
       this.dropdownOpen2 = false; // Close the dropdown
+    },
+
+    async selectRiskChildCode(option) {
+      this.selectedRiskChild = option;
+      this.dropdownIR = false; // Close the dropdown
     },
 
     content() {
@@ -1523,7 +2092,17 @@ export default {
 
     FormatDate(SubjectDate) {
       const date = new Date(SubjectDate);
-      const options = { year: "numeric", month: "short", day: "2-digit" };
+      const options = { year: "numeric", month: "long", day: "2-digit" };
+      const formattedDate = date
+        .toLocaleDateString("en-US", options)
+        .toUpperCase()
+        .replace(/\s/g, " ");
+      return formattedDate;
+    },
+
+    FormatDateIR(DateTimeCreated) {
+      const date = new Date(DateTimeCreated);
+      const options = { year: "numeric", month: "long", day: "2-digit" };
       const formattedDate = date
         .toLocaleDateString("en-US", options)
         .toUpperCase()
@@ -1555,10 +2134,20 @@ export default {
           "ApplyStore/disIrpHR",
           data
         );
-        this.IRQADetailss = this.getQAForm;
+        this.IRQADetailss = this.getHR;
       } catch (error) {
         console.error("Error inserting data:", error);
       }
+    },
+
+    viewPDF(subjectFile) {
+      this.pdfUrl = "data:application/pdf;base64," + subjectFile;
+      this.pdfDisplayDialog = true;
+    },
+
+    closepdf() {
+      this.pdfDisplayDialog = false;
+      this.SubjectFile = null;
     },
 
     //////////////////////////////////////////////////// POLICY /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1812,11 +2401,6 @@ export default {
 
 /* ///////////////////////////////////////ALL CONTENT////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
-.q-tab--active {
-  background-color: #ffc412 !important;
-  font-size: 18px;
-}
-
 .RiskText {
   font-weight: bold;
   font-style: roboto;
@@ -1833,6 +2417,24 @@ export default {
   background: white; /* or any color to match the card */
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
   border-top: 0.2em solid #d5d7da;
+}
+
+.footer-actions-reportable {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  background: white;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  border-top: 0.2em solid #d5d7da;
+  display: flex;
+  justify-content: flex-end; /* Aligns buttons to the right */
+  padding: 10px; /* Adds padding */
+}
+
+.button1 {
+  width: auto; /* Adjusts button width */
+  margin-left: 10px; /* Adds spacing between buttons */
 }
 
 /* ///////////////////////////////////////TABLE////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
@@ -1942,16 +2544,93 @@ export default {
   margin-top: 5px;
   width: 98%;
   font-size: 15px;
+  border: 0.1em solid #ffffff;
+}
+
+.ADTitlelist {
+  height: 40%;
+  width: 100%;
+  padding: 8px;
   border: 0.1em solid #cacaca;
+  background-color: #003566;
 }
 .ADTextlist {
+  font-weight: bold;
+  display: flex;
+  color: #ffc619;
+  font-size: 22px;
+  justify-content: center;
+}
+.ADDesContent {
+  border: 0.1em solid #cacaca;
+  margin-top: 5px;
+}
+.ADDesign {
+  width: 70%;
+  margin: 5px;
+  font-size: 15px;
+  background-color: #ffffff;
+}
+.ADDesign2 {
+  width: 25%;
+  margin: 5px;
+  font-size: 15px;
+  background-color: #ffffff;
+}
+.ADFixDesign {
+  width: 99.5%;
+  margin: 5px;
+  font-size: 15px;
+  background-color: #ffffff;
+}
+.ADFileDes {
+  padding: 8px;
+  margin-top: 5px;
+  font-size: 15px;
+  border: 0.1em solid #003566;
+  background-color: #e3f2fd;
+}
+.ADFixDesign {
+  width: 99.5%;
+  margin: 5px;
+  font-size: 15px;
+  background-color: #ffffff;
+}
+.ADIRND {
   font-weight: bold;
   display: flex;
   color: #ffc619;
   font-size: 20px;
   justify-content: center;
 }
-
+.ADDes1 {
+  padding: 8px;
+  margin: 5px;
+  font-size: 15px;
+  border: 0.1em solid #ffffff;
+}
+.ADText {
+  font-weight: bold;
+  font-style: roboto;
+  display: flex;
+  color: #ffc619;
+  font-size: 30px;
+  justify-content: center;
+}
+.ADVGT {
+  font-weight: bold;
+  display: flex;
+  color: #ffc619;
+  font-size: 20px;
+  justify-content: center;
+}
+.ADlist {
+  height: 30%;
+  width: 100%;
+  margin-top: 15px;
+  border: 0.1em solid #cacaca;
+  background-color: #003566;
+}
 /* ///////////////////////////////////////AUDIT NOTE////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 .ADNDIA {
@@ -2089,5 +2768,40 @@ export default {
   font-size: 20px;
   color: #ffc619;
   display: flex;
+}
+
+/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+.AuditRisk {
+  width: 80%;
+  margin-right: 10px;
+  background-color: #083d73;
+}
+
+.BorderDesign {
+  border: 2px solid #ffc619;
+}
+
+.disAllAudit {
+  border-left: 0.5px solid #fffdfd;
+  border-right: 0.5px solid #ececec;
+  border-top: 0.5px solid #ececec;
+  border-bottom: none;
+  background-color: #ffffff;
+  color: #083d73;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: Roboto, sans-serif;
+  width: 20%;
+}
+
+.disAuditRisk {
+  font-size: 16px;
+  font-weight: 600;
+  font-family: Roboto, sans-serif;
+  border: 0.5px solid #ffc412;
+  background-color: #ffc412;
+  color: #083d73;
+  border-top-right-radius: 155px;
+  width: 20%;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
-      <q-toolbar>
+      <q-toolbar class="q-ma-xs">
         <q-btn
           flat
           dense
@@ -11,14 +11,12 @@
           @click="toggleLeftDrawer"
         />
         <q-space />
-        <q-btn
-          v-if="isUserLoggedIn"
-          push
-          class="bg-negative text-white"
-          icon="logout"
-          label="LOGOUT"
-          @click="logout"
-        />
+
+        <!-- Date and Time -->
+        <div class="text-accent text-weight-bold text-right q-mr-md">
+          <div>{{ topLine }}</div>
+          <div>{{ bottomLine }}</div>
+        </div>
       </q-toolbar>
     </q-header>
 
@@ -32,12 +30,15 @@
         <q-item class="custom-item">
           <q-item-section>
             <q-item-label>
-              <div class="column items-center">
+              <div class="column items-center q-mt-x">
                 <q-avatar size="120px">
-                  <img :src="avatarUrl + loggedInUser.EmployeeCode" />
+                  <img
+                    :src="avatarUrl + loggedInUser.EmployeeCode"
+                    style="border: 2px solid #6b7c93"
+                  />
                 </q-avatar>
               </div>
-              <p class="item-label" v-if="loggedInUser">
+              <p class="item-lab" v-if="loggedInUser">
                 {{ loggedInUser.FullName }}
               </p>
               <p class="item-label1" v-if="loggedInUser">
@@ -46,9 +47,11 @@
             </q-item-label>
           </q-item-section>
         </q-item>
+
         <EssentialLink
           v-for="item in getAccessModule"
           :key="item.title"
+          :label="item.label"
           :title="item.title"
           :link="item.link"
           :icon="item.icon"
@@ -75,16 +78,25 @@
       </q-list>
 
       <footer class="footer">
-        <img
-          src="../assets/UERM Logos.png"
-          class="q-ma-s"
-          style="width: 45%; height: 40%"
-        />
-        <img
-          src="../assets/IRLogo.png"
-          class="q-ma-s"
-          style="width: 25%; height: 40%; margin-top: 5%"
-        />
+        <div class="footer-content">
+          <q-btn
+            v-if="isUserLoggedIn"
+            flat
+            rounded
+            push
+            icon="logout"
+            label="LOGOUT"
+            @click="logout"
+            class="buttonLogoutDesign bg-negative text-white"
+            style="font-weight: bold; width: 200%"
+          />
+
+          <img
+            src="../assets/FINALPOST.png"
+            alt="Footer Logo"
+            class="footer-logo"
+          />
+        </div>
       </footer>
     </q-drawer>
 
@@ -92,8 +104,6 @@
       <router-view />
     </q-page-container>
   </q-layout>
-
-  <footer class="footer"></footer>
 </template>
 
 <script>
@@ -106,6 +116,8 @@ export default {
   data() {
     return {
       FullName: "",
+      topLine: "",
+      bottomLine: "",
       leftDrawerOpen: false,
       selectedLink: null,
       showTable: true,
@@ -143,13 +155,48 @@ export default {
       loggedInUser: "ApplyStore/getUser",
       getAccessModule: "ApplyStore/getAccessModule",
     }),
+
     isUserLoggedIn() {
       return !!this.loggedInUser && !!this.loggedInUser.FullName;
     },
   },
 
+  mounted() {
+    this.updateDateTime()
+    this.interval = setInterval(this.updateDateTime, 1000)
+  },
+
+  beforeUnmount() {
+    clearInterval(this.interval)
+  },
+
+
   methods: {
     ...mapActions("ApplyStore", ["logoutAction"]),
+
+    updateDateTime() {
+      const now = new Date()
+      const weekday = now
+        .toLocaleDateString("en-US", { weekday: "short" })
+        .toUpperCase()
+      const time = now.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+      })
+      const [timePart, ampm] = time.split(" ")
+      const date = now
+        .toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
+        .toUpperCase()
+
+      this.topLine = `${weekday} | ${timePart} | ${ampm}`
+      this.bottomLine = date
+    },
 
     async logout() {
       try {
@@ -227,33 +274,32 @@ export default {
 
 <style>
 .custom-drawer {
-  background-color: #ececec;
-  color: #003566;
-  border: 1px solid #c9c9c9;
+  background-color: #003566;
+  color: #fff;
 }
 .custom-item {
   display: flex;
   flex-direction: column;
+  border-radius: 10%;
   align-items: center;
   margin: 5%;
-  background-color: #003566;
-  border: 0.2em solid #f6fbff;
+  height: auto;
+  background-color: #fff;
+  border: 0.3em solid #ffc412;
 }
 
-.item-label {
+.item-lab {
   font-weight: bold;
-  font-family: Arial Black;
-  color: #ffc619;
+  color: #003566;
   font-size: 20px;
-  margin-top: 10px;
+  margin-top: 20px;
   text-align: center;
 }
+
 .item-label1 {
-  font-style: bold;
-  font-family: "Roboto", sans-serif;
-  color: #ffc619;
-  font-size: 12px;
-  margin-top: 10px;
+  font-weight: bold;
+  color: #333333;
+  font-size: 13px;
   text-align: center;
 }
 
@@ -272,6 +318,7 @@ export default {
   margin-left: 93px;
   margin-right: 54px;
 }
+
 .icon-above-text .q-icon {
   font-size: 32px; /* Adjust the icon size as needed */
 }
@@ -279,11 +326,35 @@ export default {
 /* /...................................FOOTER.............................................../ */
 
 .footer {
-  border-bottom: 15px solid #ffc619;
-  padding: 10px;
-  text-align: center;
   position: fixed;
   bottom: 0;
   width: 100%;
+  padding: 16px;
+  background-color: #003566; /* optional, to separate from page background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 10;
 }
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px; /* adds spacing between button and image */
+}
+
+.logout-btn {
+  border-radius: 20px;
+  width: 250px;
+  font-weight: bold;
+}
+
+.footer-logo {
+  width: 100px;
+  height: auto;
+  margin-top: 6px;
+}
+
 </style>

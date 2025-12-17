@@ -1,50 +1,76 @@
 <template>
-  <div id="q-app" style="min-height: 100vh; position: relative; z-index: 1">
-    <div class="q-pa-sm row items-start q-gutter-xs">
-      <div class="my-card">
-        <q-card-section
-          class="bg-primary text-white"
-          style="
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-          "
-        >
-          <div class="IRQHText">INCIDENT REPORT</div>
-          <div
-            class="q-gutter-md row"
-            style="display: flex; align-items: center"
-          >
-            <q-input
-              dark
-              dense
-              standout
-              v-model="searchContent"
-              input-class="text-right"
-              class="q-ml-md"
-              style="background-color: #f3f4f7; border-radius: 0.4em"
-            >
-              <template v-slot:append>
-                <q-icon name="search" style="color: black"></q-icon>
-              </template>
-            </q-input>
+  <div id="q-app" style="position: relative; z-index: 1">
+    <div style="height: 100%; width: 100%" class="q-pa-lg">
+      <div
+        class="row items-center justify-between q-mb-md bg-white q-pa-sm rounded-borders shadow-1"
+        style="border-radius: 10px"
+      >
+        <div>
+          <div class="text-primary text-weight-bold" style="font-size: 30px">
+            DASHBOARD
           </div>
-        </q-card-section>
-        <q-spinner-ball
-          class="spinner"
-          v-if="loading"
-          size="150px"
-          color="primary"
-        ></q-spinner-ball>
-        <q-table
-          v-show="showTable"
-          :rows="filteredDisAll"
-          :columns="disColumns"
-          row-key="IRNo"
-          :pagination="{ rowsPerPage: 8 }"
-          :loading="loading"
-        />
+          <div style="font-size: 18px; color: #333333">
+            Incident Report Details
+          </div>
+        </div>
+
+        <div class="row items-center q-gutter-sm">
+          <q-input
+            v-model="searchContent"
+            label="Search "
+            dense
+            outlined
+            rounded
+          >
+            <template v-slot:append>
+              <q-icon name="search" color="info" />
+            </template>
+          </q-input>
+        </div>
       </div>
+
+      <q-card-section
+        class="row q-mb-sm bg-white q-pa-md rounded-borders shadow-1"
+        style="border-radius: 10px"
+      >
+        <div
+          v-if="loading"
+          class="fixed-full flex flex-center column q-gutter-md"
+          style="background-color: rgba(255, 255, 255, 0.7); z-index: 9999"
+        >
+          <q-spinner-ball size="150px" color="primary" />
+          <div class="text-subtitle1 text-primary">Please wait...</div>
+        </div>
+
+        <q-card-section class="bg-white column fit full-width">
+          <q-table
+            v-show="showTable"
+            :rows="filteredDisAll"
+            :columns="disColumns"
+            row-key="IRNo"
+            :pagination="{ rowsPerPage: 8 }"
+            :loading="loading"
+          >
+            <template v-slot:body-cell-subject="props">
+              <q-td :props="props" style="width: 20%">
+                <span
+                  v-if="!props.row.subjectSpecificExam"
+                  class="text-uppercase text-bold text-center"
+                >
+                  {{ props.row.subjectName }}
+                </span>
+                <span
+                  v-if="props.row.subjectSpecificExam"
+                  class="text-uppercase text-bold text-center"
+                >
+                  {{ props.row.subjectName }} -
+                  {{ props.row.subjectSpecificExam }}
+                </span>
+              </q-td>
+            </template>
+          </q-table>
+        </q-card-section>
+      </q-card-section>
     </div>
   </div>
   <img
@@ -72,18 +98,18 @@ export default {
       searchContent: "",
       disAllDash: [],
       disColumns: [
-        { name: "IRNo", label: "IRNUMBER", align: "left", field: "IRNo" },
+        { name: "IRNo", label: "IRNUMBER", align: "left", field: "iRNo" },
         {
           name: "departmentNumber",
           label: "INCIDENT RESPONDER (DEPARTMENT)",
           align: "left",
-          field: "Department_Description",
+          field: "department_Description",
         },
         {
           name: "subject",
           label: "SUBJECT OF THE INCIDENT",
           align: "left",
-          field: "SubjectName",
+          field: "subjectName",
         },
       ],
     };
@@ -143,18 +169,19 @@ export default {
 /* ///////////////////////////////////////QAHEADER////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 .my-card {
-  height: 500px;
-  width: 100%;
-  margin-bottom: 25px;
+  border: 2px solid #f1f1f1;
+  border-radius: 20px;
+  background-color: #fff;
 }
-.filtertab {
+
+/* .filtertab {
   background-color: #0f4d91;
   font-weight: bold;
   border: 0.1em solid #f3f4f7;
   box-shadow: 0 4px 8px rgba(243, 238, 238, 0.1);
   font-style: Arial Black;
-}
-.IRQHText {
+} */
+/* .IRQHText {
   font-weight: bold;
   font-style: roboto;
   font-family: Arial Black;
@@ -162,15 +189,8 @@ export default {
   color: #ffc619;
   font-size: 35px;
   justify-content: center;
-}
+} */
 
-.spinner {
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  margin-top: 100px;
-  margin-left: 45%;
-}
 /* ///////////////////////////////////////TABLE////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 .table-with-border {

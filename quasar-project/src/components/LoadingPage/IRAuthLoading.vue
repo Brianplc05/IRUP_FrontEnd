@@ -1,17 +1,18 @@
 <template>
   <div
-    class="flex flex-center column q-pa-md"
+    class="flex-center column q-pa-s"
     style="min-height: 100vh; position: relative; z-index: 1"
   >
-    <q-spinner-pie class="spinner" color="primary" />
-    <div class="q-mt-md" style="color: #0a335f; font-size: 28px">
-      Authenticating, Please wait...
-    </div>
+    <q-spinner-cube
+      color="accent"
+      style="height: 10%; width: 10%; border: 0.2em solid #0f4d91"
+    />
+    <div class="q-mt-md loading-textwait">Authenticating, Please wait...</div>
   </div>
   <img
-    src="../../assets/LoadingBG.png"
+    src="../../assets/B&W1.png"
     alt="Loading Image"
-    class="background-image q-mt-lg"
+    class="background-image"
   />
 </template>
 
@@ -37,18 +38,19 @@ export default {
         } else {
           this.$router.push("/IRLogin");
         }
-      }, 2000);
+      }, 3000);
     },
   },
 };
 </script>
 
 <style scoped>
-.spinner {
-  width: 15vw;
-  height: 15vw;
-  max-width: 150px;
-  max-height: 150px;
+.loading-textwait {
+  color: #0f4d91; /* Adjust if needed */
+  font-size: 28px;
+  font-weight: bold;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center; /* Center text alignment */
 }
 
 .background-image {
@@ -56,9 +58,9 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  height: 97.5%;
+  height: 100%; /* Adjusted height to cover the whole screen */
   z-index: 0;
   object-fit: cover;
-  overflow: hidden;
+  opacity: 0.7; /* Added opacity for better text visibility */
 }
 </style>

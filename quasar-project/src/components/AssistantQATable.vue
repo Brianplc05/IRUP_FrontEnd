@@ -3,312 +3,367 @@
     <template v-slot:body-cell-viewIR="props">
       <q-td>
         <q-btn
+          flat
+          rounded
           push
-          @click="viewIReport(props.row.IRNo)"
+          @click="viewIReport(props.row.iRNo)"
           :ripple="{ center: true }"
-          color="accent"
           icon="description"
-          class="text-black text-bold text-center shadow-5"
+          class="bg-accent text-black text-bold text-center shadow-5"
+          style="border-radius: 20px; width: 125px"
         />
 
-        <q-dialog full-width full-height v-model="IRDialog" persistent>
-          <q-card class="AQADialog">
-            <q-card-section class="AQAIR">
-              <div class="row items-center justify-between">
-                <div class="AQAText">INCIDENT REPORT</div>
+        <q-dialog maximized v-model="IRDialog" persistent>
+          <div class="QAModuleDiag">
+            <q-card class="contentFormQAModule">
+              <q-card-section class="q-mb-sm row items-center justify-between">
+                <div
+                  class="text-secondary text-weight-bold"
+                  style="font-size: 25px; color: #002b5c"
+                >
+                  INCIDENT REPORT INFORMATION
+                </div>
+
                 <q-btn
-                  style="margin-left: 25px"
-                  round
-                  push
+                  flat
                   icon="close"
-                  class="bg-accent text-black"
+                  style="
+                    color: #003566;
+                    background-color: rgba(22, 110, 204, 0.1);
+                  "
                   @click="IRDialog = false"
                   v-close-popup
-                />
-              </div>
-            </q-card-section>
+                >
+                  <q-tooltip class="bg-info text-white"> Close Form </q-tooltip>
+                </q-btn>
+              </q-card-section>
 
-            <q-card-section>
-              <q-list>
-                <q-item v-for="(ird, index) in IRAQADetailss" :key="index">
-                  <q-item-section class="custom-item-section">
-                    <q-item-section class="AQAlist">
-                      <div class="AQATextlist">INCIDENT INFORMATION</div>
-                    </q-item-section>
+              <q-card-section style="border: 2px solid #6b7c93">
+                <div class="row q-col-gutter-md q-mx-lg">
+                  <div class="col-6">
+                    <div
+                      class="text-weight-bold"
+                      style="font-size: 15px; color: #03254b"
+                    >
+                      Incident Report Number
+                    </div>
 
-                    <q-item-section class="AQADes">
+                    <q-input
+                      rounded
+                      outlined
+                      :model-value="IRAQADetailss.iRNo"
+                      disable
+                    />
+                  </div>
+                  <div class="col-6">
+                    <div
+                      class="text-weight-bold"
+                      style="font-size: 15px; color: #03254b"
+                    >
+                      Date Report Created
+                    </div>
+
+                    <q-input
+                      rounded
+                      outlined
+                      :model-value="FormatDateIR(IRAQADetailss.dateTimeCreated)"
+                      disable
+                    />
+                  </div>
+                </div>
+
+                <q-separator class="formseparatorWhite" />
+
+                <div class="QADesContent">
+                  <div class="QAFixDesign">
+                    <div class="QADes1">
                       <div
-                        style="display: flex; justify-content: space-between"
+                        class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
                       >
-                        <div><b>INCIDENT REPORT NUMBER:</b> {{ ird.IRNo }}</div>
-                        <div>
-                          <b>INCIDENT REPORT DATE CREATED:</b>
-                          {{ FormatDate(ird.DateTimeCreated) }}
-                        </div>
+                        General Information
                       </div>
-                    </q-item-section>
-
-                    <q-item-section class="AQADes">
                       <div
-                        style="display: flex; justify-content: space-between"
+                        class="q-mb-sm"
+                        style="font-size: 15px; color: #737373"
                       >
-                        <div>
-                          <b>SUBJECT OF THE INCIDENT:</b>
-                          {{ ird.SubjectName }}
+                        This section contains essential details regarding the
+                        incident, including the date, time, location,
+                        individuals involved, and the nature of the incident.
+                      </div>
+                      <q-separator class="formseparatorYellow" />
+
+                      <div class="row q-col-gutter-md q-mx-lg q-mt-xs">
+                        <div class="col-6">
+                          <div
+                            class="text-weight-bold"
+                            style="font-size: 15px; color: #03254b"
+                          >
+                            Incident Brief Description
+                          </div>
+
+                          <span>
+                            <q-input
+                              rounded
+                              outlined
+                              :model-value="IRAQADetailss.subjectBriefDes"
+                              disable
+                            />
+                          </span>
                         </div>
-                        <div>
-                          <b>LOCATION OF THE INCIDENT:</b>
-                          {{ ird.SubjectLoc }}
+
+                        <div class="col-6">
+                          <div
+                            class="text-weight-bold"
+                            style="font-size: 15px; color: #03254b"
+                          >
+                            Location of the Incident
+                          </div>
+
+                          <q-input
+                            rounded
+                            outlined
+                            :model-value="IRAQADetailss.subjectLoc"
+                            disable
+                          />
                         </div>
                       </div>
-                      <div>
-                        <b>BRIEF DESCRIPTION OF THE INCIDENT:</b>
-                        {{ ird.SubjectBriefDes }}
+
+                      <div class="row q-col-gutter-md q-mx-lg q-mt-xs">
+                        <div class="col-6">
+                          <div
+                            class="text-weight-bold"
+                            style="font-size: 15px; color: #03254b"
+                          >
+                            Date of the Incident
+                          </div>
+
+                          <q-input
+                            rounded
+                            outlined
+                            :model-value="FormatDate(IRAQADetailss.subjectDate)"
+                            disable
+                          />
+                        </div>
+
+                        <div class="col-6">
+                          <div
+                            class="text-weight-bold"
+                            style="font-size: 15px; color: #03254b"
+                          >
+                            Time of the Incident
+                          </div>
+
+                          <q-input
+                            rounded
+                            outlined
+                            :model-value="FormatTime(IRAQADetailss.subjectTime)"
+                            disable
+                          />
+                        </div>
                       </div>
+                    </div>
+                  </div>
+                </div>
+
+                <q-separator class="formseparatorWhite" />
+
+                <div class="QADesContent">
+                  <div class="QAFixDesign">
+                    <div class="QADes1">
                       <div
-                        style="
-                          background-color: #ffc619;
-                          height: 2px;
-                          margin: 5px 0;
-                        "
-                      ></div>
-                      <div
-                        style="display: flex; justify-content: space-between"
+                        class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
                       >
-                        <div>
-                          <b>DATE OF THE INCIDENT:</b>
-                          {{ FormatDate(ird.SubjectDate) }}
+                        Attached File
+                      </div>
+
+                      <div
+                        class="q-mb-sm"
+                        style="font-size: 15px; color: #737373"
+                      >
+                        The attached files support the accurate review and
+                        proper documentation of this incident report.
+                      </div>
+
+                      <q-separator class="formseparatorYellow" />
+
+                      <div
+                        v-if="
+                          IRAQADetailss.subjectFile &&
+                          IRAQADetailss.subjectFile.length
+                        "
+                        class="QAFileDes column flex-center"
+                      >
+                        <div
+                          style="
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                            background: #e3f2fd;
+                            padding: 8px;
+                            border-radius: 4px;
+                          "
+                          @click.stop="
+                            viewPDF(
+                              IRAQADetailss.subjectFile,
+                              IRAQADetailss.subjectFileName
+                            )
+                          "
+                        >
+                          <q-icon
+                            name="description"
+                            class="text-h3"
+                            color="red"
+                          ></q-icon>
+
+                          <div class="text-dark text-left text-subtitle1">
+                            {{ IRAQADetailss.subjectFileName }}
+                          </div>
                         </div>
-                        <div>
-                          <b>TIME OF THE INCIDENT:</b>
-                          {{ FormatTime(ird.SubjectTime) }}
+
+                        <q-dialog v-model="pdfDisplayDialog">
+                          <q-card style="width: 90vw; max-width: 1100px">
+                            <div class="bg-info text-white">
+                              <div class="IRND">UPLOADED PDF FILES</div>
+                              <q-btn
+                                icon="close"
+                                flat
+                                round
+                                dense
+                                @click="pdfDisplayDialog = false"
+                                class="absolute-top-right"
+                              />
+                            </div>
+                            <q-card-section>
+                              <iframe
+                                v-if="pdfUrl"
+                                :src="pdfUrl"
+                                width="100%"
+                                height="600px"
+                                style="border: none"
+                              ></iframe>
+                            </q-card-section>
+                          </q-card>
+                        </q-dialog>
+                      </div>
+
+                      <div class="QAFileDes column flex-center" v-else>
+                        <div
+                          class="text-subtitle1 items-center text-weight-bold text-dark"
+                        >
+                          <i>~ NO FILE ATTACHED ~</i>
                         </div>
                       </div>
-                    </q-item-section>
+                    </div>
+                  </div>
+                </div>
 
-                    <q-item-section class="AQADes">
-                      <div><b>NARRATIVE DESCRIPTION OF THE INCIDENT</b></div>
-                      <q-separator
-                        style="
-                          background-color: #ffc619;
-                          height: 2px;
-                          margin: 5px 0;
-                        "
-                      ></q-separator>
-                      <div>
-                        <p>{{ ird.SubjectNote }}</p>
-                      </div>
-                    </q-item-section>
+                <q-separator class="formseparatorWhite" />
 
-                    <q-item-section class="AQADes">
-                      <div><b>POSSIBLE CAUSES OF THE INCIDENT</b></div>
-                      <q-separator
-                        style="
-                          background-color: #ffc619;
-                          height: 2px;
-                          margin: 5px 0;
-                        "
-                      ></q-separator>
-                      <div>
-                        <p>{{ ird.SubjectCause }}</p>
+                <div class="QADesContent">
+                  <div class="QAFixDesign">
+                    <div class="QADes1">
+                      <div
+                        class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                      >
+                        Narrative Description of the Incident
                       </div>
-                    </q-item-section>
+                      <div
+                        class="q-mb-sm"
+                        style="font-size: 15px; color: #737373"
+                      >
+                        Provided detailed of how the incident transpired,
+                        including the sequence of events, contributing factors,
+                        and individuals involved.
+                      </div>
+                      <q-separator class="formseparatorYellow" />
+                      <div class="q-mx-xl">
+                        <q-input
+                          autogrow
+                          rounded
+                          outlined
+                          :model-value="IRAQADetailss.subjectNote"
+                          disable
+                          input-class="q-pa-md"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-                    <q-item-section class="AQADes">
-                      <div><b>IMMEDIATE RESPONSE</b></div>
-                      <q-separator
-                        style="
-                          background-color: #ffc619;
-                          height: 2px;
-                          margin: 5px 0;
-                        "
-                      ></q-separator>
-                      <div>
-                        <p>{{ ird.SubjectResponse }}</p>
+                <q-separator class="formseparatorWhite" />
+
+                <div class="QADesContent">
+                  <div class="QAFixDesign">
+                    <div class="QADes1">
+                      <div
+                        class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                      >
+                        Possible Causes of the Incident
                       </div>
-                    </q-item-section>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-card-section>
-          </q-card>
+                      <div
+                        class="q-mb-sm"
+                        style="font-size: 15px; color: #737373"
+                      >
+                        Possible reason on the perspective of the Informant.
+                      </div>
+                      <q-separator class="formseparatorYellow" />
+                      <div class="q-mx-xl">
+                        <q-input
+                          autogrow
+                          rounded
+                          outlined
+                          :model-value="IRAQADetailss.subjectCause"
+                          disable
+                          input-class="q-pa-md"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <q-separator class="formseparatorWhite" />
+
+                <div class="QADesContent">
+                  <div class="QAFixDesign">
+                    <div class="QADes1">
+                      <div
+                        class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                      >
+                        Immediate Response
+                      </div>
+                      <div
+                        class="q-mb-sm"
+                        style="font-size: 15px; color: #737373"
+                      >
+                        Action taken by the concerned department or by the
+                        Informant to ease the incident.
+                      </div>
+                      <q-separator class="formseparatorYellow" />
+                      <div class="q-mx-xl">
+                        <q-input
+                          autogrow
+                          rounded
+                          outlined
+                          :model-value="IRAQADetailss.subjectResponse"
+                          disable
+                          input-class="q-pa-md"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
         </q-dialog>
       </q-td>
     </template>
 
     <template v-slot:body-cell-division="props">
       <q-td :props="props">
-        <q-btn
-          @click="tranferDivision(props.row.IRNo, props.row.DivisionCode)"
-          class="bg-positive text-white text-bold text-center"
-        >
-          {{ props.row.Division }}
-        </q-btn>
-
-        <q-dialog v-model="setDivisionDialogs">
-          <q-card>
-            <q-card-section class="DivisionHD">
-              <div class="row items-center justify-between">
-                <div class="DivisionText">CONFIRM TRANSFER</div>
-              </div>
-            </q-card-section>
-            <q-card-section>
-              <div>DO YOU WANT TO TRANSFER THE INCIDENT REPORT?</div>
-            </q-card-section>
-            <q-separator
-              style="background-color: #d5d7da; height: 2px; margin: 2px 0"
-            ></q-separator>
-            <q-card-actions align="right">
-              <q-btn
-                push
-                label="NO"
-                color="secondary"
-                @click="setDivisionDialogs = false"
-              />
-              <q-btn
-                push
-                label="YES"
-                color="accent"
-                class="text-black"
-                @click="saveDivisionTra"
-              />
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
-
-        <q-dialog v-model="setDivisionCodeDialogs" persistent>
-          <q-card>
-            <q-card-section class="DivisionHD">
-              <div class="row items-center justify-between">
-                <div class="DivisionText">DIVISION TRANSFER</div>
-              </div>
-            </q-card-section>
-            <q-card-section>
-              <q-input outlined v-model="IRNo" style="display: none" />
-              <q-select
-                use-input
-                square
-                outlined
-                v-model="DivisionSubCode"
-                :options="filteredDivCodeOptions"
-                label="DIVISION"
-                emit-value
-                map-options
-                :option-value="(option) => option.DivisionCode"
-                :option-label="(option) => option.Division"
-                style="margin-bottom: 10px; width: 100%"
-              />
-            </q-card-section>
-            <q-separator
-              style="background-color: #d5d7da; height: 2px; margin: 2px 0"
-            ></q-separator>
-            <q-card-actions align="right">
-              <q-btn
-                push
-                label="CANCEL"
-                color="secondary"
-                @click="cancelDivision"
-              />
-              <q-btn
-                push
-                label="SAVE"
-                color="accent"
-                class="text-black"
-                @click="submitDivision"
-              />
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
-
-        <q-dialog
-          v-model="transfer"
-          persistent
-          content-class="non-transparent-dialog"
-        >
-          <q-card class="centered-card">
-            <q-card-section>
-              <div class="spinner-container">
-                <q-spinner-ios size="100px"></q-spinner-ios>
-                <div class="please-wait">Transfering QA. Please wait...</div>
-              </div>
-            </q-card-section>
-          </q-card>
-        </q-dialog>
-      </q-td>
-    </template>
-
-    <template v-slot:body-cell-subject="props">
-      <q-td>
-        <div class="q-gutter-sm row justify-evenly">
-          <span
-            class="text-dark text-bold text-center"
-            v-if="props.row.SubjectCode"
-          >
-            OTHERS
-          </span>
-          <q-btn
-            push
-            class="bg-positive text-white text-bold text-center"
-            style="width: 110px"
-            label="CHANGE"
-            icon="edit_document"
-            v-if="props.row.SubjectCode === 'others'"
-            @click="changeSubCode(props.row.IRNo)"
-          />
-          <q-dialog v-model="SubCodeDialog" persistent>
-            <q-card class="AQACHANGE">
-              <q-card-section>
-                <q-select
-                  class="text-uppercase"
-                  outlined
-                  use-input
-                  fill-input
-                  clearable
-                  hide-dropdown-icon
-                  hide-selected
-                  v-model="SubjectCode"
-                  label="REPORTABLE INCIDENT CODE"
-                  :options="disAllSubCode"
-                  @filter="FilterFn"
-                  emit-value
-                  map-options
-                  :option-value="(option) => option.SubjectCode"
-                  :option-label="(option) => option.SubjectName"
-                />
-              </q-card-section>
-              <q-card-actions align="right" class="footer-actions">
-                <q-btn
-                  push
-                  label="Cancel"
-                  color="secondary"
-                  @click="onAQACancel"
-                />
-                <q-btn
-                  push
-                  label="Save"
-                  color="accent"
-                  class="text-black"
-                  @click="submitChangeCode"
-                />
-              </q-card-actions>
-            </q-card>
-          </q-dialog>
-
-          <q-dialog
-            v-model="rdPWait"
-            persistent
-            content-class="non-transparent-dialog"
-          >
-            <q-card class="centered-card">
-              <q-card-section>
-                <div class="spinner-container">
-                  <q-spinner-facebook size="100px"></q-spinner-facebook>
-                  <div class="please-wait">Doing something. Please wait...</div>
-                </div>
-              </q-card-section>
-            </q-card>
-          </q-dialog>
-        </div>
+        <span class="text-bold text-center text-uppercase">
+          {{ props.row.division }}
+        </span>
       </q-td>
     </template>
   </q-table>
@@ -327,38 +382,31 @@ export default {
   data() {
     return {
       IRAQADetailss: [],
-      disAllSubCode: [],
       disAllDivCode: [],
       IRDialog: false,
-      rdPWait: false,
-      transfer: false,
-      SubCodeDialog: false,
-      setDivisionDialogs: false,
-      setDivisionCodeDialogs: false,
       IrNo: "",
-      IRNo: "",
-      SubjectCode: "",
-      DivisionCode: "",
-      DivisionSubCode: "",
+      pdfDisplayDialog: false,
+      pdfUrl: null,
+      maximizedToggle: null,
+      subjectFileName: null,
+      subjectFile: null,
     };
   },
 
   computed: {
     ...mapGetters({
-      getAssistantSubCode: "ApplyStore/getAssistantSubCode",
       getAssistantQAForm: "ApplyStore/getAssistantQAForm",
       getAssistantDivision: "ApplyStore/getAssistantDivision",
     }),
 
     filteredDivCodeOptions() {
       return this.disAllDivCode.filter(
-        (item) => item.DivisionCode != this.DivisionCode
+        (item) => item.divisionCode != this.DivisionCode
       );
     },
   },
 
   created() {
-    this.getSubjectcode();
     this.getDivisioncode();
   },
 
@@ -367,7 +415,17 @@ export default {
 
     FormatDate(SubjectDate) {
       const date = new Date(SubjectDate);
-      const options = { year: "numeric", month: "short", day: "2-digit" };
+      const options = { year: "numeric", month: "long", day: "2-digit" };
+      const formattedDate = date
+        .toLocaleDateString("en-US", options)
+        .toUpperCase()
+        .replace(/\s/g, " ");
+      return formattedDate;
+    },
+
+    FormatDateIR(DateTimeCreated) {
+      const date = new Date(DateTimeCreated);
+      const options = { year: "numeric", month: "long", day: "2-digit" };
       const formattedDate = date
         .toLocaleDateString("en-US", options)
         .toUpperCase()
@@ -401,19 +459,14 @@ export default {
       }
     },
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /////////////////////////////////////////////////////////////////// TRANSFER DIVISION CODE /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    tranferDivision(IRNo, DivisionCode) {
-      this.setDivisionDialogs = true;
-      this.IRNo = IRNo;
-      this.DivisionCode = DivisionCode;
+    viewPDF(subjectFile) {
+      this.pdfUrl = "data:application/pdf;base64," + subjectFile;
+      this.pdfDisplayDialog = true;
     },
 
-    saveDivisionTra() {
-      this.setDivisionDialogs = false;
-      this.setDivisionCodeDialogs = true;
+    closepdf() {
+      this.pdfDisplayDialog = false;
+      this.subjectFile = null;
     },
 
     async getDivisioncode() {
@@ -424,143 +477,6 @@ export default {
         console.error("Error inserting data:", error);
       }
     },
-
-    submitDivision() {
-      try {
-        this.transfer = true;
-        this.transferDivision();
-        setTimeout(() => {
-          this.getAssistantQAs();
-          this.transfer = false;
-        }, 4000);
-        this.$q.notify({
-          color: "green-8",
-          position: "top",
-          message: "SUCCESS NOTIFIYING QA",
-          icon: "check",
-          iconColor: "white",
-          timeout: 5000,
-          progress: true,
-        });
-      } catch (error) {
-        console.error("Error inserting transfer division data:", error);
-      }
-    },
-
-    async transferDivision() {
-      try {
-        const data = {
-          IRNo: this.IRNo,
-          DivisionSubCode: this.DivisionSubCode,
-        };
-        console.log(data);
-        this.cancelDivision();
-        const response = await this.$store.dispatch(
-          "ApplyStore/putChangeDivision",
-          data
-        );
-      } catch (error) {
-        console.error("Error inserting transfer division data:", error);
-      }
-    },
-
-    cancelDivision() {
-      this.setDivisionCodeDialogs = false;
-      this.IRNo = "";
-      this.DivisionSubCode = "";
-    },
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /////////////////////////////////////////////////////////////////// DISPLAY SUBJECT CODE /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    async getSubjectcode() {
-      try {
-        await this.$store.dispatch("ApplyStore/disSubjectCode");
-        this.disAllSubCode = this.getAssistantSubCode;
-      } catch (error) {
-        console.error("Error inserting data:", error);
-      }
-    },
-
-    FilterFn(val, update) {
-      if (val === "") {
-        update(() => {
-          this.disAllSubCode = this.getAssistantSubCode;
-        });
-        return;
-      }
-
-      update(() => {
-        const needle = val.toLowerCase();
-        this.disAllSubCode = this.getAssistantSubCode.filter((option) => {
-          return option.SubjectName.toLowerCase().indexOf(needle) > -1;
-        });
-      });
-    },
-
-    ///////////////////////////////////////////////////////////////////CHANGE SUBJECT CODE/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    changeSubCode(IRNo) {
-      this.SubCodeDialog = true;
-      this.IrNo = IRNo;
-    },
-
-    submitChangeCode() {
-      if (!this.SubjectCode) {
-        this.$q.notify({
-          color: "negative",
-          position: "top",
-          message: "REPORTABLE INCIDENT CODE IS REQUIRED",
-          icon: "report_problem",
-          iconColor: "white",
-          timeout: 1000, // Increased timeout to 2000 milliseconds
-          progress: true,
-        });
-        return;
-      }
-      this.rdPWait = true;
-      this.saveChangeCode();
-
-      setTimeout(() => {
-        this.getAssistantQAs();
-        this.rdPWait = false;
-      }, 2000);
-      this.$q.notify({
-        color: "green-8",
-        position: "top",
-        message: "SUCCESS NOTIFIYING QUALITY OFFICER",
-        icon: "check",
-        iconColor: "white",
-        timeout: 3000,
-        progress: true,
-      });
-    },
-
-    async saveChangeCode() {
-      try {
-        const data = {
-          IRNo: this.IrNo,
-          SubjectCode: this.SubjectCode,
-        };
-        this.onAQACancel();
-        const response = await this.$store.dispatch(
-          "ApplyStore/putChangeCode",
-          data
-        );
-        console.log(data);
-      } catch (error) {
-        console.error("Error inserting data:", error);
-      }
-    },
-
-    onAQACancel() {
-      this.SubCodeDialog = false;
-      this.IrNo = "";
-      this.SubjectCode = "";
-    },
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   },
 };
 </script>

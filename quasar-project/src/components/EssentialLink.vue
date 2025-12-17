@@ -1,21 +1,23 @@
 <template>
   <q-item
     clickable
-    tag="a"
-    :href="link"
-    :class="{ 'selected-item': isSelected }"
+    :active="isSelected"
     @click="$emit('select')"
+    active-class="my-active-item"
+    class="my-sidebar-item"
   >
+    <q-item-section avatar>
+      <q-icon :name="icon" :size="iconSize" />
+    </q-item-section>
+
     <q-item-section>
-      <div class="q-col">
-        <q-icon :name="icon" :size="iconSize" />
-      </div>
-      <div class="q-col">
-        <q-item-label>{{ title }}</q-item-label>
-      </div>
+      <q-item-label :style="{ fontSize: labelSize }">
+        {{ label }}
+      </q-item-label>
     </q-item-section>
   </q-item>
 </template>
+
 
 <script>
 import { defineComponent } from "vue";
@@ -24,6 +26,10 @@ export default defineComponent({
   name: "EssentialLink",
   props: {
     title: {
+      type: String,
+      required: true,
+    },
+    label: {
       type: String,
       required: true,
     },
@@ -37,7 +43,11 @@ export default defineComponent({
     },
     iconSize: {
       type: String,
-      default: "35px",
+      default: "25px",  // you can change this
+    },
+    labelSize: {
+      type: String,
+      default: "16px",  // NEW: text size
     },
     isSelected: {
       type: Boolean,
@@ -48,14 +58,24 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.q-col {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.my-sidebar-item {
+  border-radius: 12px;
+  margin: 4px 8px;
+  padding: 8px 12px;
+  transition: background 0.2s, color 0.2s;
 }
-.selected-item {
-  background-color: #ffc619;
+
+.my-active-item {
+  background: #f1f5f9;
   color: #003566;
-  border-left: 8px solid #003566;
+  border-left: 8px solid #ffc412;
+  border-radius: 12px;
+  font-weight: bold;
 }
+
+.my-sidebar-item:hover {
+  background: #f8fafc;
+  color: #003566;
+}
+
 </style>

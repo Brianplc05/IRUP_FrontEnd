@@ -1,81 +1,83 @@
 <template>
-  <div id="q-app" style="min-height: 100vh; position: relative; z-index: 1">
-    <div class="q-pa-sm row items-start q-gutter-xs">
-      <div class="my-card">
-        <q-card-section
-          class="bg-primary text-white"
-          style="
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-          "
-        >
-          <div style="display: flex; align-items: center">
-            <q-btn-dropdown
-              push
-              class="filtertab"
-              icon="sort"
-              dropdown-icon="change_history"
-              label="FILTER STATUS "
-              menu-anchor="top right"
-              style="width: 25ch; padding: auto"
-            >
-              <q-list>
-                <q-item
-                  v-for="option in hrStats"
-                  :key="option.value"
-                  clickable
-                  @click="selectStatus(option)"
-                >
-                  <q-item-section>{{ option.label }}</q-item-section>
-                </q-item>
-              </q-list>
-            </q-btn-dropdown>
+  <div id="q-app" style="position: relative; z-index: 1">
+    <div style="height: 100%; width: 100%" class="q-pa-lg">
+      <div
+        class="row items-center justify-between q-mb-md bg-white q-pa-sm rounded-borders shadow-1"
+        style="border-radius: 10px"
+      >
+        <div>
+          <div class="text-primary text-weight-bold" style="font-size: 30px">
+            HUMAN RESOURCES MODULE
           </div>
-          <div class="IRHHText">INCIDENT REPORT</div>
-          <div
-            class="q-gutter-md row"
-            style="display: flex; align-items: center"
-          >
-            <q-input
-              dark
-              dense
-              standout
-              v-model="searchQuery"
-              input-class="text-right"
-              class="q-ml-md"
-              style="background-color: #f3f4f7; border-radius: 0.4em"
-            >
-              <template v-slot:append>
-                <q-icon name="search" style="color: black"></q-icon>
-              </template>
-            </q-input>
+          <div style="font-size: 18px; color: #333333">
+            Incident Report Details
           </div>
-        </q-card-section>
-        <q-page>
-          <q-spinner-ball
-            class="spinner"
-            v-if="loading"
-            size="150px"
-            color="primary"
-          ></q-spinner-ball>
-          <humanRTable
-            v-show="showTable"
-            :items="filteredDisAll"
-            :pagination="{ rowsPerPage: 8 }"
-            :columns="disColumns"
-            :hrStats="hrStats"
-            :getInc="getInc"
-            :getQAForm="getQAForm"
-            :disCod="disCod"
-            :disSpeOF="disSpeOF"
-            :Occurrences="Occurrences"
-            :Penalty="Penalty"
-            style="border-collapse: collapse"
-            :loading="loading"
-          />
-        </q-page>
+        </div>
       </div>
+
+      <q-card-section
+        class="bg-white q-pa-lg rounded-borders shadow-1 q-mb-md"
+      >
+        <q-toolbar class="bg-secondary text-white shadow-2 rounded-borders">
+          <q-btn flat label="All Items" class="text-h6"/>
+          <q-space />
+
+          <q-tabs v-model="hrTab" shrink stretch>
+            <q-tab name="reportable" label="Reportable Incident" />
+            <q-tab name="hrReferral" label="Human Resources (HR) Referral" />
+          </q-tabs>
+        </q-toolbar>
+
+        <q-tab-panels
+          v-model="hrTab"
+          animated
+          class="q-mt-sm tab-panels-bordered rounded-borders bg-warning shadow-4"
+        >
+          <q-tab-panel name="reportable">
+            <div class="row items-center justify-end q-mb-md">
+              <q-input v-model="searchRepQuery" label="SEARCH " dense outlined rounded>
+                  <template v-slot:append>
+                    <q-icon name="search" color="info" />
+                  </template>
+              </q-input>
+            </div>
+
+              <hrRepComponentsTable
+                v-show="showTable"
+                :items="filteredRepDisAll"
+                :pagination="{ rowsPerPage: 8 }"
+                :columns="disRepColumns"
+                style="border-collapse: collapse"
+                :loading="loading"
+              />
+          </q-tab-panel>
+
+          <q-tab-panel name="hrReferral">
+            <div class="row items-center justify-end q-mb-md">
+              <q-input v-model="searchRefQuery" label="SEARCH " dense outlined rounded>
+                  <template v-slot:append>
+                    <q-icon name="search" color="info" />
+                  </template>
+              </q-input>
+            </div>
+
+            <hrRefComponentsTable
+              v-show="showTable"
+              :items="filteredRefDisAll"
+              :pagination="{ rowsPerPage: 8 }"
+              :columns="disRefColumns"
+              :hrStats="hrStats"
+              :getInc="getInc"
+              :disCod="disCod"
+              :disSpeOF="disSpeOF"
+              :Occurrences="Occurrences"
+              :Penalty="Penalty"
+              style="border-collapse: collapse"
+              :loading="loading"
+            />
+          </q-tab-panel>
+        </q-tab-panels>
+      </q-card-section>
     </div>
   </div>
   <img
@@ -92,7 +94,8 @@
 </template>
 
 <script>
-import humanRTab from "components/HRTables.vue";
+import hrRepComponents from "src/components/HRRepTables.vue";
+import hrRefComponents from "src/components/HRRefTables.vue";
 import { mapGetters } from "vuex";
 
 export default {
@@ -100,57 +103,84 @@ export default {
     return {
       loading: true,
       showTable: false,
-      disAll: [],
+      hrTab: 'reportable', // default active tab
+
+      disRepAll: [],
+      disRefAll: [],
       disEmployees: [],
-      disColumns: [
+      disRefColumns: [
         {
           name: "viewIR",
           label: "INCIDENT REPORT DETAILS",
           align: "left",
           field: "id",
         },
-        { name: "IRNo", label: "IRNUMBER", align: "left", field: "IRNo" },
+        { name: "IRNo", label: "IRNUMBER", align: "left", field: "iRNo" },
         {
           name: "departmentNumber",
           label: "INCIDENT RESPONDER (DEPARTMENT)",
           align: "left",
-          field: "Department_Description",
+          field: "department_Description",
         },
         {
           name: "subject",
           label: "SUBJECT OF THE INCIDENT",
           align: "left",
-          field: "SubjectName",
+          field: "subjectName",
         },
         { name: "QA", label: "QA IN-CHARGE", align: "left", field: "id" },
         {
-          name: "lostrec",
-          label: "LOST RECOVERY REQUIRED",
+          name: "hrReferral",
+          label: "HR REFERRAL",
           align: "left",
-          field: "lostRec,",
+          field: "hrReferral,",
         },
         // { name: 'qaref', label: 'HR EVALUATION', align: 'left', field: 'QAReferral,' },
-        {
-          name: "financialLia",
-          label: "PECUNIARY LIABILITY",
-          align: "left",
-          field: "id",
-        },
+        // {
+        //   name: "financialLia",
+        //   label: "PECUNIARY LIABILITY",
+        //   align: "left",
+        //   field: "id",
+        // },
         // { name: 'demerit', label: 'EMPLOYEE OFFENSE RECORD', align: 'left', field: 'id' },
-        {
-          name: "hrnotes",
-          label: "HUMAN RESOURCES(HR) NOTE",
-          align: "left",
-          field: "newHRNote",
-        },
-        { name: "hrstatus", label: "STATUS", align: "left", field: "HRStatus" },
+        // {
+        //   name: "hrnotes",
+        //   label: "HUMAN RESOURCES(HR) NOTE",
+        //   align: "left",
+        //   field: "newHRNote",
+        // },
+        // { name: "hrstatus", label: "STATUS", align: "left", field: "hRStatus" },
         // { name: 'rcastatus', label: 'RCA SUBMITTED', align: 'left', field: 'RCA'},
         // { name: 'hrdisAct', label: 'NTE REQUIRED', align: 'left', field: 'HRDicipAction' },
       ],
+
+      disRepColumns: [
+        {
+          name: "viewIR",
+          label: "INCIDENT REPORT DETAILS",
+          align: "left",
+          field: "id",
+        },
+        { name: "IRNo", label: "IRNUMBER", align: "left", field: "iRNo" },
+        {
+          name: "departmentNumber",
+          label: "INCIDENT RESPONDER (DEPARTMENT)",
+          align: "left",
+          field: "department_Description",
+        },
+        {
+          name: "subject",
+          label: "SUBJECT OF THE INCIDENT",
+          align: "left",
+          field: "subjectName",
+        }
+      ],
+
       hrStats: [
         { label: "OPEN", value: true },
         { label: "CLOSED", value: false },
       ],
+
       Occurrences: [
         { label: "1ST", value: "1ST" },
         { label: "2ND", value: "2ND" },
@@ -158,41 +188,46 @@ export default {
         { label: "4TH", value: "4TH" },
         { label: "5TH", value: "5TH" },
       ],
+
       Penalty: [
         { label: "VERBAL WARNING", value: "VERBAL WARNING" },
         { label: "WRITTEN WARNING", value: "WRITTEN WARNING" },
         { label: "SUSPENSION", value: "SUSPENSION" },
         { label: "DISMISSAL", value: "DISMISSAL" },
       ],
+
       disCod: [],
       disSpeOF: [],
       date: new Date(),
       selectedStatus: null,
-      searchQuery: "",
+      searchRefQuery: "",
       DisciplineCode: null,
       PenaltiesCode: null,
+
+      searchRepQuery: "",
+      selectedRepStatus: null,
     };
   },
 
   computed: {
     ...mapGetters({
       getForm: "ApplyStore/getForm",
+      getHR: "ApplyStore/getHR",
       departments: "ApplyStore/departments",
-      employees: "ApplyStore/employees",
-      getQAForm: "ApplyStore/getQAForm",
+      // employees: "ApplyStore/employees",
     }),
 
-    filteredDisAll() {
-      const { disAll, selectedStatus, searchQuery } = this;
-      let filteredData = [...disAll];
+    filteredRefDisAll() {
+      const { disRefAll, selectedStatus, searchRefQuery } = this;
+      let filteredData = [...disRefAll];
       if (selectedStatus && typeof selectedStatus === "object") {
         const { value: statusValue } = selectedStatus;
         filteredData = filteredData.filter(
           (item) => item.HRStatus === statusValue
         );
       }
-      if (searchQuery && typeof searchQuery === "string") {
-        const query = searchQuery.toLowerCase();
+      if (searchRefQuery && typeof searchRefQuery === "string") {
+        const query = searchRefQuery.toLowerCase();
         filteredData = filteredData.filter((item) =>
           Object.values(item).some(
             (val) =>
@@ -202,10 +237,33 @@ export default {
       }
       return filteredData;
     },
+
+    filteredRepDisAll() {
+      const { disRepAll, selectedRepStatus, searchRepQuery } = this;
+      let filteredData = [...disRepAll];
+      if (selectedRepStatus && typeof selectedRepStatus === "object") {
+        const { value: statusValue } = selectedRepStatus;
+        filteredData = filteredData.filter(
+          (item) => item.HRStatus === statusValue
+        );
+      }
+      if (searchRepQuery && typeof searchRepQuery === "string") {
+        const query = searchRepQuery.toLowerCase();
+        filteredData = filteredData.filter((item) =>
+          Object.values(item).some(
+            (val) =>
+              typeof val === "string" && val.toLowerCase().includes(query)
+          )
+        );
+      }
+      return filteredData;
+    },
+
   },
 
   components: {
-    humanRTable: humanRTab,
+    hrRepComponentsTable: hrRepComponents,
+    hrRefComponentsTable: hrRefComponents
   },
 
   mounted() {
@@ -217,44 +275,54 @@ export default {
   },
 
   created() {
-    this.getInc();
-    this.getCod();
-    this.getSpeOf();
-    this.getEmployees();
+    this.getHRRepInc();
+    this.getHRRefInc();
+    // this.getCod();
+    // this.getSpeOf();
+    // this.getEmployees();
   },
 
   methods: {
-    async getEmployees() {
-      try {
-        await this.$store.dispatch("ApplyStore/Employees");
-        this.disEmployees = this.employees;
-      } catch (error) {
-        console.error("Error displaying data:", error);
-      }
-    },
+    // async getEmployees() {
+    //   try {
+    //     await this.$store.dispatch("ApplyStore/Employees");
+    //     this.disEmployees = this.employees;
+    //   } catch (error) {
+    //     console.error("Error displaying data:", error);
+    //   }
+    // },
 
-    async getCod() {
+    // async getCod() {
+    //   try {
+    //     await this.$store.dispatch("ApplyStore/codedis");
+    //     this.disCod = this.getForm;
+    //   } catch (error) {
+    //     console.error("Error inserting data:", error);
+    //   }
+    // },
+
+    // async getSpeOf() {
+    //   try {
+    //     await this.$store.dispatch("ApplyStore/speOfdis");
+    //     this.disSpeOF = this.getForm;
+    //   } catch (error) {
+    //     console.error("Error inserting data:", error);
+    //   }
+    // },
+
+    async getHRRepInc() {
       try {
-        await this.$store.dispatch("ApplyStore/codedis");
-        this.disCod = this.getForm;
+        await this.$store.dispatch("ApplyStore/disHRRep");
+        this.disRepAll = this.getHR;
       } catch (error) {
         console.error("Error inserting data:", error);
       }
     },
 
-    async getSpeOf() {
+    async getHRRefInc() {
       try {
-        await this.$store.dispatch("ApplyStore/speOfdis");
-        this.disSpeOF = this.getForm;
-      } catch (error) {
-        console.error("Error inserting data:", error);
-      }
-    },
-
-    async getInc() {
-      try {
-        await this.$store.dispatch("ApplyStore/disInc");
-        this.disAll = this.getForm;
+        await this.$store.dispatch("ApplyStore/disHRRef");
+        this.disRefAll = this.getForm;
       } catch (error) {
         console.error("Error inserting data:", error);
       }
@@ -336,10 +404,75 @@ export default {
   padding: 5px; /* Optional padding */
 }
 .HRVDia {
-  background-color: #ffffff;
-  max-height: 100%; /* You can adjust the units based on your preference, 'vw' for viewport width */
-  border: 0.2em solid #dcdddf;
+  background-image: url("../assets/BGCORE.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #f4f7fc;
+  padding-top: 20px;
+  padding-bottom: 40px;
+  min-height: 100vh;
 }
+
+.formseparatorYellow {
+  background-color: #ffc619;
+  height: 2px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.formseparatorBlue {
+  background-color: #6b7c93;
+  height: 2px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.formseparatorWhite {
+  background-color: #fff;
+  height: 2px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.contentFormHR {
+  border: 2px solid #f0f2f5;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 25px;
+  padding: 20px;
+  background-color: #ffffff;
+  width: 1100px;
+  height: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.HRFixDesign {
+  width: 99.5%;
+  margin: 5px;
+  font-size: 15px;
+  background-color: #ffffff;
+}
+
+.HRDes1 {
+  font-size: 15px;
+  border: 0.1em solid #ffffff;
+}
+
+.HRDes {
+  font-size: 15px;
+  border: 0.1em solid #ffffff;
+}
+
+.HRFileDes {
+  padding: 8px;
+  margin-top: 5px;
+  font-size: 15px;
+  border: 0.1em solid #003566;
+  background-color: #e3f2fd;
+}
+
+/*
 .HRVHead {
   display: flex;
   justify-content: space-between;
@@ -374,14 +507,63 @@ export default {
   font-size: 20px;
   justify-content: center;
 }
+
+.HRDesContent {
+  border: 0.1em solid #cacaca;
+  margin-top: 5px;
+}
+.HRDesign {
+  width: 70%;
+  margin: 5px;
+  font-size: 15px;
+  background-color: #ffffff;
+}
+.HRDesign2 {
+  width: 25%;
+  margin: 5px;
+  font-size: 15px;
+  background-color: #ffffff;
+}
 .HRDes {
   padding: 8px;
   margin-top: 5px;
   width: 98%;
   font-size: 15px;
-  border: 0.1em solid #cacaca;
+  border: 0.1em solid #ffffff;
 }
-
+.HRFileDes {
+  padding: 8px;
+  margin-top: 5px;
+  font-size: 15px;
+  border: 0.1em solid #003566;
+  background-color: #e3f2fd;
+}
+.HRIRND {
+  font-weight: bold;
+  display: flex;
+  color: #ffc619;
+  font-size: 20px;
+  justify-content: center;
+}
+.HRFixDesign {
+  width: 99.5%;
+  margin: 5px;
+  font-size: 15px;
+  background-color: #ffffff;
+}
+.HRDes1 {
+  padding: 8px;
+  margin: 5px;
+  font-size: 15px;
+  border: 0.1em solid #ffffff;
+}
+.HRlist {
+  height: 30%;
+  width: 100%;
+  margin-top: 15px;
+  border: 0.1em solid #cacaca;
+  background-color: #003566;
+} */
 /* ///////////////////////////////////////HRDISACTION ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 .HRDA {

@@ -1,13 +1,16 @@
 <template>
   <div
-    class="flex flex-center column q-pa-md"
+    class="flex-center column q-pa-s"
     style="min-height: 100vh; position: relative; z-index: 1"
   >
-    <q-spinner-pie class="spinner" color="primary" />
-    <div class="q-mt-md loading-text">Authenticating, Please wait...</div>
+    <q-spinner-cube
+      color="accent"
+      style="height: 10%; width: 10%; border: 0.2em solid #0f4d91"
+    />
+    <div class="q-mt-md loading-textwait">Authenticating, Please wait...</div>
   </div>
   <img
-    src="../../assets/LoadingBG.png"
+    src="../../assets/B&W1.png"
     alt="Loading Image"
     class="background-image"
   />
@@ -41,7 +44,6 @@ export default {
           this.getUser.EmployeeCode
         );
         this.$router.push("/Dashboard");
-        console.log(this.$route);
       } catch (error) {
         console.error("Authentication failed:", error);
         this.$router.push("/Login");
@@ -52,18 +54,11 @@ export default {
 </script>
 
 <style scoped>
-.spinner {
-  width: 15vw;
-  height: 15vw;
-  max-width: 150px;
-  max-height: 150px;
-  z-index: 1; /* Ensure it's above the background */
-}
-
-.loading-text {
-  color: #0a335f; /* Adjust if needed */
+.loading-textwait {
+  color: #0f4d91; /* Adjust if needed */
   font-size: 28px;
-  z-index: 1; /* Ensure it's above the background */
+  font-weight: bold;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   text-align: center; /* Center text alignment */
 }
 
