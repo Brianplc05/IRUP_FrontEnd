@@ -9,6 +9,7 @@
             color="accent"
             icon="description"
             class="text-black text-bold text-center shadow-5"
+            style="border-radius: 20px; width: 125px"
           />
 
           <q-dialog maximized v-model="IRDialog" persistent>

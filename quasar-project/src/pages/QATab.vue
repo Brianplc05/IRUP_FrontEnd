@@ -1564,7 +1564,7 @@
                     label="Very Low Risk"
                     :class="['tab-equal', getRiskTabClass('veryLow')]"
                   >
-                    <q-badge color="orange" floating>{{
+                    <q-badge color="primary" floating>{{
                       veryLowRiskItemsCount
                     }}</q-badge>
                   </q-tab>
@@ -1574,7 +1574,7 @@
                     label="Low Risk"
                     :class="['tab-equal', getRiskTabClass('low')]"
                   >
-                    <q-badge color="orange" floating>{{
+                    <q-badge color="primary" floating>{{
                       lowRiskItemsCount
                     }}</q-badge>
                   </q-tab>
@@ -1584,7 +1584,7 @@
                     label="Moderate Risk"
                     :class="['tab-equal', getRiskTabClass('moderate')]"
                   >
-                    <q-badge color="orange" floating>{{
+                    <q-badge color="primary" floating>{{
                       moderateRiskItemsCount
                     }}</q-badge>
                   </q-tab>
@@ -1594,7 +1594,7 @@
                     label="High Risk"
                     :class="['tab-equal', getRiskTabClass('high')]"
                   >
-                    <q-badge color="orange" floating>{{
+                    <q-badge color="primary" floating>{{
                       highRiskItemsCount
                     }}</q-badge>
                   </q-tab>
@@ -1604,7 +1604,7 @@
                     label="Very High Risk"
                     :class="['tab-equal', getRiskTabClass('veryHigh')]"
                   >
-                    <q-badge color="orange" floating>{{
+                    <q-badge color="primary" floating>{{
                       veryHighRiskItemsCount
                     }}</q-badge>
                   </q-tab>
@@ -1899,7 +1899,7 @@ export default {
         },
         {
           name: "isReject",
-          label: "Reject",
+          label: "REJECT",
           align: "left",
           field: "isReject",
         },

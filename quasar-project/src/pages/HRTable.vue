@@ -18,6 +18,15 @@
       <q-card-section
         class="bg-white q-pa-lg rounded-borders shadow-1 q-mb-md"
       >
+        <div
+          v-if="loading"
+          class="fixed-full flex flex-center column q-gutter-md"
+          style="background-color: rgba(255, 255, 255, 0.7); z-index: 9999"
+        >
+          <q-spinner-ball size="150px" color="primary" />
+          <div class="text-subtitle1 text-primary">Please wait...</div>
+        </div>
+
         <q-toolbar class="bg-secondary text-white shadow-2 rounded-borders">
           <q-btn flat label="All Items" class="text-h6"/>
           <q-space />
