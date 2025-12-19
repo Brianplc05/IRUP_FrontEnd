@@ -137,9 +137,10 @@
             </div>
 
             <div class="q-mb-sm" style="font-size: 15px; color: #737373">
-              <b>This section contains essential details regarding the incident,
-              including the date, time, location, individuals involved, and the
-              nature of the incident.
+              <b>
+                This section contains essential details regarding the incident,
+                including the date, time, location, individuals involved, and the
+                nature of the incident.
               </b>
             </div>
 
@@ -147,20 +148,73 @@
 
             <div class="row q-col-gutter-md q-mx-lg">
               <div class="col-6">
-                <q-select
-                  use-input
-                  rounded
-                  outlined
-                  clearable
-                  v-model="SubjectCode"
-                  :options="disSubName"
-                  @filter="FilterSubName"
-                  label="REPORTABLE INCIDENT"
-                  emit-value
-                  map-options
-                  :option-value="(option) => option"
-                  :option-label="(option) => option.subjectName"
-                />
+                <div class="row items-center q-col-gutter-sm">
+                  <div class="col">
+                    <q-select
+                      use-input
+                      rounded
+                      outlined
+                      clearable
+                      v-model="SubjectCode"
+                      :options="disSubName"
+                      @filter="FilterSubName"
+                      label="REPORTABLE INCIDENT"
+                      emit-value
+                      map-options
+                      :option-value="(option) => option"
+                      :option-label="(option) => option.subjectName"
+                    />
+                  </div>
+
+                  <div class="col-auto">
+                    <q-icon
+                      name="help"
+                      class="cursor-pointer bg-warning text-primary q-pa-xs rounded-borders"
+                      size="22px"
+                      @click="DisplayReportableList"
+                    >
+                      <q-tooltip class="bg-info text-white">
+                        This section displays the reportable guidelines.
+                      </q-tooltip>
+                    </q-icon>
+
+                    <q-dialog v-model="viewReportableList" persistent maximized>
+                      <q-card class="column full-height">
+
+                        <!-- HEADER -->
+                        <q-card-section class="row items-center justify-between">
+                          <div
+                            class="text-weight-bold"
+                            style="font-size: 25px; color: #002b5c"
+                          >
+                            REPORTABLE INCIDENT LIST
+                          </div>
+
+                          <q-btn
+                            flat
+                            icon="close"
+                            v-close-popup
+                            style="color: #166ecc; background-color: rgba(22, 110, 204, 0.1);"
+                          >
+                            <q-tooltip class="bg-info text-white">Close</q-tooltip>
+                          </q-btn>
+                        </q-card-section>
+
+                        <q-separator class="formseparatorBlue" />
+
+                        <!-- BODY -->
+                        <q-card-section class="col q-pa-none q-ma-md">
+                          <iframe
+                            v-if="reportPdfPath"
+                            :src="reportPdfPath"
+                            style="width:100%; height:100%; border:none;"
+                          ></iframe>
+                        </q-card-section>
+
+                      </q-card>
+                    </q-dialog>
+                  </div>
+                </div>
 
                 <q-select
                   v-if="shouldShowSpecificExamples"
@@ -202,10 +256,8 @@
                 />
 
                 <q-item
+                  v-if="SubjectCode && SubjectCode.subjectCode !== 'others'"
                   style="border: 0.2em solid #003566; margin-top: 15px"
-                  v-if="
-                    SubjectCode && this.SubjectCode.subjectCode !== 'others'
-                  "
                 >
                   <q-item-section>
                     <q-item-label>
@@ -232,6 +284,7 @@
                     />
                   </template>
                 </q-input>
+
                 <q-dialog v-model="showDatePicker">
                   <q-card>
                     <q-card-section>
@@ -243,7 +296,6 @@
                     </q-card-section>
                   </q-card>
                 </q-dialog>
-
 
                 <q-input
                   v-model="SubjectTime"
@@ -262,21 +314,17 @@
                     />
                   </template>
                 </q-input>
+
                 <q-dialog v-model="showTimePicker">
                   <q-card>
                     <q-card-section class="q-pa-sm">
-                      <q-time
-                        v-model="SubjectTime"
-                        now-btn
-                      ></q-time>
+                      <q-time v-model="SubjectTime" now-btn />
                     </q-card-section>
                   </q-card>
                 </q-dialog>
 
                 <q-input
-                  v-if="
-                    SubjectCode && this.SubjectCode.subjectCode === 'others'
-                  "
+                  v-if="SubjectCode && SubjectCode.subjectCode === 'others'"
                   v-model="SubjectBriefDes"
                   label="BRIEF DESCRIPTION OF THE INCIDENT"
                   use-input
@@ -288,6 +336,7 @@
               </div>
             </div>
           </q-card-section>
+
 
           <q-card-section>
             <div class="text-subtitle1 text-primary text-weight-bold q-mb-sm">
@@ -696,6 +745,7 @@
 import { mapGetters } from "vuex";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
+import reportPdf from 'assets/reportlist.pdf';
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -736,7 +786,9 @@ export default {
       datamatch: null,
       pdfDisplayDialog: false,
       pdfUrl: null,
-      maxFileSize: 10 * 1024 * 1024, // 10MB in bytes
+      maxFileSize: 10 * 1024 * 1024,
+      viewReportableList: false,
+      reportPdfPath: reportPdf
     };
   },
 
@@ -1509,6 +1561,10 @@ export default {
     mounted() {
       this.generatePDF(); // Call the method to generate and display the PDF when the component is mounted
     },
+
+    DisplayReportableList(){
+      this.viewReportableList = true;
+    }
   },
 };
 </script>
@@ -1920,4 +1976,6 @@ export default {
   font-style: italic;
   color: #ffc107; /* optional accent color */
 }
+
+
 </style>
