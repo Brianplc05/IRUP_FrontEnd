@@ -718,8 +718,6 @@ export default {
       await this.$nextTick();
       this.reportForm = true;
 
-      console.log(EmployeeCode);
-
       try {
         const data = {
           userCode: EmployeeCode,
@@ -777,7 +775,6 @@ export default {
         const data = {
           iRNo: row.iRNo,
         };
-        console.log(data)
         const response = await this.$store.dispatch("ApplyStore/disIrp", data);
         this.IRQADetailss = this.getQACon;
       } catch (error) {

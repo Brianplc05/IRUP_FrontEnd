@@ -61,7 +61,7 @@ module.exports = configure(function (/* ctx */) {
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
-      // publicPath: '/',
+      publicPath: '/irms-app',
       // analyze: true,
       env: {
         // ACCESS_RIGHT_API_URL: "https://localapi.uerm.edu.ph:8081/access-right",

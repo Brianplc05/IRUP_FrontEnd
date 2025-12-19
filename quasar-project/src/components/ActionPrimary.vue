@@ -749,32 +749,30 @@
                 </q-btn>
               </q-card-section>
 
-              <q-separator class="formseparatorWhite" />
-
               <q-card-section>
-                <div class="row q-col-gutter-lg q-mx-xs">
+                <div class="row q-col-gutter-lg q-ma-xs">
                   <div
-                    class="col-9 q-pa-md bg-white rounded-borders"
+                    class="col-9 bg-white rounded-borders q-pa-smd"
                     style="border: 2px solid #6b7c93; border-radius: 40px"
                   >
-                    <div class="QADesContent q-mb-md">
-                      <div class="QAFixDesign">
-                        <div class="QADes1">
-                          <div
-                            class="text-info text-subtitle1 text-weight-bold q-mb-sm"
-                          >
-                            Problem Background
-                          </div>
-                          <div class="text-body2 text-grey-7 q-mb-sm">
-                            This section contains essential details regarding
-                            the incident, including the date, time, location,
-                            individuals involved, and the nature of the
-                            incident.
-                          </div>
-                          <q-separator class="formseparatorYellow" />
+                    <div>
+                      <div
+                        class="text-info text-subtitle1 text-weight-bold q-mb-sm"
+                      >
+                        Problem Background
+                      </div>
 
-                          <div class="row q-col-gutter-xs" style="margin: 20px">
-                            <div class="col-4">
+                      <div class="text-body2 text-grey-7 q-mb-sm">
+                        This section contains essential details regarding
+                        the incident, including the date, time, location,
+                        individuals involved, and the nature of the
+                        incident.
+                      </div>
+
+                      <q-separator class="formseparatorYellow q-mr-md" />
+
+                      <div class="row q-col-gutter-xs q-pa-md">
+                        <div class="col-4">
                               <div
                                 class="text-weight-bold text-primary q-mb-xs"
                               >
@@ -819,110 +817,103 @@
                                 disable
                               />
                             </div>
-                          </div>
-                        </div>
                       </div>
                     </div>
 
-                    <div class="QADesContent q-mb-md">
-                      <div class="QAFixDesign">
-                        <div class="QADes1">
+                    <div class="q-pt-md">
+                      <div
+                        class="text-info text-subtitle1 text-weight-bold q-mb-sm"
+                      >
+                        Immediate Response
+                      </div>
+
+                      <div class="text-body2 text-grey-7 q-mb-sm">
+                        Action taken by the concerned department or by the
+                        Informant to ease the incident.
+                      </div>
+
+                      <q-separator class="formseparatorYellow q-mr-md" />
+
+                      <div class="q-pa-sm">
+                        <q-input
+                          autogrow
+                          rounded
+                          outlined
+                          :model-value="props.row.subjectResponse"
+                          disable
+                          input-class="q-pa-md"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="q-pt-md">
+                      <div
+                        class="text-info text-subtitle1 text-weight-bold q-mb-sm"
+                      >
+                        Action Item Details
+                      </div>
+
+                      <div class="text-body2 text-grey-7 q-mb-sm">
+                        This section outlines the action items implemented
+                        by the department to address and mitigate the
+                        incident.
+                      </div>
+
+                      <q-separator class="formseparatorYellow q-mr-md" />
+
+                      <div class="row q-col-gutter-xs q-pa-md">
+                        <div
+                          class="col-12"
+                          v-for="(item, index) in actionitemDetails"
+                          :key="index"
+                        >
                           <div
-                            class="text-info text-subtitle1 text-weight-bold q-mb-sm"
+                            class="q-pa-md q-mb-md rounded-borders"
+                            style="border: 1px solid #d0d7e2"
                           >
-                            Immediate Response
-                          </div>
-                          <div class="text-body2 text-grey-7 q-mb-sm">
-                            Action taken by the concerned department or by the
-                            Informant to ease the incident.
-                          </div>
-                          <q-separator class="formseparatorYellow" />
-                          <div class="q-mt-md">
+                            <!-- Action Item Notes -->
+                            <div class="text-weight-bold text-primary q-mb-xs">
+                              Action Item Notes
+                            </div>
+
                             <q-input
                               autogrow
                               rounded
                               outlined
-                              :model-value="props.row.subjectResponse"
+                              :model-value="item.actionItem || 'No Data Available'"
                               disable
                               input-class="q-pa-md"
+                              class="q-mb-md"
                             />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
 
-                    <div class="QADesContent">
-                      <div class="QAFixDesign">
-                        <div class="QADes1">
-                          <div
-                            class="text-info text-subtitle1 text-weight-bold q-mb-sm"
-                          >
-                            Action Item Details
-                          </div>
-                          <div class="text-body2 text-grey-7 q-mb-sm">
-                            This section outlines the action items implemented
-                            by the department to address and mitigate the
-                            incident.
-                          </div>
-                          <q-separator class="formseparatorYellow" />
-
-                          <div class="q-mt-md" style="margin: 20px">
-                            <div
-                              class="q-pa-sm q-mb-md"
-                              v-for="(item, index) in actionitemDetails"
-                              :key="index"
-                            >
-                              <div class="row q-col-gutter-md">
-                                <div class="col-8">
-                                  <div
-                                    class="text-weight-bold text-primary q-mb-xs"
-                                  >
-                                    Action Item Notes
-                                  </div>
-                                  <q-input
-                                    autogrow
-                                    rounded
-                                    outlined
-                                    :model-value="
-                                      item.actionItem || 'No Data Available'
-                                    "
-                                    disable
-                                  />
+                            <!-- Timeline -->
+                            <div class="row q-col-gutter-md">
+                              <div class="col-6">
+                                <div class="text-weight-bold text-primary q-mb-xs">
+                                  Timeline From
                                 </div>
+                                <q-input
+                                  rounded
+                                  outlined
+                                  :model-value="
+                                    FormatActionDate(item.timelineFromDate) || 'No Data Available'
+                                  "
+                                  disable
+                                />
+                              </div>
 
-                                <div class="col-2">
-                                  <div
-                                    class="text-weight-bold text-primary q-mb-xs"
-                                  >
-                                    Timeline From
-                                  </div>
-                                  <q-input
-                                    rounded
-                                    outlined
-                                    :model-value="
-                                      FormatActionDate(item.timelineFromDate) ||
-                                      'No Data Available'
-                                    "
-                                    disable
-                                  />
+                              <div class="col-6">
+                                <div class="text-weight-bold text-primary q-mb-xs">
+                                  Timeline To
                                 </div>
-
-                                <div class="col-2">
-                                  <div
-                                    class="text-weight-bold text-primary q-mb-xs"
-                                  >
-                                    Timeline To
-                                  </div>
-                                  <q-input
-                                    rounded
-                                    outlined
-                                    :model-value="
-                                      FormatActionDate(item.timelineToDate) ||
-                                      'No Data Available'
-                                    "
-                                    disable
-                                  />
-                                </div>
+                                <q-input
+                                  rounded
+                                  outlined
+                                  :model-value="
+                                    FormatActionDate(item.timelineToDate) || 'No Data Available'
+                                  "
+                                  disable
+                                />
                               </div>
                             </div>
                           </div>

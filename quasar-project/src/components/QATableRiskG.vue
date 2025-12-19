@@ -801,9 +801,8 @@
                   Action Item Note
                 </div>
                 <div class="text-body2 text-grey-7 q-mb-sm">
-                  <b>Direction:</b> This section outlines the action items
-                  implemented by the department to address and mitigate the
-                  incident.
+                  <b>Direction: This section is for confirmation purposes only and should be <br/> completed only upon approval of the incident.
+                  A note is not required if the incident is disapproved.</b>
                 </div>
 
                 <q-input
