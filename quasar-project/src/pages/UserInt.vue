@@ -694,8 +694,8 @@
 
 <script>
 import { mapGetters } from "vuex";
-import pdfMake from "pdfmake/build/pdfmake"; // Import pdfmake library
-import pdfFonts from "pdfmake/build/vfs_fonts"; // Import vfs_fonts module
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 export default {
@@ -1199,15 +1199,25 @@ export default {
     },
 
     getPdfDefinition() {
-      const IRNo = this.getIRForm[0].iRNo;
-      const SubjectName = this.getIRForm[0].subjectName;
-      const SubjectSpecificExam = this.getIRForm[0].subjectSpecificExam;
-      const SubjectLoc = this.getIRForm[0].subjectLoc;
-      const SubjectDate = this.FormatDate(this.getIRForm[0].subjectDate);
-      const SubjectTime = this.FormatTime(this.getIRForm[0].subjectTime);
-      const SubjectNote = this.getIRForm[0].subjectNote;
-      const SubjectCause = this.getIRForm[0].subjectCause;
-      const SubjectResponse = this.getIRForm[0].subjectResponse;
+    if (!this.getIRForm) {
+      console.warn("getIRForm is not loaded yet");
+      return;
+    }
+
+    const {
+      iRNo,
+      subjectName,
+      subjectSpecificExam,
+      subjectLoc,
+      subjectDate,
+      subjectTime,
+      subjectNote,
+      subjectCause,
+      subjectResponse
+    } = this.getIRForm;
+
+    const SubjectDateFormatted = this.FormatDate(subjectDate);
+    const SubjectTimeFormatted = this.FormatTime(subjectTime);
 
       return {
         info: {
@@ -1215,7 +1225,7 @@ export default {
         },
         content: [
           {
-            text: `IRNo.: ${IRNo}`,
+            text: `IRNo.: ${iRNo}`,
             alignment: "right",
             style: "s1",
           },
@@ -1263,8 +1273,8 @@ export default {
               body: [
                 [
                   {
-                    text: `Subject of the incident: ${SubjectName}${
-                      SubjectSpecificExam ? ` - ${SubjectSpecificExam}` : ""
+                    text: `Subject of the incident: ${subjectName}${
+                      subjectSpecificExam ? ` - ${subjectSpecificExam}` : ""
                     }`,
                   },
                 ],
@@ -1275,7 +1285,7 @@ export default {
             style: "table1",
             table: {
               widths: ["*"],
-              body: [[{ text: `Location of the incident: ${SubjectLoc}` }]],
+              body: [[{ text: `Location of the incident: ${subjectLoc}` }]],
             },
           },
           {
@@ -1284,9 +1294,9 @@ export default {
               widths: ["*", "*"],
               body: [
                 [
-                  `Date of the incident: ${SubjectDate}`,
+                  `Date of the incident: ${SubjectDateFormatted}`,
                   {
-                    text: `Time of the incident: ${SubjectTime}`,
+                    text: `Time of the incident: ${SubjectTimeFormatted}`,
                     noWrap: true,
                   },
                 ],
@@ -1325,7 +1335,7 @@ export default {
                 ],
                 [
                   {
-                    text: `${SubjectNote}`,
+                    text: `${subjectNote}`,
                     style: "s6",
                     fillColor: "#FFFFFF",
                     border: [1, 0, 1, 0],
@@ -1370,7 +1380,7 @@ export default {
                 ],
                 [
                   {
-                    text: `${SubjectCause}`,
+                    text: `${subjectCause}`,
                     style: "s6",
                     fillColor: "#FFFFFF",
                     border: [1, 0, 1, 0],
@@ -1419,7 +1429,7 @@ export default {
                 ],
                 [
                   {
-                    text: `${SubjectResponse}`,
+                    text: `${subjectResponse}`,
                     style: "s6",
                     fillColor: "#FFFFFF",
                     border: [1, 0, 1, 0],
