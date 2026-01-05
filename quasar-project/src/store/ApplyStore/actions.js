@@ -131,7 +131,6 @@ export default {
 
   /////////////////// REPORT LIST /////////////////////////
   async displayReportList({ commit }, data) {
-    console.log("DATA: ", data)
     try {
       const token = localStorage.getItem("authToken");
       const response = await axios.get(`${ApiUrl}/incident-report/DisplayReportList`, {
