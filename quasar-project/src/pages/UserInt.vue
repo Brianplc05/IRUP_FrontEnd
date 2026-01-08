@@ -909,6 +909,14 @@ export default {
 
     handleFormSubmit() {
       try {
+        this.confirm = true;
+      } catch (error) {
+        console.error("Error inserting data:", error);
+      }
+    },
+
+    async SubmitForm() {
+      try {
         if (!this.validateForm()) {
           this.$q.notify({
             color: "negative",
@@ -921,35 +929,33 @@ export default {
           });
           return;
         }
-        this.confirm = true;
-      } catch (error) {
-        console.error("Error inserting data:", error);
-      }
-    },
 
-    SubmitForm() {
-      try {
         this.showLoading = true;
-        this.addInc();
+        await this.addInc(); // important
         this.confirm = false;
+
         setTimeout(() => {
           this.showLoading = false;
-          this.clearForm(); // Clear the form after 1 second
+          this.clearForm();
           this.print = true;
-        }, 8000);
+        }, 1000);
+
         this.$q.notify({
           color: "positive",
           position: "top",
           message: "SUCCESSFULLY SENT THE REPORT TO THE QUALITY OFFICER",
-          icon: "report_problem",
+          icon: "check_circle",
           iconColor: "white",
           timeout: 3000,
           progress: true,
         });
+
       } catch (error) {
+        this.showLoading = false;
         console.error("Error inserting data:", error);
       }
     },
+
 
     async downloadPDF() {
       try {
@@ -1168,10 +1174,10 @@ export default {
           formData.SubjectBriefDes = this.SubjectBriefDes;
           formData.SubjectCode = this.SubjectCode.subjectCode;
         }
-        const response = await this.$store.dispatch(
-          "ApplyStore/addIReport",
-          formData
-        );
+        // const response = await this.$store.dispatch(
+        //   "ApplyStore/addIReport",
+        //   formData
+        // );
 
 
       } catch (error) {
@@ -1180,15 +1186,20 @@ export default {
     },
 
     validateForm() {
-      return (
-        this.SubjectLoc !== " " &&
-        this.SubjectDate !== " " &&
-        this.SubjectTime !== " " &&
-        this.SubjectNote !== " " &&
-        this.SubjectCause !== " " &&
-        this.SubjectResponse !== " "
+      const requiredFields = [
+        this.SubjectLoc,
+        this.SubjectDate,
+        this.SubjectTime,
+        this.SubjectNote,
+        this.SubjectCause,
+        this.SubjectResponse
+      ];
+
+      return requiredFields.every(
+        field => field && field.toString().trim() !== ""
       );
     },
+
 
     clearForm() {
       this.SubjectCode = "";

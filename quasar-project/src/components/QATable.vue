@@ -9599,9 +9599,25 @@ export default {
     },
 
     viewPDF(subjectFile, subjectFileName) {
-      this.pdfUrl = "data:application/pdf;base64," + subjectFile;
+      const cleanBase64 = subjectFile.replace(
+        /^data:application\/pdf;base64,/,
+        ""
+      );
+
+      const byteCharacters = atob(cleanBase64);
+      const byteNumbers = new Array(byteCharacters.length);
+
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: "application/pdf" });
+
+      this.pdfUrl = URL.createObjectURL(blob);
       this.pdfDisplayDialog = true;
     },
+
 
     EmploFullName(employeeCode) {
       if (!employeeCode || !this.getEmployee) return null;
