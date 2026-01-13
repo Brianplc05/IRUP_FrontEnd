@@ -815,7 +815,7 @@ export default {
       return (
         this.SubjectCode &&
         this.SubjectCode.subjectCode !== "others" &&
-        this.disAllRiskChild.some(
+        this.disAllRiskChild.filter(
           (child) => child.subjectCode === this.SubjectCode.subjectCode
         )
       );
