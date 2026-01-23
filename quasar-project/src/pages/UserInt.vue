@@ -1185,10 +1185,11 @@ export default {
           formData.SubjectBriefDes = this.SubjectBriefDes;
           formData.SubjectCode = this.SubjectCode.subjectCode;
         }
-        // const response = await this.$store.dispatch(
-        //   "ApplyStore/addIReport",
-        //   formData
-        // );
+
+        const response = await this.$store.dispatch(
+          "ApplyStore/addIReport",
+          formData
+        );
 
 
       } catch (error) {
