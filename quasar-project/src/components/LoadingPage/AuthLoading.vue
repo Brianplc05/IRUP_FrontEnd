@@ -43,7 +43,7 @@ export default {
           "ApplyStore/getAccessRight",
           this.getUser.EmployeeCode
         );
-        this.$router.push("/Dashboard");
+        this.$router.push("/WelcomePage");
       } catch (error) {
         console.error("Authentication failed:", error);
         this.$router.push("/Login");

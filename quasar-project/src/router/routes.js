@@ -80,6 +80,10 @@ const routes = [
         path: "/ReportTable",
         component: () => import("pages/ReportTab.vue"),
       },
+      {
+        path: "/WelcomePage",
+        component: () => import("pages/WelcomePage.vue"),
+      },
     ],
   },
 

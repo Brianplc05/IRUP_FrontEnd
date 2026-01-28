@@ -1,6 +1,12 @@
 export default {
   getListModule: [
     {
+      title: "Dashboard",
+      label: "DASHBOARD",
+      icon: "dashboard",
+      link: "/Dashboard",
+    },
+    {
       title: "QA Module",
       label: "ADMIN MODULE",
       icon: "assignment",
@@ -37,20 +43,20 @@ export default {
       link: "/AuditTable",
     },
   ],
-  getListDefaultModule: [
-    {
-      title: "DASHBOARD",
-      label: "DASHBOARD",
-      icon: "dashboard",
-      link: "/Dashboard",
-    },
-    // {
-    //   title: "REPORT MODULE",
-    //   label: "REPORT MODULE",
-    //   icon: "summarize",
-    //   link: "#/ReportTable",
-    // },
-  ],
+  // getListDefaultModule: [
+  //   {
+  //     title: "DASHBOARD",
+  //     label: "DASHBOARD",
+  //     icon: "dashboard",
+  //     link: "/Dashboard",
+  //   },
+  //   {
+  //     title: "REPORT MODULE",
+  //     label: "REPORT MODULE",
+  //     icon: "summarize",
+  //     link: "#/ReportTable",
+  //   },
+  // ],
 
   getAccessModule: [],
   getGoogleUser: [],

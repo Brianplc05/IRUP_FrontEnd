@@ -293,6 +293,31 @@
                             {{ IRQADetailss.subjectFileName }}
                           </div>
                         </div>
+
+                        <q-dialog v-model="pdfDisplayDialog">
+                          <q-card style="width: 90vw; max-width: 1100px">
+                            <div class="bg-info text-white">
+                              <div class="IRND">UPLOADED PDF FILES</div>
+                              <q-btn
+                                icon="close"
+                                flat
+                                round
+                                dense
+                                @click="pdfDisplayDialog = false"
+                                class="absolute-top-right"
+                              />
+                            </div>
+                            <q-card-section>
+                              <iframe
+                                v-if="pdfUrl"
+                                :src="pdfUrl"
+                                width="100%"
+                                height="600px"
+                                style="border: none"
+                              ></iframe>
+                            </q-card-section>
+                          </q-card>
+                        </q-dialog>
                       </div>
 
                       <div class="QAFileDes column flex-center" v-else>
@@ -578,7 +603,7 @@
                           <q-date
                             v-model="party.TimelineFromDate"
                             @input="updateSubjectDateFrom"
-                            :options="dateAfterOrToday"
+                            :options="dateAfterOrSubjectDate"
                           />
                         </q-card-section>
                       </q-card>
@@ -608,7 +633,7 @@
                             landscape
                             v-model="party.TimelineToDate"
                             @input="updateSubjectDateTo"
-                            :options="dateAfterOrToday"
+                            :options="dateAfterOrSubjectDate"
                           />
                         </q-card-section>
                       </q-card>
@@ -1143,7 +1168,7 @@
                                                           val
                                                         )
                                                     "
-                                                    :options="dateAfterOrToday"
+                                                    :options="dateAfterOrSubjectDate"
                                                   />
                                                 </q-card-section>
                                               </q-card>
@@ -1196,7 +1221,7 @@
                                                           val
                                                         )
                                                     "
-                                                    :options="dateAfterOrToday"
+                                                    :options="dateAfterOrSubjectDate"
                                                   />
                                                 </q-card-section>
                                               </q-card>
@@ -1610,7 +1635,7 @@
                                               <q-date
                                                 v-model="DateActAccomplish"
                                                 @input="updateSubjectDate"
-                                                :options="dateBeforeOrToday"
+                                                :options="dateAfterOrSubjectDate"
                                               />
                                             </q-card-section>
                                           </q-card>
@@ -1905,14 +1930,24 @@ export default {
       }
     },
 
-    viewPDF(subjectFile) {
-      this.pdfUrl = "data:application/pdf;base64," + subjectFile;
-      this.pdfDisplayDialog = true;
-    },
+    viewPDF(subjectFile, subjectFileName) {
+      const cleanBase64 = subjectFile.replace(
+        /^data:application\/pdf;base64,/,
+        ""
+      );
 
-    closepdf() {
-      this.pdfDisplayDialog = false;
-      this.subjectFile = null;
+      const byteCharacters = atob(cleanBase64);
+      const byteNumbers = new Array(byteCharacters.length);
+
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: "application/pdf" });
+
+      this.pdfUrl = URL.createObjectURL(blob);
+      this.pdfDisplayDialog = true;
     },
 
     ///////////////////////////////////////ACTION ITEMS/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1927,16 +1962,17 @@ export default {
       this.showActionDatePickerTo = false;
     },
 
-    dateAfterOrToday(date) {
-      const today = new Date();
-      const selectedDate = new Date(date);
-      return (
-        selectedDate.getFullYear() > today.getFullYear() ||
-        (selectedDate.getFullYear() === today.getFullYear() &&
-          (selectedDate.getMonth() > today.getMonth() ||
-            (selectedDate.getMonth() === today.getMonth() &&
-              selectedDate.getDate() >= today.getDate())))
-      );
+    dateAfterOrSubjectDate (date) {
+      if (!this.IRQADetailss?.subjectDate) return true
+
+      const subjectDate = new Date(this.IRQADetailss.subjectDate)
+      const allowedDate = new Date(date)
+
+      // normalize dates (remove time)
+      subjectDate.setHours(0, 0, 0, 0)
+      allowedDate.setHours(0, 0, 0, 0)
+
+      return allowedDate >= subjectDate
     },
 
     editActionItem(IRNo) {
@@ -2227,17 +2263,6 @@ export default {
     updateSubjectDate(date) {
       this.DateActAccomplish = date.toISOString().split("T")[0];
       this.showActAccomDatePicker = false;
-    },
-
-    dateBeforeOrToday(date) {
-      const today = new Date();
-      const selectedDate = new Date(date);
-
-      // tanggalin ang time para sure na "date only" ang comparison
-      today.setHours(0, 0, 0, 0);
-      selectedDate.setHours(0, 0, 0, 0);
-
-      return selectedDate <= today;
     },
 
     onActAccomStatusCancel(){

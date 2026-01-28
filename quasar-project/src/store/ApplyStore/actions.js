@@ -115,8 +115,8 @@ export default {
         }
       }
 
-      const defaultModule = state.getListDefaultModule;
-      const combinedModules = [...defaultModule, ...getAccessModule];
+      // const defaultModule = state.getListDefaultModule;
+      const combinedModules = [...getAccessModule];
       commit("SET_MODULES", combinedModules);
 
       // Save the combined modules to localStorage
