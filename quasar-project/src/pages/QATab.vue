@@ -1756,6 +1756,12 @@ export default {
           align: "left",
           field: "subjectName",
         },
+        {
+          name: "topic",
+          label: "TOPIC",
+          align: "left",
+          field: "subjectTopic",
+        },
         // { name: "QA", label: "QA IN-CHARGE", align: "left", field: "id" },
         {
           name: "rcaStat",
@@ -1892,6 +1898,12 @@ export default {
           field: "subjectName",
         },
         {
+          name: "topic",
+          label: "TOPIC",
+          align: "left",
+          field: "subjectTopic",
+        },
+        {
           name: "riskGrading",
           label: "RISK GRADING",
           align: "left",
@@ -1926,6 +1938,12 @@ export default {
           label: "SUBJECT OF THE INCIDENT",
           align: "left",
           field: "subjectName",
+        },
+        {
+          name: "topic",
+          label: "TOPIC",
+          align: "left",
+          field: "subjectTopic",
         },
         {
           name: "deptInvolved",

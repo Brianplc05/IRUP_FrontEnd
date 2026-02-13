@@ -53,7 +53,7 @@
             flat
             icon="close"
             style="color: #166ecc; background-color: rgba(22, 110, 204, 0.1)"
-            @click="IRDialog = false"
+            @click="basic = false"
             v-close-popup
           />
         </q-card-section>
@@ -337,6 +337,28 @@
             </div>
           </q-card-section>
 
+          <q-card-section>
+            <div class="text-subtitle1 text-primary text-weight-bold q-mb-sm">
+              Topic
+            </div>
+            <div class="q-mb-sm" style="font-size: 15px; color: #737373">
+              <b>Short description of the Incident
+              </b>
+            </div>
+            <q-separator class="sepDesign" />
+
+            <div class="row q-col-gutter-md q-mx-xl">
+              <div class="col">
+                <q-input
+                  autogrow
+                  rounded
+                  outlined
+                  v-model="SubjectTopic"
+                  label="NOTE"
+                />
+              </div>
+            </div>
+          </q-card-section>
 
           <q-card-section>
             <div class="text-subtitle1 text-primary text-weight-bold q-mb-sm">
@@ -348,73 +370,115 @@
               incident.</b>
             </div>
 
-            <q-separator class="sepDesign" />
+            <q-item-section style="padding: 10px; border: 2px solid #d9d9d9">
+              <!-- HEADER -->
+              <q-item-section
+                class="q-mb-xs rounded-borders"
+                style="background-color: rgba(22, 110, 204, 0.1); border: 1px solid #166ecc;"
+              >
+                <div class="row items-center q-px-sm">
+                  <span class="text-primary text-weight-bold">
+                    Add Pdf File
+                  </span>
 
-            <div class="row q-col-gutter-md q-mx-xl">
-              <!-- QFile sa kaliwa -->
-              <div class="col">
-                <q-file
+                  <q-btn
+                    class="text-primary q-ml-auto"
+                    flat
+                    round
+                    dense
+                    icon="add"
+                    @click="addFileItem"
+                  />
+                </div>
+              </q-item-section>
+
+              <!-- FILE LIST -->
+              <div
+                v-for="(party, index) in fileparties"
+                :key="index"
+                class="row items-center q-mt-xs q-mb-sm q-px-sm"
+              >
+                <!-- FILE INPUT -->
+                <div class="col">
+                  <q-file
+                    rounded
+                    outlined
+                    bottom-slots
+                    counter
+                    v-model="party.SubjectFile"
+                    :label="party.SubjectFile ? party.SubjectFile.name : 'UPLOAD FILE'"
+                    accept="application/pdf"
+                    @update:model-value="validateFile"
+                    class="full-width"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="picture_as_pdf" color="primary" />
+                    </template>
+
+                    <template v-slot:append>
+                      <q-icon
+                        name="close"
+                        class="cursor-pointer"
+                        @click.stop.prevent="clearAddFile(index)"
+                      />
+                    </template>
+
+                    <template v-slot:hint>
+                      <p v-if="errorMessage" class="text-negative">
+                        {{ errorMessage }}
+                      </p>
+                      <p v-else class="text-positive">
+                        10 MB FILE ONLY
+                      </p>
+                    </template>
+                  </q-file>
+                </div>
+
+                <!-- VIEW ICON -->
+                <div class="q-ml-sm">
+                  <q-icon
+                    v-if="party.SubjectFile"
+                    name="visibility"
+                    class="cursor-pointer text-h4"
+                    color="primary"
+                    @click.stop="viewPDF(party.SubjectFile)"
+                  />
+                  <q-icon
+                    v-else
+                    name="disabled_visible"
+                    class="text-h4"
+                    color="primary"
+                  />
+                </div>
+
+                <!-- REMOVE BUTTON -->
+                <q-btn
                   rounded
                   outlined
-                  bottom-slots
-                  counter
-                  v-model="SubjectFile"
-                  :label="SubjectFile ? SubjectFile.name : 'UPLOAD FILE'"
-                  accept="application/pdf"
-                  @update:model-value="validateFile"
-                  class="full-width"
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="picture_as_pdf" color="primary" />
-                  </template>
-
-                  <template v-slot:append>
-                    <q-icon
-                      name="close"
-                      @click.stop.prevent="clearFile"
-                      class="cursor-pointer"
-                    />
-                  </template>
-
-                  <template v-slot:hint>
-                    <p v-if="errorMessage" class="text-negative">
-                      {{ errorMessage }}
-                    </p>
-                    <p class="text-positive" v-else>10 MB FILE ONLY</p>
-                  </template>
-                </q-file>
-              </div>
-
-              <!-- Icon sa kanan -->
-              <div style="margin-top: 10px">
-                <q-icon
-                  v-if="SubjectFile"
-                  name="visibility"
-                  @click.stop="viewPDF"
-                  class="cursor-pointer text-h4"
-                  color="primary"
-                />
-                <q-icon
-                  v-else
-                  name="disabled_visible"
-                  class="cursor-pointer text-h4"
-                  color="primary"
+                  color="negative"
+                  icon="remove_circle"
+                  size="xs"
+                  class="q-ml-sm"
+                  @click="removeFile(index)"
                 />
               </div>
 
+              <!-- PDF PREVIEW DIALOG -->
               <q-dialog v-model="pdfDisplayDialog">
                 <q-card style="width: 90vw; max-width: 1100px">
-                  <div class="bg-info text-white">
-                    <div class="IRND">UPLOADED PDF FILES</div>
+                  <div class="bg-info text-white q-pa-sm">
+                    <div class="text-h6">UPLOADED PDF FILE</div>
+
                     <q-btn
                       icon="close"
                       flat
                       round
                       dense
-                      @click="pdfDisplayDialog = false"
                       class="absolute-top-right"
+                      @click="pdfDisplayDialog = false"
                     />
                   </div>
+
                   <q-card-section>
                     <iframe
                       v-if="pdfUrl"
@@ -422,11 +486,11 @@
                       width="100%"
                       height="600px"
                       style="border: none"
-                    ></iframe>
+                    />
                   </q-card-section>
                 </q-card>
               </q-dialog>
-            </div>
+            </q-item-section>
           </q-card-section>
 
           <q-card-section>
@@ -754,47 +818,47 @@ export default {
     return {
       basic: false,
       form: false,
+      confirm: false,
+      loading: false,
       showDatePicker: false,
       showTimePicker: false,
-      confirm: false,
       showLoading: false,
       print: false,
       pdfdialog: false,
+      pdfDisplayDialog: false,
       maximizedToggle: false,
-      loading: false,
-      // disEmpDep: [],
-      disSubName: [],
-      // disSubCategory: [],
-      disDivision: [],
+      viewReportableList: false,
+      reportPdfPath: reportPdf,
+      pdfUrl: null,
+      errorMessage: null,
+      SubCategory: null,
+      SubjectCode: null,
       SubjectCatCode: " ",
       SubjectBriefDes: " ",
       DivisionCode: " ",
-      SubCategory: null,
-      SubjectCode: null,
       SubjectLoc: " ",
       SubjectDomain: " ",
-      SubjectDate: this.getToday(),
       SubjectTime: "",
+      SubjectTopic: "",
       SubjectNote: " ",
       SubjectCause: " ",
       SubjectResponse: " ",
-      SubjectFile: null,
-      errorMessage: null,
+      SubjectChilCode: " ",
+      SubjectDate: this.getToday(),
       IRNo: [],
       disAllRiskChild: [],
-      SubjectChilCode: " ",
-      datamatch: null,
-      pdfDisplayDialog: false,
-      pdfUrl: null,
-      maxFileSize: 10 * 1024 * 1024,
-      viewReportableList: false,
-      reportPdfPath: reportPdf
+      disSubName: [],
+      disDivision: [],
+      fileparties: [
+        {
+          SubjectFile: null,
+        },
+      ],
     };
   },
 
   computed: {
     ...mapGetters({
-      // getForm: "ApplyStore/getForm",
       getGoogleUser: "ApplyStore/getGoogleUser",
       loggedInUser: "ApplyStore/getUser",
       getIRForm: "ApplyStore/getIRForm",
@@ -803,13 +867,6 @@ export default {
       subjectcategory: "ApplyStore/subjectcategory",
       division: "ApplyStore/division",
     }),
-
-    // filteredSubjects() {
-    //   if (!this.SubCategory) return this.disSubName;
-    //   return (this.disSubName || []).filter(
-    //     (subject) => subject.subjectDomain === this.SubCategory
-    //   );
-    // },
 
     filteredRiskChildren() {
       try {
@@ -851,28 +908,6 @@ export default {
     },
   },
 
-  // watch: {
-  //   SubjectCode(newVal) {
-  //     if (newVal) {
-  //       const matchedItem = this.disSubCategory.find(
-  //         (item) => item.domainCode === newVal.subjectDomain
-  //       );
-  //       return (this.SubCategory = matchedItem.domainCode);
-  //     } else {
-  //       this.SubCategory = "";
-  //       this.SubjectBriefDes = "";
-  //     }
-  //   },
-
-  //   SubCategory(newVal) {
-  //     if (!newVal) {
-  //       this.DivisionCode = "";
-  //       this.SubjectBriefDes = "";
-  //       this.SubjectCode = "";
-  //     }
-  //   },
-  // },
-
   watch: {
     SubjectCode(newVal) {
       if (newVal) {
@@ -895,6 +930,13 @@ export default {
         this.pdfUrl = null;
       }
     },
+
+    pdfDisplayDialog (val) {
+      if (!val && this.pdfUrl) {
+        URL.revokeObjectURL(this.pdfUrl)
+        this.pdfUrl = null
+      }
+    }
   },
 
   created() {
@@ -907,93 +949,13 @@ export default {
       },
     };
 
-    // this.getED();
     this.getSN();
-    // this.getSC();
     this.getRC();
     this.getDisivion();
     this.$store.dispatch("ApplyStore/initAuth");
   },
 
   methods: {
-    ///////////////////////////////////////////////////////////////////////////////THE PROCESS////////////////////////////////////////////////////////////////////////////////////////////
-
-    handleFormSubmit() {
-      try {
-        this.confirm = true;
-      } catch (error) {
-        console.error("Error inserting data:", error);
-      }
-    },
-
-    async SubmitForm() {
-      try {
-        if (!this.validateForm()) {
-          this.$q.notify({
-            color: "negative",
-            position: "top",
-            message: "REQUIRED ALL FIELDS",
-            icon: "report_problem",
-            iconColor: "white",
-            timeout: 1000,
-            progress: true,
-          });
-          return;
-        }
-
-        this.showLoading = true;
-        await this.addInc(); // important
-        this.confirm = false;
-
-        setTimeout(() => {
-          this.showLoading = false;
-          this.clearForm();
-          this.print = true;
-        }, 1000);
-
-        this.$q.notify({
-          color: "positive",
-          position: "top",
-          message: "SUCCESSFULLY SENT THE REPORT TO THE QUALITY OFFICER",
-          icon: "check_circle",
-          iconColor: "white",
-          timeout: 3000,
-          progress: true,
-        });
-
-      } catch (error) {
-        this.showLoading = false;
-        console.error("Error inserting data:", error);
-      }
-    },
-
-
-    async downloadPDF() {
-      try {
-        await this.generatePDF();
-        this.print = false;
-        this.pdfdialog = true;
-      } catch (error) {
-        console.error(error);
-      }
-    },
-
-    downloadPDForm() {
-      const pdfDef = this.getPdfDefinition();
-      const pdfDocGenerator = pdfMake.createPdf(pdfDef);
-      pdfDocGenerator.download("Incident_Report.pdf");
-    },
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // async getED() {
-    //   try {
-    //     await this.$store.dispatch("ApplyStore/disEmDept");
-    //     this.disEmpDep = this.getForm;
-    //   } catch (error) {
-    //     console.error("Error Displaying Data:", error);
-    //   }
-    // },
 
     async getSN() {
       try {
@@ -1003,16 +965,6 @@ export default {
         console.error("Error Displaying Data:", error);
       }
     },
-
-    // async getSC() {
-    //   try {
-    //     await this.$store.dispatch("ApplyStore/disSubCategory");
-    //     console.log(this.subjectcategory)
-    //     this.disSubCategory = this.subjectcategory;
-    //   } catch (error) {
-    //     console.error("Error Displaying Data:", error);
-    //   }
-    // },
 
     async getDisivion() {
       try {
@@ -1032,66 +984,7 @@ export default {
       }
     },
 
-    // FilterCategory(val, update) {
-    //   if (val === "") {
-    //     update(() => {
-    //       this.disSubCategory = this.subjectcategory;
-    //     });
-    //     return;
-    //   }
-
-    //   update(() => {
-    //     const needle = val.toLowerCase();
-    //     this.disSubCategory = this.subjectcategory.filter((option) => {
-    //       return option.RiskDomain.toLowerCase().indexOf(needle) > -1;
-    //     });
-    //   });
-    // },
-
-    // FilterSubIncident(val, update) {
-    //   if (val === "") {
-    //     update(() => {
-    //       this.disSubName = this.subjectname;
-    //     });
-    //     return;
-    //   }
-
-    //   update(() => {
-    //     const needle = val.toLowerCase();
-    //     this.disSubName = this.subjectname.filter((option) => {
-    //       return option.SubjectName.toLowerCase().indexOf(needle) > -1;
-    //     });
-    //   });
-    // },
-
-    validateFile(file) {
-      if (!file) return;
-
-      if (file.type !== "application/pdf") {
-        this.errorMessage = "Please upload a valid PDF file.";
-        this.SubjectFile = null;
-        this.pdfUrl = null;
-      } else if (file.size > this.maxFileSize) {
-        this.errorMessage = "File size exceeds 10MB limit.";
-        this.SubjectFile = null;
-        this.pdfUrl = null;
-      } else {
-        this.errorMessage = null;
-        this.pdfUrl = URL.createObjectURL(file);
-      }
-    },
-
-    viewPDF() {
-      if (this.SubjectFile) {
-        this.pdfDisplayDialog = true;
-      }
-    },
-
-    clearFile() {
-      this.SubjectFile = null;
-      this.errorMessage = null;
-      this.pdfUrl = null;
-    },
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     FilterSubName(val, update) {
       if (val === "") {
@@ -1114,21 +1007,6 @@ export default {
       return today.toISOString().split("T")[0]; // format: YYYY-MM-DD
     },
 
-
-    // getCurrentTime12h() {
-    //   const now = new Date();
-    //   let h = now.getHours();
-    //   const m = now.getMinutes().toString().padStart(2, "0");
-    //   const ampm = h >= 12 ? "PM" : "AM";
-    //   h = h % 12 || 12;
-    //   return `${h}:${m} ${ampm}`;
-    // },
-
-    // onTimePicked(time) {
-    //   this.SubjectTime = time;
-    //   this.showTimePicker = false;
-    // },
-
     updateSubjectDate(date) {
       // No need to format — q-date already gives YYYY-MM-DD
       this.SubjectDate = date;
@@ -1148,6 +1026,189 @@ export default {
       );
     },
 
+    addFileItem () {
+      this.fileparties.push({
+        SubjectFile: null
+      })
+    },
+
+    removeFile (index) {
+      this.fileparties.splice(index, 1)
+    },
+
+    clearAddFile (index) {
+      this.fileparties[index].SubjectFile = null
+      this.errorMessage = null
+    },
+
+    validateFile (file) {
+      if (!file) return
+      const maxSize = 10 * 1024 * 1024 // 10MB
+
+      if (file.size > maxSize) {
+        this.errorMessage = 'File size exceeds 10MB'
+        return
+      }
+
+      if (file.type !== 'application/pdf') {
+        this.errorMessage = 'PDF files only'
+        return
+      }
+      this.errorMessage = null
+    },
+
+    viewPDF (file) {
+      if (!file) return
+      this.pdfUrl = URL.createObjectURL(file)
+      this.pdfDisplayDialog = true
+    },
+
+
+    ///////////////////////////////////////////////////////////////////////////////THE PROCESS////////////////////////////////////////////////////////////////////////////////////////////
+
+    handleFormSubmit () {
+      const isValid = this.validateForm()
+
+      if (!isValid) {
+        this.$q.notify({
+          color: 'negative',
+          position: 'top',
+          message: 'REQUIRED ALL FIELDS',
+          icon: 'report_problem',
+          timeout: 1000
+        })
+        return
+      }
+
+      this.confirm = true
+    },
+
+    validateForm () {
+      console.log("validateForm: ", {
+        SubjectCode: this.SubjectCode.subjectCode,
+        SubjectChilCode: this.SubjectChilCode.subjectChilCode,
+        SubjectLoc: this.SubjectLoc,
+        DivisionCode: this.DivisionCode,
+        SubjectDate: this.SubjectDate,
+        SubjectTime: this.SubjectTime,
+        SubjectTopic: this.SubjectTopic,
+        SubjectNote: this.SubjectNote,
+        SubjectCause: this.SubjectCause,
+        SubjectResponse: this.SubjectResponse
+      })
+
+      return (
+        this.SubjectCode.subjectCode &&
+        this.SubjectChilCode.subjectChilCode &&
+        this.SubjectLoc &&
+        this.DivisionCode &&
+        this.SubjectDate &&
+        this.SubjectTime &&
+        this.SubjectTopic &&
+        this.SubjectNote &&
+        this.SubjectCause &&
+        this.SubjectResponse
+      )
+    },
+
+
+    async SubmitForm() {
+      try {
+        this.showLoading = true;
+        await this.addInc(); // important
+        this.confirm = false;
+
+        setTimeout(() => {
+          this.showLoading = false;
+          this.clearForm();
+          this.print = true;
+        }, 2000);
+
+        this.$q.notify({
+          color: "positive",
+          position: "top",
+          message: "SUCCESSFULLY SENT THE REPORT TO THE QUALITY OFFICER",
+          icon: "check_circle",
+          iconColor: "white",
+          timeout: 3000,
+          progress: true,
+        });
+
+      } catch (error) {
+        this.showLoading = false;
+        console.error("Error inserting data:", error);
+      }
+    },
+
+    async addInc() {
+      try {
+        const formData = {
+          EmployeeCode: this.employeeCode,
+          DeptCode: this.deptCode,
+          DivisionCode: this.DivisionCode,
+          SubjectCode: this.SubjectCode.subjectCode,
+          SubjectChilCode: this.SubjectChilCode.subjectChilCode,
+          SubjectDate: this.SubjectDate,
+          SubjectTime: this.SubjectTime,
+          SubjectTopic: this.SubjectTopic,
+          SubjectLoc: this.SubjectLoc,
+          SubjectNote: this.SubjectNote,
+          SubjectCause: this.SubjectCause,
+          SubjectResponse: this.SubjectResponse,
+          SubjectFile: this.fileparties.map((party) => party.SubjectFile),
+        };
+
+        // Conditionally add SubjectBriefDes if SubjectCode is "others"
+        if (this.SubjectCode.subjectCode === "others") {
+          formData.SubjectBriefDes = this.SubjectBriefDes;
+          formData.SubjectCode = this.SubjectCode.subjectCode;
+        }
+
+        console.log("FORMDATA: ", formData)
+
+        const response = await this.$store.dispatch(
+          "ApplyStore/addIReport",
+          formData
+        );
+      } catch (error) {
+        console.error("Error inserting data:", error);
+      }
+    },
+
+    clearForm() {
+      this.SubjectCode = "";
+      this.SubjectBriefDes = "";
+      this.SubjectSpecificExam = null;
+      this.SubCategory = "";
+      this.SubjectDate = "";
+      this.SubjectTime = "";
+      this.SubjectLoc = "";
+      this.SubjectTopic = "";
+      this.SubjectNote = "";
+      this.SubjectCause = " ";
+      this.SubjectResponse = " ";
+      this.fileparties.splice(0);
+      this.SubjectFile = null;
+    },
+
+    async downloadPDF() {
+      try {
+        await this.generatePDF();
+        this.print = false;
+        this.pdfdialog = true;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    downloadPDForm() {
+      const pdfDef = this.getPdfDefinition();
+      const pdfDocGenerator = pdfMake.createPdf(pdfDef);
+      pdfDocGenerator.download("Incident_Report.pdf");
+    },
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     printClose() {
       this.form = false;
       this.print = false;
@@ -1163,67 +1224,10 @@ export default {
       this.clearForm();
     },
 
-    async addInc() {
-      try {
-        const formData = {
-          EmployeeCode: this.employeeCode,
-          DeptCode: this.deptCode,
-          DivisionCode: this.DivisionCode,
-          SubjectCode: this.SubjectCode.subjectCode,
-          SubjectChilCode: this.SubjectChilCode.subjectChilCode,
-          SubjectDate: this.SubjectDate,
-          SubjectTime: this.SubjectTime,
-          SubjectLoc: this.SubjectLoc,
-          SubjectNote: this.SubjectNote,
-          SubjectCause: this.SubjectCause,
-          SubjectResponse: this.SubjectResponse,
-          SubjectFile: this.SubjectFile,
-        };
-
-        // Conditionally add SubjectBriefDes if SubjectCode is "others"
-        if (this.SubjectCode.subjectCode === "others") {
-          formData.SubjectBriefDes = this.SubjectBriefDes;
-          formData.SubjectCode = this.SubjectCode.subjectCode;
-        }
-
-        const response = await this.$store.dispatch(
-          "ApplyStore/addIReport",
-          formData
-        );
-
-
-      } catch (error) {
-        console.error("Error inserting data:", error);
-      }
-    },
-
-    validateForm() {
-      const requiredFields = [
-        this.SubjectLoc,
-        this.SubjectDate,
-        this.SubjectTime,
-        this.SubjectNote,
-        this.SubjectCause,
-        this.SubjectResponse
-      ];
-
-      return requiredFields.every(
-        field => field && field.toString().trim() !== ""
-      );
-    },
-
-
-    clearForm() {
-      this.SubjectCode = "";
-      this.SubjectBriefDes = "";
-      this.SubjectSpecificExam = null;
-      this.SubCategory = "";
-      this.SubjectDate = "";
-      this.SubjectTime = "";
-      this.SubjectLoc = "";
-      this.SubjectNote = "";
-      this.SubjectCause = " ";
-      this.SubjectResponse = " ";
+    clearFile() {
+      this.SubjectFile = null;
+      this.errorMessage = null;
+      this.pdfUrl = null;
     },
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1275,6 +1279,7 @@ export default {
     },
 
     getPdfDefinition() {
+
     if (!this.getIRForm) {
       console.warn("getIRForm is not loaded yet");
       return;
@@ -2000,5 +2005,12 @@ export default {
   color: #ffc107; /* optional accent color */
 }
 
-
+.QARTGTestlist {
+  font-weight: bold;
+  display: flex;
+  color: #003566;
+  font-size: 15px;
+  justify-content: center;
+  margin-left: 10px;
+}
 </style>

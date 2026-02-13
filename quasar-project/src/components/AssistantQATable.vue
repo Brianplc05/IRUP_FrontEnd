@@ -38,7 +38,18 @@
                 </q-btn>
               </q-card-section>
 
-              <q-card-section style="border: 2px solid #6b7c93">
+              <q-card-section
+                v-if="isLoadingIRDetails"
+                class="column flex-center q-pa-xl"
+                style="height: 400px"
+              >
+                <q-spinner size="60px" color="primary" />
+                <div class="q-mt-md text-primary text-weight-medium">
+                  Loading incident details...
+                </div>
+              </q-card-section>
+
+              <q-card-section style="border: 2px solid #6b7c93" v-else>
                 <div class="row q-col-gutter-md q-mx-lg">
                   <div class="col-6">
                     <div
@@ -105,6 +116,7 @@
                             <q-input
                               rounded
                               outlined
+                              autogrow
                               :model-value="IRAQADetailss.subjectBriefDes"
                               disable
                             />
@@ -187,52 +199,69 @@
                       <q-separator class="formseparatorYellow" />
 
                       <div
-                        v-if="
-                          IRAQADetailss.subjectFile &&
-                          IRAQADetailss.subjectFile.length
-                        "
-                        class="QAFileDes column flex-center"
+                        class="text-red text-subtitle2 text-weight-bold q-mb-sx  q-mx-xl"
+                      >
+                        Number of file: {{  IRAQADetailss.totalAttachments }}
+                      </div>
+
+                      <div
+                        v-if="IRAQADetailss.files && IRAQADetailss.files.length"
+                        class="QAFileDes row flex-start q-mx-xl"
+                        style=" border-radius: 25px;"
                       >
                         <div
+                          v-for="(file, index) in IRAQADetailss.files"
+                          :key="index"
                           style="
                             display: flex;
-                            align-items: center;
-                            gap: 8px;
+                            align-items: start;
+                            gap: 5px;
                             background: #e3f2fd;
                             padding: 8px;
                             border-radius: 4px;
+                            margin-bottom: 5px;
+                            cursor: pointer;
                           "
-                          @click.stop="
-                            viewPDF(
-                              IRAQADetailss.subjectFile,
-                              IRAQADetailss.subjectFileName
-                            )
-                          "
+                          @click.stop="viewPDF(file.subjectFile, file.subjectFileName)"
                         >
-                          <q-icon
-                            name="description"
-                            class="text-h3"
-                            color="red"
-                          ></q-icon>
+                          <div
+                            style="
+                              display: flex;
+                              align-items: center;
+                              gap: 10px;
+                              background-color: #f5f5f5;
+                              padding: 8px 12px;
+                              border-radius: 6px;
+                              border: 1px solid #dcdcdc;
+                              width: fit-content;
+                            "
+                          >
+                            <q-icon
+                              name="description"
+                              size="24px"
+                              color="grey-7"
+                            ></q-icon>
 
-                          <div class="text-dark text-left text-subtitle1">
-                            {{ IRAQADetailss.subjectFileName }}
+                            <div class="text-dark text-subtitle2">
+                              {{ file.subjectFileName }}
+                            </div>
                           </div>
                         </div>
 
                         <q-dialog v-model="pdfDisplayDialog">
                           <q-card style="width: 90vw; max-width: 1100px">
                             <div class="bg-info text-white">
-                              <div class="IRND">UPLOADED PDF FILES</div>
-                              <q-btn
-                                icon="close"
-                                flat
-                                round
-                                dense
-                                @click="pdfDisplayDialog = false"
-                                class="absolute-top-right"
+                              <div class="text-h6 q-mx-md">UPLOADED PDF FILES</div>
+                                <q-btn
+                                  icon="close"
+                                  flat
+                                  round
+                                  dense
+                                  @click="pdfDisplayDialog = false"
+                                  class="absolute-top-right"
                               />
                             </div>
+
                             <q-card-section>
                               <iframe
                                 v-if="pdfUrl"
@@ -246,10 +275,9 @@
                         </q-dialog>
                       </div>
 
-                      <div class="QAFileDes column flex-center" v-else>
+                      <div class="QAFileDes column flex-center q-mx-xl" v-else style=" border-radius: 25px;">
                         <div
-                          class="text-subtitle1 items-center text-weight-bold text-dark"
-                        >
+                          class="text-subtitle1 items-center text-weight-bold text-dark">
                           <i>~ NO FILE ATTACHED ~</i>
                         </div>
                       </div>
@@ -384,6 +412,7 @@ export default {
       IRAQADetailss: [],
       disAllDivCode: [],
       IRDialog: false,
+      isLoadingIRDetails: false,
       IrNo: "",
       pdfDisplayDialog: false,
       pdfUrl: null,
@@ -449,18 +478,39 @@ export default {
     async viewIReport(IRNo) {
       try {
         this.IRDialog = true;
+        this.isLoadingIRDetails = true
+
         const data = {
           iRNo: IRNo,
         };
+        this.selectedIrNo = IRNo;
         const response = await this.$store.dispatch("ApplyStore/disAQA", data);
         this.IRAQADetailss = this.getAssistantQAForm;
       } catch (error) {
         console.error("Error inserting data:", error);
+      } finally {
+        // Stop loading regardless of success or error
+        this.isLoadingIRDetails = false
       }
     },
 
-    viewPDF(subjectFile) {
-      this.pdfUrl = "data:application/pdf;base64," + subjectFile;
+    viewPDF(subjectFile, subjectFileName) {
+      const cleanBase64 = subjectFile.replace(
+        /^data:application\/pdf;base64,/,
+        ""
+      );
+
+      const byteCharacters = atob(cleanBase64);
+      const byteNumbers = new Array(byteCharacters.length);
+
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: "application/pdf" });
+
+      this.pdfUrl = URL.createObjectURL(blob);
       this.pdfDisplayDialog = true;
     },
 

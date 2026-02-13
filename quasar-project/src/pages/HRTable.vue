@@ -43,7 +43,27 @@
           class="q-mt-sm tab-panels-bordered rounded-borders bg-warning shadow-4"
         >
           <q-tab-panel name="reportable">
-            <div class="row items-center justify-end q-mb-md">
+            <div class="row items-center justify-between q-mb-md">
+              <q-btn-dropdown
+                rounded
+                label="FILTER AREA"
+                menu-anchor="top right"
+                style="width: 25ch"
+                class="bg-info text-white q-mr-sm"
+              >
+                <q-list>
+                  <q-item
+                    v-for="option in areaDivValue"
+                    :key="option.value"
+                    clickable
+                    @click="selectArea(option)"
+                  >
+
+                    <q-item-section>{{ option.label }}</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-btn-dropdown>
+
               <q-input v-model="searchRepQuery" label="SEARCH " dense outlined rounded>
                   <template v-slot:append>
                     <q-icon name="search" color="info" />
@@ -62,7 +82,27 @@
           </q-tab-panel>
 
           <q-tab-panel name="hrReferral">
-            <div class="row items-center justify-end q-mb-md">
+            <div class="row items-center justify-between q-mb-md">
+                <q-btn-dropdown
+                rounded
+                label="FILTER AREA"
+                menu-anchor="top right"
+                style="width: 25ch"
+                class="bg-info text-white q-mr-sm"
+              >
+                <q-list>
+                  <q-item
+                    v-for="option in areaDivValue"
+                    :key="option.value"
+                    clickable
+                    @click="selectArea(option)"
+                  >
+
+                    <q-item-section>{{ option.label }}</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-btn-dropdown>
+
               <q-input v-model="searchRefQuery" label="SEARCH " dense outlined rounded>
                   <template v-slot:append>
                     <q-icon name="search" color="info" />
@@ -137,6 +177,12 @@ export default {
           align: "left",
           field: "subjectName",
         },
+        {
+          name: "topic",
+          label: "TOPIC",
+          align: "left",
+          field: "subjectTopic",
+        },
         { name: "QA", label: "QA IN-CHARGE", align: "left", field: "id" },
         {
           name: "hrReferral",
@@ -144,6 +190,12 @@ export default {
           align: "left",
           field: "hrReferral,",
         },
+        {
+          name: "divisionCode",
+          label: "AREA",
+          align: "left",
+          field: "divisionCode"
+        }
         // { name: 'qaref', label: 'HR EVALUATION', align: 'left', field: 'QAReferral,' },
         // {
         //   name: "financialLia",
@@ -182,6 +234,18 @@ export default {
           label: "SUBJECT OF THE INCIDENT",
           align: "left",
           field: "subjectName",
+        },
+        {
+          name: "topic",
+          label: "TOPIC",
+          align: "left",
+          field: "subjectTopic",
+        },
+        {
+          name: "divisionCode",
+          label: "AREA",
+          align: "left",
+          field: "divisionCode"
         }
       ],
 
@@ -205,6 +269,8 @@ export default {
         { label: "DISMISSAL", value: "DISMISSAL" },
       ],
 
+
+
       disCod: [],
       disSpeOF: [],
       date: new Date(),
@@ -214,7 +280,14 @@ export default {
       PenaltiesCode: null,
 
       searchRepQuery: "",
+      selectedAreaValue: null,
       selectedRepStatus: null,
+
+      areaDivValue: [
+        { label: "ACADEME", value: "ACD-01" },
+        { label: "HOSPITAL", value: "HST-02" },
+        { label: "ADMIN", value: "ADM-03" },
+      ]
     };
   },
 
@@ -227,7 +300,7 @@ export default {
     }),
 
     filteredRefDisAll() {
-      const { disRefAll, selectedStatus, searchRefQuery } = this;
+      const { disRefAll, selectedStatus, selectedAreaValue, searchRefQuery } = this;
       let filteredData = [...disRefAll];
       if (selectedStatus && typeof selectedStatus === "object") {
         const { value: statusValue } = selectedStatus;
@@ -235,6 +308,14 @@ export default {
           (item) => item.HRStatus === statusValue
         );
       }
+
+      if (selectedAreaValue && typeof selectedAreaValue === "object") {
+        const { value: areaValue } = selectedAreaValue;
+        filteredData = filteredData.filter(
+          item => item.divisionCode === areaValue
+        );
+      }
+
       if (searchRefQuery && typeof searchRefQuery === "string") {
         const query = searchRefQuery.toLowerCase();
         filteredData = filteredData.filter((item) =>
@@ -248,7 +329,7 @@ export default {
     },
 
     filteredRepDisAll() {
-      const { disRepAll, selectedRepStatus, searchRepQuery } = this;
+      const { disRepAll, selectedRepStatus, selectedAreaValue, searchRepQuery } = this;
       let filteredData = [...disRepAll];
       if (selectedRepStatus && typeof selectedRepStatus === "object") {
         const { value: statusValue } = selectedRepStatus;
@@ -256,6 +337,15 @@ export default {
           (item) => item.HRStatus === statusValue
         );
       }
+
+      if (selectedAreaValue && typeof selectedAreaValue === "object") {
+        const { value: areaValue } = selectedAreaValue;
+        filteredData = filteredData.filter(
+          item => item.divisionCode === areaValue
+        );
+      }
+
+
       if (searchRepQuery && typeof searchRepQuery === "string") {
         const query = searchRepQuery.toLowerCase();
         filteredData = filteredData.filter((item) =>
@@ -341,6 +431,10 @@ export default {
 
     async selectStatus(option) {
       this.selectedStatus = option;
+    },
+
+    selectArea(option) {
+      this.selectedAreaValue = option;
     },
   },
 };

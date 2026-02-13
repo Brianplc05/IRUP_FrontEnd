@@ -204,6 +204,12 @@ export default {
           align: "left",
           field: "subjectName",
         },
+        {
+          name: "topic",
+          label: "TOPIC",
+          align: "left",
+          field: "subjectTopic",
+        },
         { name: "riskGrading", label: "RISK GRADING", align: "left", field: "id" },
         { name: "rcaform", label: "RCA FORM", align: "left", field: "id" },
         {
@@ -232,6 +238,12 @@ export default {
           label: "SUBJECT OF THE INCIDENT",
           align: "left",
           field: "subjectName",
+        },
+        {
+          name: "topic",
+          label: "TOPIC",
+          align: "left",
+          field: "subjectTopic",
         },
         { name: "riskGrading", label: "RISK GRADING", align: "left", field: "id" },
         {
