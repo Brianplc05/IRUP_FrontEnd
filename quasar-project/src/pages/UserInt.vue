@@ -869,30 +869,17 @@ export default {
     }),
 
     filteredRiskChildren() {
-      try {
-        if (
-          !this.SubjectCode ||
-          !Array.isArray(this.disAllRiskChild)
-        ) {
-          return [];
-        }
-
-        return this.disAllRiskChild.filter(
-          child => child.subjectCode === this.SubjectCode.subjectCode
-        );
-      } catch (error) {
-        console.error("filteredRiskChildren error:", error);
+      if (!this.SubjectCode || !Array.isArray(this.disAllRiskChild)) {
         return [];
       }
+
+      return this.disAllRiskChild.filter(
+        child => child.subjectCode === this.SubjectCode.subjectCode
+      );
     },
 
     shouldShowSpecificExamples() {
-      try {
-        return this.filteredRiskChildren.length > 0;
-      } catch (error) {
-        console.error("shouldShowSpecificExamples error:", error);
-        return false;
-      }
+      return this.filteredRiskChildren.length > 0;
     },
 
     selectedDescription() {

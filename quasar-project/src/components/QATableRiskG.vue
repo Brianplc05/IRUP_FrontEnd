@@ -2038,7 +2038,7 @@
               </q-card-section>
 
               <q-card-section>
-                <div class="row q-col-gutter-sm">
+                <div class="row q-col-gutter-md">
                   <div class="col-12 col-sm-3 q-ml-xl">
                     <div class="q-pa-sm" style="border: 2px solid #6b7c93">
                       <div
@@ -2129,7 +2129,7 @@
                       class="bg-white q-pa-sm"
                       style="border: 2px solid #6b7c93; border-radius: 20px"
                     >
-                      <div class="row q-col-gutter-xs q-pa-md">
+                      <div class="row q-col-gutter-xs q-pa-xs">
                         <div class="col-9">
                           <div
                             class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
@@ -2173,8 +2173,9 @@
                       </div>
 
                       <q-separator class="formseparatorYellow" />
+
                       <div
-                        class="q-pa-md shadow-2"
+                        class="q-pa-sm shadow-2"
                         v-for="(actionitems, index) in actionitemDetails"
                         :key="index"
                         style="
@@ -2186,7 +2187,7 @@
                         <div class="row justify-between items-start q-mb-sm">
                           <!-- LEFT SIDE -->
                           <div class="column items-start">
-                            <div class="q-pa-sm">
+                            <div class="q-pa-xs">
                               <div class="text-primary text-center text-subtitle1 text-weight-bold q-mb-xs">
                                 Action Item Status
                               </div>
@@ -2213,7 +2214,7 @@
 
                           <!-- RIGHT SIDE -->
                           <div class="column items-start">
-                            <div class="q-pa-sm">
+                            <div class="q-pa-xs">
                               <div
                                 class="text-primary text-center text-subtitle1 text-weight-bold q-mb-xs"
                               >
@@ -2303,7 +2304,7 @@
 
                         <q-separator class="formseparatorBlue" />
 
-                        <div class="row q-col-gutter-md items-start q-pa-md">
+                        <div class="row q-col-gutter-md items-start q-pa-xs">
                           <div class="col-8">
                             <div class="text-weight-bold text-primary q-mb-xs">
                               Action Item Notes
@@ -2354,7 +2355,7 @@
                           </div>
                         </div>
 
-                        <div class="q-pa-md">
+                        <div class="q-pa-sm">
                           <q-list bordered class="rounded-borders shadow-4">
                             <q-expansion-item
                               expand-icon-toggle
