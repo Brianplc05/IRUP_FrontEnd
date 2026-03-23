@@ -269,8 +269,6 @@ export default {
         { label: "DISMISSAL", value: "DISMISSAL" },
       ],
 
-
-
       disCod: [],
       disSpeOF: [],
       date: new Date(),
@@ -368,9 +366,26 @@ export default {
   mounted() {
     setTimeout(() => {
       this.showTable = true;
-      this.disAll;
+      this.disRefAll;
+      this.disRepAll;
       this.loading = false;
-    }, 3000); // Simulating 2 seconds of loading time
+    }, 3000);
+  },
+
+  mounted() {
+    // 🔹 Initial delay (3 seconds)
+    setTimeout(() => {
+      this.showTable = true;
+      this.disRefAll;
+      this.disRepAll;
+      this.loading = false;
+    }, 3000);
+
+    // 🔹 Auto fetch every 60 seconds
+    this.interval = setInterval(() => {
+      this.getHR();
+      this.getForm();
+    }, 60000);
   },
 
   created() {

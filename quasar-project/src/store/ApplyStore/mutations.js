@@ -64,6 +64,36 @@ export default {
   GET_CountSub(state, getCountSubs) {
     state.getCountSubs = getCountSubs;
   },
+
+  GET_COUNTREP(state, getCountRep){
+    state.getCountRep = getCountRep;
+  },
+
+  GET_COUNTPAR(state, getCountPar){
+    state.getCountPar = getCountPar;
+  },
+
+  GET_COUNTREPTAT(state, getCountRepTaT){
+    state.getCountRepTaT = getCountRepTaT;
+  },
+
+  GET_COUNTRCATAT(state, getCountRCATaT){
+    state.getCountRCATaT = getCountRCATaT;
+  },
+
+  GET_COUNTACTIONTAT(state, getCountActionTaT){
+    state.getCountActionTaT = getCountActionTaT;
+  },
+
+  GET_AVERAGERCA(state, getCountAveRCA){
+    state.getCountAveRCA = getCountAveRCA;
+  },
+
+  GET_AVERAGEACTION(state, getCountAveAction){
+    state.getCountAveAction = getCountAveAction;
+  },
+
+
   ////////////////////////////////////////////
 
   ///////// IRFORM //////////////

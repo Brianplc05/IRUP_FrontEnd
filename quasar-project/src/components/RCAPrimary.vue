@@ -752,19 +752,12 @@
                       </div>
 
                       <div class="q-mx-xl">
-                        <div
-                          class="text-primary text-weight-bold"
-                          style="font-size: 15px"
-                        >
-                          Problem statement
-                        </div>
-
                         <q-input
                           autogrow
                           rounded
                           outlined
                           v-model="ManProbStatement"
-                          label="Problem statement"
+                          label="PROBLEM STATEMENT"
                         />
                       </div>
 
@@ -807,11 +800,17 @@
                             class="q-ma-sm"
                             autogrow
                             rounded
+                            label=""
                             outlined
                             v-model="item.Manwhy"
-                            label="Why?"
+                            :rules="ManProbStatement ? [val => !!val || 'Required field'] : []"
                             style="width: 100%"
-                          />
+                          >
+                            <template v-slot:label>
+                              WHY?
+                              <span v-if="ManProbStatement" class="text-red">*</span>
+                            </template>
+                          </q-input>
 
                           <q-btn
                             @click="removeManpower(index)"
@@ -849,19 +848,12 @@
                       </div>
 
                       <div class="q-mx-xl">
-                        <div
-                          class="text-primary text-weight-bold"
-                          style="font-size: 15px"
-                        >
-                          Problem statement
-                        </div>
-
                         <q-input
                           autogrow
                           rounded
                           outlined
                           v-model="MethodStatement"
-                          label="Problem statement"
+                          label="PROBLEM STATEMENT"
                         />
                       </div>
 
@@ -905,10 +897,16 @@
                             autogrow
                             rounded
                             outlined
+                            label
                             v-model="item.Methodwhy"
-                            label="Why?"
+                            :rules="MethodStatement ? [val => !!val || 'Required field'] : []"
                             style="width: 100%"
-                          />
+                          >
+                            <template v-slot:label>
+                              WHY?
+                              <span v-if="MethodStatement" class="text-red">*</span>
+                            </template>
+                          </q-input>
 
                           <q-btn
                             @click="removeMethod(index)"
@@ -946,19 +944,12 @@
                       </div>
 
                       <div class="q-mx-xl">
-                        <div
-                          class="text-primary text-weight-bold"
-                          style="font-size: 15px"
-                        >
-                          Problem statement
-                        </div>
-
                         <q-input
                           autogrow
                           rounded
                           outlined
                           v-model="MachineStatement"
-                          label="Problem statement"
+                          label="PROBLEM STATEMENT"
                         />
                       </div>
 
@@ -1001,11 +992,17 @@
                             class="q-ma-sm"
                             autogrow
                             rounded
+                            label=""
                             outlined
                             v-model="item.Machinewhy"
-                            label="Why?"
+                            :rules="MachineStatement ? [val => !!val || 'Required field'] : []"
                             style="width: 100%"
-                          />
+                          >
+                            <template v-slot:label>
+                              WHY?
+                              <span v-if="MachineStatement" class="text-red">*</span>
+                            </template>
+                          </q-input>
 
                           <q-btn
                             @click="removeMachine(index)"
@@ -1042,19 +1039,12 @@
                       </div>
 
                       <div class="q-mx-xl">
-                        <div
-                          class="text-primary text-weight-bold"
-                          style="font-size: 15px"
-                        >
-                          Problem statement
-                        </div>
-
                         <q-input
                           autogrow
                           rounded
                           outlined
                           v-model="MaterialStatement"
-                          label="Problem statement"
+                          label="PROBLEM STATEMENT"
                         />
                       </div>
 
@@ -1097,11 +1087,17 @@
                             class="q-ma-sm"
                             autogrow
                             rounded
+                            label=""
                             outlined
                             v-model="item.Materialwhy"
-                            label="Why?"
+                            :rules="MaterialStatement ? [val => !!val || 'Required field'] : []"
                             style="width: 100%"
-                          />
+                          >
+                            <template v-slot:label>
+                              WHY?
+                              <span v-if="MaterialStatement" class="text-red">*</span>
+                            </template>
+                          </q-input>
 
                           <q-btn
                             @click="removeMaterial(index)"
@@ -1139,19 +1135,12 @@
                       </div>
 
                       <div class="q-mx-xl">
-                        <div
-                          class="text-primary text-weight-bold"
-                          style="font-size: 15px"
-                        >
-                          Problem statement
-                        </div>
-
                         <q-input
                           autogrow
                           rounded
                           outlined
                           v-model="MeasurementStatement"
-                          label="Problem statement"
+                          label="PROBLEM STATEMENT"
                         />
                       </div>
 
@@ -1193,11 +1182,17 @@
                             class="q-ma-sm"
                             autogrow
                             rounded
+                            label=""
                             outlined
                             v-model="item.Measurementwhy"
-                            label="Why?"
+                            :rules="MeasurementStatement ? [val => !!val || 'Required field'] : []"
                             style="width: 100%"
-                          />
+                          >
+                            <template v-slot:label>
+                              WHY?
+                              <span v-if="MeasurementStatement" class="text-red">*</span>
+                            </template>
+                          </q-input>
 
                           <q-btn
                             @click="removeMeasurement(index)"
@@ -1230,23 +1225,16 @@
                         style="font-size: 15px"
                       >
                         This refers to the external factors that affect the
-                         <br> system including weather, geography, and regulation.
+                        <br> system including weather, geography, and regulation.
                       </div>
 
                       <div class="q-mx-xl">
-                        <div
-                          class="text-primary text-weight-bold"
-                          style="font-size: 15px"
-                        >
-                          Problem statement
-                        </div>
-
                         <q-input
                           autogrow
                           rounded
                           outlined
                           v-model="EnvironmentStatement"
-                          label="Problem statement"
+                          label="PROBLEM STATEMENT"
                         />
                       </div>
 
@@ -1289,11 +1277,17 @@
                             class="q-ma-sm"
                             autogrow
                             rounded
+                            label=""
                             outlined
                             v-model="item.Environmentwhy"
-                            label="Why?"
+                            :rules="EnvironmentStatement ? [val => !!val || 'Required field'] : []"
                             style="width: 100%"
-                          />
+                          >
+                            <template v-slot:label>
+                              WHY?
+                              <span v-if="EnvironmentStatement" class="text-red">*</span>
+                            </template>
+                          </q-input>
 
                           <q-btn
                             @click="removeEnvironment(index)"
@@ -1327,18 +1321,35 @@
                       identify the most critical underlying cause that requires corrective action to ensure the issue does not reoccur. </b>
                   </div>
 
-                  <q-select rounded outlined  class="q-mt-md" v-model="domainActionable" :options="domain" label="Domain" style="width: 100%"></q-select>
+                  <q-select
+                    rounded outlined
+                    class="q-mt-md"
+                    v-model="domainActionable"
+                    :options="domain"
+                    label-slot
+                    style="width: 100%">
+
+                    <template v-slot:label>
+                      DOMAIN
+                      <span class="text-red">*</span>
+                    </template>
+                  </q-select>
 
                   <q-input
                     v-model="actionableRoot"
                     rounded
                     outlined
-                    label="Summary Analysis"
+                    label-slot
                     type="textarea"
                     class="q-mt-md"
                     autofocus
                     style="width: 100%"
-                  />
+                  >
+                    <template v-slot:label>
+                      SUMMARY ANALYSIS
+                      <span class="text-red">*</span>
+                    </template>
+                  </q-input>
                 </div>
               </q-card-section>
 
@@ -1420,8 +1431,13 @@
                           rounded
                           outlined
                           v-model="partycorrective.CorrectiveAction"
-                          label="Corrective Action:"
-                        />
+                          label-slot
+                        >
+                          <template v-slot:label>
+                              CORRECTIVE ACTION
+                            <span class="text-red">*</span>
+                          </template>
+                        </q-input>
                       </div>
 
                       <!-- Timeline From -->
@@ -1431,9 +1447,14 @@
                           rounded
                           outlined
                           clearable
-                          label="Timeline From:"
+                          label-slot
                           @click="showcorDatePickerfrom = true"
                         >
+                          <template v-slot:label>
+                              TIMELINE FROM
+                            <span class="text-red">*</span>
+                          </template>
+
                           <template v-slot:append>
                             <q-icon
                               name="event"
@@ -1463,9 +1484,14 @@
                           rounded
                           outlined
                           clearable
-                          label="Timeline To:"
+                          label-slot
                           @click="showcorDatePickerto = true"
                         >
+                          <template v-slot:label>
+                              TIMELINE TO
+                            <span class="text-red">*</span>
+                          </template>
+
                           <template v-slot:append>
                             <q-icon
                               name="event"
@@ -1498,12 +1524,17 @@
                           v-model="partycorrective.AccountablePer"
                           :options="disEmployeeName"
                           @filter="FilterFn"
-                          label="Accountable Person/s"
+                          label-slot
                           emit-value
                           map-options
                           :option-value="(option) => option.employeeCode"
                           :option-label="(option) => option.fullName"
                         >
+                          <template v-slot:label>
+                              ACCOUNTABLE PERSON/S
+                            <span class="text-red">*</span>
+                          </template>
+
                           <template v-slot:no-option>
                             <q-item>
                               <q-item-section class="text-grey"
@@ -1737,13 +1768,18 @@
                       :key="index"
                   >
                     <div class="col-11">
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          v-model="partyrisk.RiskItems"
-                          label="Risk Items:"
-                        />
+                      <q-input
+                        autogrow
+                        rounded
+                        outlined
+                        v-model="partyrisk.RiskItems"
+                        label-slot
+                      >
+                        <template v-slot:label>
+                            RISK ITEMS
+                          <span class="text-red">*</span>
+                        </template>
+                      </q-input>
                     </div>
 
                     <div class="col-auto">

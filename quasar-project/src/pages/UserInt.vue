@@ -158,12 +158,17 @@
                       v-model="SubjectCode"
                       :options="disSubName"
                       @filter="FilterSubName"
-                      label="REPORTABLE INCIDENT"
+                      label-slot
                       emit-value
                       map-options
                       :option-value="(option) => option"
                       :option-label="(option) => option.subjectName"
-                    />
+                    >
+                      <template v-slot:label>
+                        REPORTABLE INCIDENT NAME
+                        <span class="text-red">*</span>
+                      </template>
+                    </q-select>
                   </div>
 
                   <div class="col-auto">
@@ -222,23 +227,33 @@
                   rounded
                   outlined
                   clearable
-                  label="PARTICULAR INCIDENT"
+                  class="q-mt-sm"
+                  label-slot
                   v-model="SubjectChilCode"
                   :options="filteredRiskChildren"
                   emit-value
                   map-options
                   :option-value="(option) => option"
                   :option-label="(option) => option.subjectSpecificExam"
-                  class="q-mt-sm"
-                />
+                >
+                  <template v-slot:label>
+                    PARTICULAR INCIDENT
+                    <span class="text-red">*</span>
+                  </template>
+                </q-select>
 
                 <q-input
                   rounded
                   outlined
                   v-model="SubjectLoc"
-                  label="Incident Location"
+                  label-slot
                   class="text-uppercase q-mt-sm"
-                />
+                >
+                  <template v-slot:label>
+                    INCIDENT LOCATION
+                    <span class="text-red">*</span>
+                  </template>
+                </q-input>
 
                 <q-select
                   use-input
@@ -246,14 +261,19 @@
                   outlined
                   clearable
                   class="q-mt-sm"
-                  label="AREA"
+                  label-slot
                   v-model="DivisionCode"
                   :options="disDivision"
                   emit-value
                   map-options
                   :option-value="(option) => option.divisionCode"
                   :option-label="(option) => option.division"
-                />
+                >
+                  <template v-slot:label>
+                    AREA
+                    <span class="text-red">*</span>
+                  </template>
+                </q-select>
 
                 <q-item
                   v-if="SubjectCode && SubjectCode.subjectCode !== 'others'"
@@ -273,7 +293,7 @@
                   rounded
                   outlined
                   clearable
-                  label="DATE OF THE INCIDENT"
+                  label-slot
                   @click="showDatePicker = true"
                 >
                   <template v-slot:append>
@@ -282,6 +302,11 @@
                       class="cursor-pointer"
                       @click="showDatePicker = true"
                     />
+                  </template>
+
+                  <template v-slot:label>
+                    DATE OF THE INCIDENT
+                    <span class="text-red">*</span>
                   </template>
                 </q-input>
 
@@ -303,7 +328,7 @@
                   outlined
                   clearable
                   class="q-mt-sm"
-                  label="TIME OF THE INCIDENT"
+                  label-slot
                   @click="showTimePicker = true"
                 >
                   <template v-slot:append>
@@ -312,6 +337,11 @@
                       class="cursor-pointer"
                       @click="showTimePicker = true"
                     />
+                  </template>
+
+                  <template v-slot:label>
+                    TIME OF THE INCIDENT
+                    <span class="text-red">*</span>
                   </template>
                 </q-input>
 
@@ -332,7 +362,12 @@
                   outlined
                   autogrow
                   class="q-mt-sm"
-                />
+                >
+                  <template v-slot:label>
+                    BRIEF DESCRIPTION OF THE INCIDENT
+                    <span class="text-red">*</span>
+                  </template>
+                </q-input>
               </div>
             </div>
           </q-card-section>
@@ -354,8 +389,18 @@
                   rounded
                   outlined
                   v-model="SubjectTopic"
-                  label="NOTE"
-                />
+                  label-slot
+                  :maxlength="50"
+                  counter
+                  :rules="[
+                    val => val.length <= 50 || 'Maximum of 50 characters only'
+                  ]"
+                >
+                  <template v-slot:label>
+                    NOTE
+                    <span class="text-red">*</span>
+                  </template>
+                </q-input>
               </div>
             </div>
           </q-card-section>
@@ -513,8 +558,13 @@
                   rounded
                   outlined
                   v-model="SubjectNote"
-                  label="NOTE"
-                />
+                  label-slot
+                >
+                  <template v-slot:label>
+                    NOTE
+                    <span class="text-red">*</span>
+                  </template>
+                </q-input>
               </div>
             </div>
           </q-card-section>
@@ -535,8 +585,13 @@
                   rounded
                   outlined
                   v-model="SubjectCause"
-                  label="NOTE"
-                />
+                  label-slot
+                >
+                  <template v-slot:label>
+                    NOTE
+                    <span class="text-red">*</span>
+                  </template>
+                </q-input>
               </div>
             </div>
           </q-card-section>
@@ -558,8 +613,13 @@
                   rounded
                   outlined
                   v-model="SubjectResponse"
-                  label="NOTE"
-                />
+                  label-slot
+                >
+                  <template v-slot:label>
+                    NOTE
+                    <span class="text-red">*</span>
+                  </template>
+                </q-input>
               </div>
             </div>
           </q-card-section>
@@ -1054,6 +1114,48 @@ export default {
     ///////////////////////////////////////////////////////////////////////////////THE PROCESS////////////////////////////////////////////////////////////////////////////////////////////
 
     handleFormSubmit () {
+
+      // kapag OTHERS
+      if (this.SubjectCode.subjectCode === "others") {
+
+        const isValidOthers = this.validateFormOthers()
+
+        if (!isValidOthers) {
+          this.$q.notify({
+            color: 'negative',
+            position: 'top',
+            message: 'REQUIRED ALL FIELDS',
+            icon: 'report_problem',
+            timeout: 1000
+          })
+          return
+        }
+
+        this.confirm = true
+        return
+      }
+
+      // 👉 kapag walang child code
+      if (!this.SubjectChilCode || !this.SubjectChilCode.subjectChilCode) {
+
+        const isValidNoChild = this.validateFormNoChild()
+
+        if (!isValidNoChild) {
+          this.$q.notify({
+            color: 'negative',
+            position: 'top',
+            message: 'REQUIRED ALL FIELDS',
+            icon: 'report_problem',
+            timeout: 1000
+          })
+          return
+        }
+
+        this.confirm = true
+        return
+      }
+
+      // 👉 normal validation (may child code)
       const isValid = this.validateForm()
 
       if (!isValid) {
@@ -1071,22 +1173,37 @@ export default {
     },
 
     validateForm () {
-      console.log("validateForm: ", {
-        SubjectCode: this.SubjectCode.subjectCode,
-        SubjectChilCode: this.SubjectChilCode.subjectChilCode,
-        SubjectLoc: this.SubjectLoc,
-        DivisionCode: this.DivisionCode,
-        SubjectDate: this.SubjectDate,
-        SubjectTime: this.SubjectTime,
-        SubjectTopic: this.SubjectTopic,
-        SubjectNote: this.SubjectNote,
-        SubjectCause: this.SubjectCause,
-        SubjectResponse: this.SubjectResponse
-      })
-
       return (
         this.SubjectCode.subjectCode &&
         this.SubjectChilCode.subjectChilCode &&
+        this.SubjectLoc &&
+        this.DivisionCode &&
+        this.SubjectDate &&
+        this.SubjectTime &&
+        this.SubjectTopic &&
+        this.SubjectNote &&
+        this.SubjectCause &&
+        this.SubjectResponse
+      )
+    },
+
+    validateFormOthers () {
+      return (
+        this.SubjectLoc &&
+        this.DivisionCode &&
+        this.SubjectDate &&
+        this.SubjectTime &&
+        this.SubjectTopic &&
+        this.SubjectNote &&
+        this.SubjectCause &&
+        this.SubjectResponse &&
+        this.SubjectBriefDes
+      )
+    },
+
+    validateFormNoChild () {
+      return (
+        this.SubjectCode.subjectCode &&
         this.SubjectLoc &&
         this.DivisionCode &&
         this.SubjectDate &&
@@ -1151,12 +1268,10 @@ export default {
           formData.SubjectCode = this.SubjectCode.subjectCode;
         }
 
-        console.log("FORMDATA: ", formData)
-
-        const response = await this.$store.dispatch(
-          "ApplyStore/addIReport",
-          formData
-        );
+        // const response = await this.$store.dispatch(
+        //   "ApplyStore/addIReport",
+        //   formData
+        // );
       } catch (error) {
         console.error("Error inserting data:", error);
       }

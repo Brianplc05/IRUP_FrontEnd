@@ -755,7 +755,7 @@
                         <q-space />
 
                         <q-input
-                          v-model="searchReportable"
+                          v-model="searchDeptHead"
                           label="SEARCH "
                           dense
                           outlined
@@ -881,7 +881,7 @@
                             </thead>
 
                             <tbody>
-                              <tr v-for="row in disAllHead" :key="row.id">
+                              <tr v-for="row in filteredDisAllHead" :key="row.id">
                                 <td
                                   v-for="column in disColumnHead"
                                   :key="column.name"
@@ -1504,7 +1504,7 @@
                 style="font-size: 18px; color: #333333"
                 class="text-weight-bold"
               >
-                Total Incident Report : {{ totalReport }}
+                Total Incident Report : <q-badge class="q-pa-sm text-bold" outline color="primary" style="font-size: 18px;"> {{ totalReport }} </q-badge>
               </div>
             </div>
 
@@ -1998,6 +1998,7 @@ export default {
         // { name: "qa", label: "QA IN-CHARGE", align: "left", field: "qAName" },
       ],
       searchReportable: "",
+      searchDeptHead: "",
       selectedSubject: null,
 
       disAllRiskChild: [],
@@ -2196,6 +2197,25 @@ export default {
       return filteredSub;
     },
 
+    filteredDisAllHead() {
+      const { disAllHead, searchDeptHead } = this;
+
+      let filtered = [...disAllHead];
+
+      if (typeof searchDeptHead === "string" && searchDeptHead.trim()) {
+        const query = searchDeptHead.toLowerCase();
+
+        filtered = filtered.filter(item =>
+          Object.values(item || {}).some(val =>
+            typeof val === "string" &&
+            val.toLowerCase().includes(query)
+          )
+        );
+      }
+
+      return filtered;
+    },
+
     filteredDisRiskChild() {
       const { disAllRiskChild, selectedRiskChild, searchRiskChild } = this;
       let filteredRiskChild = [...disAllRiskChild];
@@ -2373,11 +2393,17 @@ export default {
   },
 
   mounted() {
+    // 🔹 Initial delay (3 seconds)
     setTimeout(() => {
       this.showTable = true;
       this.disAllQA;
       this.loading = false;
-    }, 3000); // Simulating 2 seconds of loading time
+    }, 3000);
+
+    // 🔹 Auto fetch every 60 seconds
+    this.interval = setInterval(() => {
+      this.getInc();
+    }, 60000);
   },
 
   components: {

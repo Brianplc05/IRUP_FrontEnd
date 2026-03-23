@@ -109,40 +109,43 @@ export default {
   },
 
   methods: {
-    async login() {
+    async login () {
       try {
-        const logs = {
-          EmployeeCode: this.EmployeeCode,
-          WebPassword: this.WebPassword,
-        };
-        if (!this.validateNOTE()) {
-          // Changed 'validateLOGIN' to 'validateNOTE'
+        // trim para kahit may spaces lang
+        const emp = this.EmployeeCode?.trim()
+        const pass = this.WebPassword?.trim()
+
+        // 🔴 EARLY VALIDATION (undefined / empty / null)
+        if (!emp || !pass) {
           this.$q.notify({
             color: "negative",
             position: "top",
             message: "PLEASE ENTER BOTH EMPLOYEE NUMBER AND PASSWORD",
             icon: "report_problem",
-            iconColor: "white",
-            timeout: 2000, // Increased timeout to 2000 milliseconds
-            progress: true,
-          });
-          return;
+            timeout: 2000
+          })
+          return
         }
-        const response = await this.$store.dispatch("ApplyStore/Login", logs);
-        // Redirect to HRADMIN page after successful login
-        this.$router.push("/auth-loading");
+
+        const logs = {
+          EmployeeCode: emp,
+          WebPassword: pass
+        }
+
+        const response = await this.$store.dispatch("ApplyStore/Login", logs)
+
+        this.$router.push("/auth-loading")
+
       } catch (error) {
-        console.error("Error Logging in data:", error);
+
         this.$q.notify({
           color: "negative",
           position: "top",
-          message: "INCORRECT EMPLOYEE NUMBER & PASSWORD",
+          message:
+            "INCORRECT EMPLOYEE NUMBER & PASSWORD",
           icon: "report_problem",
-          iconColor: "white",
-          timeout: 2000,
-          progress: true,
-        });
-        // Call onreset after the notification is displayed
+          timeout: 2000
+        })
       }
     },
 

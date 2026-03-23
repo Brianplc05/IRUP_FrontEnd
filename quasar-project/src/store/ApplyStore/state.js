@@ -100,6 +100,13 @@ export default {
   getRisk: [],
   getRiskChild: [],
   getUser: [],
+  getCountRep : [],
+  getCountPar: [],
+  getCountRepTaT: [],
+  getCountRCATaT: [],
+  getCountActionTaT: [],
+  getCountAveRCA: [],
+  getCountAveAction: [],
   user: null,
   departments: [],
   deptList: [],
@@ -108,4 +115,5 @@ export default {
   division: [],
   employees: [],
   demerit: [],
+
 };

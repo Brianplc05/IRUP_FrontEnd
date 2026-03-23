@@ -333,11 +333,18 @@ export default {
   },
 
   mounted() {
+    // 🔹 Initial delay (3 seconds)
     setTimeout(() => {
       this.showACTable = true;
       this.disAllPrimaryDeptACT;
+      this.disAllPrimaryDeptRCA;
       this.acloading = false;
-    }, 2000);
+    }, 3000);
+
+    // 🔹 Auto fetch every 60 seconds
+    this.interval = setInterval(() => {
+      this.getPrimary();
+    }, 60000);
   },
 
   created() {
@@ -363,7 +370,6 @@ export default {
     async getPrimaryDeptACT() {
       try {
         await this.$store.dispatch("ApplyStore/disPrimaryACT");
-
         this.disAllPrimaryDeptACT = this.getPrimary;
       } catch (error) {
         console.error("Error inserting data:", error);

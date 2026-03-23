@@ -541,7 +541,7 @@
           push
           :disable="[2, 3, 4, 5].includes(props.row.actionSubStatus)"
           v-if="props.row.actionSubStatus === 1"
-          @click="editActionItem(props.row.iRNo)"
+          @click="viewActionItem(props.row.iRNo)"
           :ripple="{ center: true }"
           icon="lightbulb"
           class="bg-positive text-black text-center shadow-5"
@@ -594,7 +594,113 @@
                 </q-btn>
               </q-card-section>
 
-              <q-item-section style="padding: 20px; border: 2px solid #6b7c93">
+              <q-card-section
+                class="rounded-borders shadow-2 q-mb-md"
+                style="border: 2px solid #ddd"
+              >
+                <div class="QADesContent">
+                  <div class="QAFixDesign">
+                    <div class="QADes1">
+                      <div
+                        class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                      >
+                        Problem Background
+                      </div>
+                      <div
+                        class="q-mb-sm"
+                        style="font-size: 15px; color: #737373"
+                      >
+                        This section contains essential details regarding the
+                        incident, including the date, time, location,
+                        individuals involved, and the nature of the incident.
+                      </div>
+                      <q-separator class="formseparatorYellow" />
+
+                      <div class="row q-col-gutter-md q-mx-lg">
+                        <div class="col-4">
+                          <div
+                            class="text-weight-bold"
+                            style="font-size: 15px; color: #03254b"
+                          >
+                            Date of the Incident
+                          </div>
+
+                          <q-input
+                            rounded
+                            outlined
+                            :model-value="FormatDate(IRQADetailss.subjectDate)"
+                            disable
+                          />
+                        </div>
+
+                        <div class="col-4">
+                          <div
+                            class="text-weight-bold"
+                            style="font-size: 15px; color: #03254b"
+                          >
+                            Time of the Incident
+                          </div>
+
+                          <q-input
+                            rounded
+                            outlined
+                            :model-value="FormatTime(IRQADetailss.subjectDate)"
+                            disable
+                          />
+                        </div>
+
+                        <div class="col-4">
+                          <div
+                            class="text-weight-bold"
+                            style="font-size: 15px; color: #03254b"
+                          >
+                            Location of the Incident
+                          </div>
+
+                          <q-input
+                            rounded
+                            outlined
+                            :model-value="IRQADetailss.subjectLoc"
+                            disable
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="QADesContent">
+                  <div class="QAFixDesign">
+                    <div class="QADes1">
+                      <div
+                        class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                      >
+                        Immediate Response
+                      </div>
+                      <div
+                        class="q-mb-sm"
+                        style="font-size: 15px; color: #737373"
+                      >
+                        Action taken by the concerned department or by the
+                        Informant to ease the incident.
+                      </div>
+                      <q-separator class="formseparatorYellow" />
+                      <div class="q-mx-xl">
+                        <q-input
+                          autogrow
+                          rounded
+                          outlined
+                          :model-value="IRQADetailss.subjectResponse"
+                          disable
+                          input-class="q-pa-md"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </q-card-section>
+
+              <q-item-section style="padding: 20px; border: 2px solid #ddd">
                 <q-item-section
                   class="q-mb-xs rounded-borders"
                   style="
@@ -637,21 +743,31 @@
                 >
                   <q-input
                     v-model="party.ActionItem"
-                    label="Action"
+                    label-slot
                     rounded
                     outlined
                     autogrow
                     style="width: 70%"
-                  />
+                  >
+                    <template v-slot:label>
+                        CORRECTIVE ACTION
+                      <span class="text-red">*</span>
+                    </template>
+                  </q-input>
 
                   <q-input
                     v-model="party.TimelineFromDate"
                     rounded
                     outlined
-                    label="Timeline From"
+                    label-slot
                     style="width: 20%; margin-left: 15px; margin-right: 10px"
                     @click="showActionDatePickerFrom = true"
                   >
+                    <template v-slot:label>
+                        TIMELINE FROM
+                      <span class="text-red">*</span>
+                    </template>
+
                     <template v-slot:append>
                       <q-icon
                         name="event"
@@ -677,10 +793,15 @@
                     v-model="party.TimelineToDate"
                     rounded
                     outlined
-                    label="Timeline To"
+                    label-slot
                     style="width: 20%; margin-left: 5px; margin-right: 5px"
                     @click="showActionDatePickerTo = true"
                   >
+                    <template v-slot:label>
+                        TIMELINE TO
+                      <span class="text-red">*</span>
+                    </template>
+
                     <template v-slot:append>
                       <q-icon
                         name="event"
@@ -1572,7 +1693,7 @@
                           :key="index"
                         >
                           <div class="row q-col-gutter-sm">
-                            <div class="col-8 q-pa-md" style="border: 2px solid #ddd;">
+                            <div class="col-8 q-pa-sm" style="border: 2px solid #ddd;">
                               <div>
                                 <div
                                   class="text-weight-bold"
@@ -1590,7 +1711,7 @@
                                 />
                               </div>
 
-                              <div class="row q-col-gutter-sm q-pt-sm">
+                              <div class="row q-col-gutter-xs q-pt-md">
                                 <div class="col-6">
                                   <div
                                     class="text-weight-bold"
@@ -1634,7 +1755,7 @@
                             </div>
 
                             <div class="col-2 text-center q-pa-sm" style="border: 2px solid #ddd">
-                              <div class="q-pt-xs">
+                              <div class="q-pt-sm">
                                 <div class="text-weight-bold" style="font-size: 15px; color: #03254b">
                                   Action Item Status
                                 </div>
@@ -2044,10 +2165,18 @@ export default {
       return allowedDate >= subjectDate
     },
 
-    editActionItem(IRNo) {
-      this.setActionItems = true;
-      this.IrNo = IRNo;
-      this.selectedIrNo = IRNo;
+    async viewActionItem(IRNo) {
+      try {
+        this.setActionItems = true;
+        const data = {
+          iRNo: IRNo,
+        };
+        this.selectedIrNo = IRNo;
+        const response = await this.$store.dispatch("ApplyStore/disIrp", data);
+        this.IRQADetailss = this.getQACon;
+      } catch (error) {
+        console.error("Error inserting data:", error);
+      }
     },
 
     addActionItem() {

@@ -133,11 +133,17 @@ export default {
   },
 
   mounted() {
+    // 🔹 Initial delay (3 seconds)
     setTimeout(() => {
       this.showTable = true;
       this.disAllDirector;
       this.loading = false;
-    }, 2000); // Simulating 2 seconds of loading time
+    }, 3000);
+
+    // 🔹 Auto fetch every 60 seconds
+    this.interval = setInterval(() => {
+      this.getDirector();
+    }, 60000);
   },
 
   created() {

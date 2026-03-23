@@ -2,7 +2,7 @@
   <div id="q-app" style="min-height: 100vh; position: relative; z-index: 1">
     <div class="q-pa-sm row items-start q-gutter-xs">
       <div class="my-card">
-        <div
+        <!-- <div
           style="
             height: 385px;
             display: flex;
@@ -19,7 +19,7 @@
         </div>
         <div style="margin-top: 15px; margin-left: 25px">
           <BarGraph :series="chartSeries" :data="chartData" />
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -40,12 +40,12 @@
 import { defineComponent } from "vue";
 import { mapGetters } from "vuex";
 import BarGraph from "src/components/Charts/BarGraph.vue";
-import RadialBar from "src/components/Charts/RadialBar.vue";
-import AIRadialBar from "src/components/Charts/RadialBarTotalAction.vue";
+// import RadialBar from "src/components/Charts/RadialBar.vue";
+// import AIRadialBar from "src/components/Charts/RadialBarTotalAction.vue";
 
 export default defineComponent({
   name: "IndexPage",
-  components: { BarGraph, RadialBar, AIRadialBar },
+  // components: { BarGraph, RadialBar, AIRadialBar },
   data() {
     return {
       disCountSub: [],
@@ -66,6 +66,7 @@ export default defineComponent({
         },
       ];
     },
+
     chartData() {
       return this.disCountSub.map((item) => item.SubjectCode);
     },

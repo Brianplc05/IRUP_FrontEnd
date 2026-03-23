@@ -146,6 +146,134 @@ export default {
     }
   },
 
+
+  async displayCountReport({ commit }) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.get(
+        `${ApiUrl}/incident-report/DisplayCountReportable`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      commit("GET_COUNTREP", response.data);
+    } catch (error) {
+      console.error("ERROR", error);
+      throw error;
+    }
+  },
+
+  async displayCountParticular({ commit }, data) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.post(
+        `${ApiUrl}/incident-report/DisplayCountParticular`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      commit("GET_COUNTPAR", response.data);
+    } catch (error) {
+      console.error("ERROR", error);
+      throw error;
+    }
+  },
+
+  async displayCountReportTAT({ commit }) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.get(
+        `${ApiUrl}/incident-report/DisplayCountReportTAT`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      commit("GET_COUNTREPTAT", response.data);
+    } catch (error) {
+      console.error("ERROR", error);
+      throw error;
+    }
+  },
+
+  async displayCountRCATAT({ commit }) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.get(
+        `${ApiUrl}/incident-report/DisplayCountReportRCATAT`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      commit("GET_COUNTRCATAT", response.data);
+    } catch (error) {
+      console.error("ERROR", error);
+      throw error;
+    }
+  },
+
+  async displayCountACTIONTAT({ commit }) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.get(
+        `${ApiUrl}/incident-report/DisplayCountReportActionTAT`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      commit("GET_COUNTACTIONTAT", response.data);
+    } catch (error) {
+      console.error("ERROR", error);
+      throw error;
+    }
+  },
+
+  async displayAverageRCA({ commit }) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.get(
+        `${ApiUrl}/incident-report/DisplayCountAverageRCATAT`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      commit("GET_AVERAGERCA", response.data);
+    } catch (error) {
+      console.error("ERROR", error);
+      throw error;
+    }
+  },
+
+  async displayAverageAction({ commit }) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.get(
+        `${ApiUrl}/incident-report/DisplayCountAverageActionTAT`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      commit("GET_AVERAGEACTION", response.data);
+    } catch (error) {
+      console.error("ERROR", error);
+      throw error;
+    }
+  },
+
   ////////////////////////////////////////////
 
   ///////// IRFORM //////////////
@@ -301,6 +429,8 @@ export default {
       throw error;
     }
   },
+
+
 
   ////////////////////////////////////////////
 
@@ -1983,6 +2113,24 @@ export default {
       commit("GET_QA", response.data);
     } catch (error) {
       console.error("ERROR", error);
+      throw error;
+    }
+  },
+
+    async disFilterDivision({ commit }) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.get(
+        `${ApiUrl}/incident-report/DisplayDivision`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      commit("GET_Division", response.data);
+    } catch (error) {
+      console.error("Failed to display Division:", error);
       throw error;
     }
   },

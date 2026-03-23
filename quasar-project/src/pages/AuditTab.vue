@@ -1,1655 +1,208 @@
 <template>
-  <div id="q-app" style="min-height: 100vh; position: relative; z-index: 1">
-    <div class="q-pa-sm row items-start q-gutter-xs">
-      <div class="my-card">
-        <q-card-section
-          class="bg-primary text-white"
-          style="
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-          "
-        >
-          <div style="display: flex; align-items: center">
-            <q-btn-dropdown
-              push
-              class="filtertab"
-              icon="sort"
-              dropdown-icon="change_history"
-              label="FILTER STATUS "
-              menu-anchor="top right"
-              style="width: 25ch; padding: auto"
-            >
-              <q-list>
-                <q-item
-                  v-for="option in auditStats"
-                  :key="option.value"
-                  clickable
-                  @click="selectStatus(option)"
-                >
-                  <q-item-section>{{ option.label }}</q-item-section>
-                </q-item>
-              </q-list>
-            </q-btn-dropdown>
+  <div id="q-app" style="position: relative; z-index: 1">
+    <div style="height: 100%; width: 100%" class="q-pa-lg">
+
+      <!-- HEADER -->
+      <div
+        class="row items-center justify-between q-mb-md bg-white q-pa-sm rounded-borders shadow-1"
+        style="border-radius: 10px"
+      >
+        <div>
+          <div class="text-primary text-weight-bold" style="font-size: 30px">
+            INCIDENT REPORT DETAILS
           </div>
-          <div class="IRAHText">INCIDENT REPORT</div>
-          <div
-            class="q-gutter-md row"
-            style="display: flex; align-items: center"
-          >
+          <div style="font-size: 18px; color: #333333">
+            Comprehensive information and documentation regarding the reported incident.
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN CARD -->
+      <q-card-section
+        class="row q-mb-sm bg-white q-pa-md rounded-borders shadow-1"
+        style="border-radius: 10px"
+      >
+        <q-card-section class="column fit full-width">
+
+          <!-- FILTERS -->
+          <div class="row items-center justify-between q-mb-md">
+            <div>
+
+              <!-- FILTER AREA -->
+              <q-btn-dropdown
+                rounded
+                label="FILTER AREA"
+                style="width: 25ch"
+                class="bg-info text-white q-mr-sm"
+              >
+                <q-list>
+                  <q-item
+                    v-for="option in disAllDiv"
+                    :key="option.divisionCode"
+                    clickable
+                    @click="selectArea(option)"
+                  >
+                    <q-item-section>{{ option.division }}</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-btn-dropdown>
+
+              <!-- FILTER STATUS -->
+              <q-btn-dropdown
+                rounded
+                label="FILTER STATUS"
+                style="width: 25ch"
+                class="bg-info text-white"
+              >
+                <q-list>
+                  <q-item
+                    v-for="option in qaStats"
+                    :key="option.value"
+                    clickable
+                    @click="selectStatus(option)"
+                  >
+                    <q-item-section>{{ option.label }}</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-btn-dropdown>
+
+            </div>
+
+            <!-- SEARCH -->
             <q-input
-              dark
-              dense
-              standout
               v-model="searchQuery"
-              input-class="text-right"
-              class="q-ml-md"
-              style="background-color: #f3f4f7; border-radius: 0.4em"
+              label="SEARCH"
+              dense
+              outlined
+              rounded
             >
               <template v-slot:append>
-                <q-icon name="search" style="color: black"></q-icon>
+                <q-icon name="search" color="info" />
               </template>
             </q-input>
           </div>
-        </q-card-section>
 
-        <!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+          <!-- TABLE CARD -->
+          <q-card-section
+            class="bg-white q-pa-sm rounded-borders shadow-1 q-mb-md"
+            style="border-radius: 10px"
+          >
 
-        <q-card-section
-          class="bg-primary"
-          style="border-top: 0.1em solid #d5d7da"
-        >
-          <div class="text-right">
-            <q-btn
-              @click="content"
-              :ripple="{ center: true }"
-              icon="add_card"
-              color="accent"
-              label="REPORTABLE INCIDENT & RISK DICTIONARY"
-              class="text-black text-bold text-center shadow-5"
-              style="width: 370px"
-            />
-          </div>
+            <div class="q-pb-md q-pt-md q-pl-sm">
+              <div class="text-weight-bold" style="font-size: 18px;">
+                Total Incident Report : <q-badge class="q-pa-sm text-bold" outline color="primary" style="font-size: 18px;"> {{ totalReport }} </q-badge>
+              </div>
+            </div>
 
-          <q-dialog maximized v-model="FullContent" persistent>
-            <q-card class="SIODialog">
-              <q-card-section class="AuditIR">
-                <div class="row items-center justify-between">
-                  <div class="AuditText">
-                    REPORTABLE INCIDENT & RISK DICTIONARY
-                  </div>
-                  <q-btn
-                    style="margin-left: 5px"
-                    round
-                    push
-                    icon="close"
-                    class="bg-accent text-black"
-                    @click="FullContent = false"
-                    v-close-popup
-                  />
-                </div>
-              </q-card-section>
-              <q-card-section>
-                <div class="q-gutter-y-md" full-width>
-                  <q-card>
-                    <q-tabs
-                      v-model="tab"
-                      dense
-                      indicator-color="warning"
-                      align="justify"
-                      class="tab-container"
-                    >
-                      <q-tab
-                        :class="
-                          tab === 'repIncident'
-                            ? 'text-primary disAuditRisk'
-                            : 'text-primary disAllAudit'
-                        "
-                        name="repIncident"
-                        label="REPORTABLE INCIDENT DETAILS"
-                      ></q-tab>
-                      <q-tab
-                        :class="
-                          tab === 'repChild'
-                            ? 'text-primary disAuditRisk'
-                            : 'text-primary disAllAudit'
-                        "
-                        name="repChild"
-                        label="REPORTABLE INCIDENT CHILDREN"
-                      ></q-tab>
-                      <q-tab
-                        :class="
-                          tab === 'riskDic'
-                            ? 'text-primary disAuditRisk'
-                            : 'text-primary disAllAudit'
-                        "
-                        name="riskDic"
-                        label="RISK DICTIONARY"
-                      ></q-tab>
-                      <div class="AuditRisk"></div>
-                    </q-tabs>
+            <div class="q-table-scroll-wrapper">
+              <!-- LOADING -->
+              <div
+                v-if="loading"
+                class="fixed-full flex flex-center column q-gutter-md"
+                style="background-color: rgba(255, 255, 255, 0.7); z-index: 9999"
+              >
+                <q-spinner-ball size="150px" color="primary" />
+                <div class="text-subtitle1 text-primary">Please wait...</div>
+              </div>
 
-                    <q-separator></q-separator>
-
-                    <q-tab-panels v-model="tab" animated>
-                      <q-tab-panel name="repIncident" class="BorderDesign">
-                        <div class="row justify-between">
-                          <div>
-                            <q-btn-dropdown
-                              v-model="dropdownOpen2"
-                              push
-                              class="filtertab"
-                              dense
-                              icon="sort"
-                              text-color="white"
-                              dropdown-icon="change_history"
-                              label="FILTER RISK DOMAIN"
-                              style="width: 30ch; height: 44px"
-                            >
-                              <q-list>
-                                <q-item
-                                  v-for="option in disAllDomain"
-                                  :key="option.domainCode"
-                                  clickable
-                                  @click="selectSubjectCode(option)"
-                                >
-                                  <q-item-section>
-                                    {{ option.riskDomain }}
-                                  </q-item-section>
-                                </q-item>
-                              </q-list>
-                            </q-btn-dropdown>
-                          </div>
-                          <div>
-                            <q-input
-                              color="secondary"
-                              label-color="secondary"
-                              outlined
-                              dense
-                              v-model="search"
-                              label="SEARCH"
-                              style="width: 35ch; height: 44px; margin-top: 2px"
-                            >
-                              <template v-slot:append>
-                                <q-icon name="search" color="secondary" />
-                              </template>
-                            </q-input>
-                          </div>
-                        </div>
-
-                        <q-card-section
-                          class="bg-secondary row justify-end"
-                          style="
-                            border-top: 0.1em solid #d5d7da;
-                            margin-top: 15px;
-                          "
-                        >
-                          <q-btn
-                            @click="subjectIncident"
-                            :ripple="{ center: true }"
-                            icon="add_card"
-                            color="accent"
-                            label="CREATE REPORTABLE INCIDENT"
-                            class="text-black text-bold text-center shadow-5"
-                            style="width: 280px"
-                          />
-
-                          <q-dialog v-model="SubIncident" persistent>
-                            <q-card
-                              class="bg-warning"
-                              style="height: 75%; width: 40%"
-                            >
-                              <q-card-section
-                                class="bg-accent"
-                                style="height: 10%"
-                              >
-                                <div class="RiskText">
-                                  ADD REPORTABLE INCIDENT
-                                </div>
-                              </q-card-section>
-                              <q-card-section class="q-gutter-md">
-                                <q-input
-                                  square
-                                  outlined
-                                  v-model="SubjectName"
-                                  label-slot
-                                >
-                                  <template v-slot:label
-                                    >REPORTABLE INCIDENT
-                                    <span class="text-red">*</span></template
-                                  >
-                                </q-input>
-
-                                <q-select
-                                  outlined
-                                  use-input
-                                  clearable
-                                  v-model="SubjectRiskCode"
-                                  label-slot
-                                  :options="disAllDomain"
-                                  @filter="FilterFn"
-                                  emit-value
-                                  map-options
-                                  :option-value="(option) => option"
-                                  :option-label="(option) => option.riskDomain"
-                                >
-                                  <template v-slot:label>
-                                    RISK DOMAIN
-                                    <span class="text-red">*</span>
-                                  </template>
-                                </q-select>
-
-                                <!-- <q-select
-                                  outlined
-                                  use-input
-                                  clearable
-                                  v-model="SubjectRiskCode"
-                                  label-slot
-                                  :options="disAllRisk"
-                                  @filter="FilterFn"
-                                  emit-value
-                                  map-options
-                                  :option-value="(option) => option"
-                                  :option-label="(option) => option.risk"
-                                >
-                                  <template v-slot:label>
-                                    RISK
-                                    <span class="text-red">*</span>
-                                  </template>
-                                </q-select> -->
-
-                                <q-select
-                                  use-input
-                                  square
-                                  outlined
-                                  clearable
-                                  v-model="EmployeeCode"
-                                  :options="disQA"
-                                  label-slot
-                                  emit-value
-                                  map-options
-                                  :option-value="
-                                    (option) => option.employeeCode
-                                  "
-                                  :option-label="(option) => option.fullName"
-                                >
-                                  <template v-slot:label
-                                    >QA IN-CHARGE
-                                    <span class="text-red">*</span></template
-                                  >
-                                </q-select>
-
-                                <q-input
-                                  square
-                                  outlined
-                                  type="textarea"
-                                  v-model="SubjectReptDescription"
-                                  label-slot
-                                >
-                                  <template v-slot:label
-                                    >SUBJECT DEFINITION
-                                    <span class="text-red">*</span></template
-                                  >
-                                </q-input>
-
-                                <q-select
-                                  v-model="SubjectPolicy"
-                                  @new-value="createValue"
-                                  label="POLICY"
-                                  square
-                                  outlined
-                                  multiple
-                                  use-input
-                                  use-chips
-                                  hide-dropdown-icon
-                                />
-                                <q-select
-                                  use-input
-                                  square
-                                  outlined
-                                  clearable
-                                  v-model="SecondaryQA"
-                                  :options="disQA"
-                                  label="SECONDARY QA"
-                                  emit-value
-                                  map-options
-                                  :option-value="
-                                    (option) => option.employeeCode
-                                  "
-                                  :option-label="(option) => option.fullName"
-                                />
-                              </q-card-section>
-                              <q-card-actions class="footer-actions-reportable">
-                                <q-btn
-                                  push
-                                  label="CANCEL"
-                                  @click="onCancelRisk"
-                                  color="secondary"
-                                  class="button1 left-btn"
-                                ></q-btn>
-                                <q-btn
-                                  push
-                                  label="SAVE"
-                                  @click="submitRisk"
-                                  color="accent text-black"
-                                  class="button1 right-btn"
-                                ></q-btn>
-                              </q-card-actions>
-                            </q-card>
-                          </q-dialog>
-
-                          <q-dialog
-                            v-model="waiting"
-                            persistent
-                            content-class="non-transparent-dialog"
-                          >
-                            <div class="risk-card">
-                              <q-card-section>
-                                <div class="spinner-container">
-                                  <q-spinner-facebook
-                                    size="200px"
-                                  ></q-spinner-facebook>
-                                  <div class="risk-wait">
-                                    Doing something. Please wait...
-                                  </div>
-                                </div>
-                              </q-card-section>
-                            </div>
-                          </q-dialog>
-                        </q-card-section>
-
-                        <div style="max-height: 600px; overflow-y: auto">
-                          <q-markup-table class="custom-q-table">
-                            <thead>
-                              <tr>
-                                <th
-                                  v-for="column in disSubColumns"
-                                  :key="column.name"
-                                  class="custom-header"
-                                >
-                                  {{ column.label }}
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr v-for="row in filteredDisSub" :key="row.id">
-                                <td
-                                  v-for="column in disSubColumns"
-                                  :key="column.name"
-                                  class="custom-cell"
-                                >
-                                  {{ row[column.field] }}
-                                </td>
-                              </tr>
-                            </tbody>
-                          </q-markup-table>
-                        </div>
-                      </q-tab-panel>
-
-                      <!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-
-                      <q-tab-panel name="repChild" class="BorderDesign">
-                        <div class="row justify-between">
-                          <div>
-                            <q-btn-dropdown
-                              v-model="dropdownRI"
-                              push
-                              class="filtertab"
-                              dense
-                              icon="sort"
-                              text-color="white"
-                              dropdown-icon="change_history"
-                              label="FILTER REPORTABLE INCIDENT"
-                              style="width: 40ch; height: 44px"
-                            >
-                              <q-list>
-                                <q-item
-                                  v-for="option in disAllSubject"
-                                  :key="option.subjectCode"
-                                  clickable
-                                  @click="selectRiskChildCode(option)"
-                                >
-                                  <q-item-section>
-                                    {{ option.subjectName }}
-                                  </q-item-section>
-                                </q-item>
-                              </q-list>
-                            </q-btn-dropdown>
-                          </div>
-
-                          <div>
-                            <q-input
-                              color="secondary"
-                              label-color="secondary"
-                              outlined
-                              dense
-                              v-model="searchRiskChild"
-                              label="SEARCH"
-                              style="width: 35ch; height: 44px; margin-top: 2px"
-                            >
-                              <template v-slot:append>
-                                <q-icon name="search" color="secondary" />
-                              </template>
-                            </q-input>
-                          </div>
-                        </div>
-
-                        <q-card-section
-                          class="bg-secondary row justify-end"
-                          style="
-                            border-top: 0.1em solid #d5d7da;
-                            margin-top: 15px;
-                          "
-                        >
-                          <q-btn
-                            @click="incidentChildren"
-                            :ripple="{ center: true }"
-                            icon="add_card"
-                            color="accent"
-                            label="CREATE RI CHILDREN"
-                            class="text-black text-bold text-center shadow-5"
-                            style="width: 280px"
-                          />
-
-                          <q-dialog v-model="ChilIncident" persistent>
-                            <q-card
-                              class="bg-warning"
-                              style="height: 75%; width: 40%"
-                            >
-                              <q-card-section
-                                class="bg-accent"
-                                style="height: 10%"
-                              >
-                                <div class="RiskText">
-                                  ADD REPORTABLE INCIDENT CHILDREN
-                                </div>
-                              </q-card-section>
-
-                              <q-card-section class="q-gutter-md">
-                                <q-select
-                                  outlined
-                                  use-input
-                                  clearable
-                                  v-model="SubjectCode"
-                                  :options="disAllSubject"
-                                  label="REPORTABLE INCIDENT"
-                                  @filter="FilterFnChil"
-                                  emit-value
-                                  map-options
-                                  :option-value="(option) => option"
-                                  :option-label="(option) => option.subjectName"
-                                />
-                                <q-input
-                                  square
-                                  outlined
-                                  v-model="SubjectSpecificExam"
-                                  label-slot
-                                >
-                                  <template v-slot:label
-                                    >SPECIFIC EXAMPLE
-                                    <span class="text-red">*</span></template
-                                  >
-                                </q-input>
-
-                                <q-select
-                                  use-input
-                                  square
-                                  outlined
-                                  clearable
-                                  v-model="PrimaryChilQA"
-                                  :options="disQA"
-                                  label="SECONDARY QA"
-                                  emit-value
-                                  map-options
-                                  :option-value="
-                                    (option) => option.employeeCode
-                                  "
-                                  :option-label="(option) => option.fullName"
-                                />
-                                <q-input
-                                  square
-                                  outlined
-                                  type="textarea"
-                                  v-model="SubjectReptChilDescription"
-                                  label="SUBJECT DEFINITION"
-                                />
-                              </q-card-section>
-
-                              <q-card-actions class="footer-actions-reportable">
-                                <q-btn
-                                  push
-                                  label="CANCEL"
-                                  @click="onCancelRiskChil"
-                                  color="secondary"
-                                  class="button1 left-btn"
-                                ></q-btn>
-                                <q-btn
-                                  push
-                                  label="SAVE"
-                                  @click="submitRiskChild"
-                                  color="accent text-black"
-                                  class="button1 right-btn"
-                                ></q-btn>
-                              </q-card-actions>
-                            </q-card>
-                          </q-dialog>
-                        </q-card-section>
-
-                        <div style="max-height: 600px; overflow-y: auto">
-                          <q-markup-table class="custom-q-table">
-                            <thead>
-                              <tr>
-                                <th
-                                  v-for="column in disRiskChildColumns"
-                                  :key="column.name"
-                                  class="custom-header"
-                                >
-                                  {{ column.label }}
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr
-                                v-for="row in filteredDisRiskChild"
-                                :key="row.id"
-                              >
-                                <td
-                                  v-for="column in disRiskChildColumns"
-                                  :key="column.name"
-                                  class="custom-cell"
-                                >
-                                  {{ row[column.field] }}
-                                </td>
-                              </tr>
-                            </tbody>
-                          </q-markup-table>
-                        </div>
-                        <q-dialog
-                          v-model="waiting"
-                          persistent
-                          content-class="non-transparent-dialog"
-                        >
-                          <div class="risk-card">
-                            <q-card-section>
-                              <div class="spinner-container">
-                                <q-spinner-facebook
-                                  size="200px"
-                                ></q-spinner-facebook>
-                                <div class="risk-wait">
-                                  Doing something. Please wait...
-                                </div>
-                              </div>
-                            </q-card-section>
-                          </div>
-                        </q-dialog>
-                      </q-tab-panel>
-
-                      <!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-
-                      <q-tab-panel name="riskDic" class="BorderDesign">
-                        <div class="row justify-between">
-                          <div>
-                            <q-btn-dropdown
-                              v-model="dropdownOpen"
-                              push
-                              class="filtertab"
-                              dense
-                              icon="sort"
-                              text-color="white"
-                              dropdown-icon="change_history"
-                              label="FILTER RISK DOMAIN"
-                              style="width: 30ch; height: 44px"
-                            >
-                              <q-list>
-                                <q-item
-                                  v-for="option in disAllDomain"
-                                  :key="option.domainCode"
-                                  clickable
-                                  @click="selectRickDics(option)"
-                                >
-                                  <q-item-section>
-                                    {{ option.riskDomain }}
-                                  </q-item-section>
-                                </q-item>
-                              </q-list>
-                            </q-btn-dropdown>
-                          </div>
-                          <div>
-                            <q-input
-                              color="secondary"
-                              label-color="secondary"
-                              outlined
-                              dense
-                              v-model="searchRisk"
-                              label="SEARCH"
-                              style="width: 35ch; height: 44px; margin-top: 2px"
-                            >
-                              <template v-slot:append>
-                                <q-icon name="search" color="secondary" />
-                              </template>
-                            </q-input>
-                          </div>
-                        </div>
-
-                        <q-card-section
-                          class="bg-secondary row justify-end"
-                          style="
-                            border-top: 0.1em solid #d5d7da;
-                            margin-top: 15px;
-                          "
-                        >
-                          <q-btn
-                            @click="riskDisctionary"
-                            :ripple="{ center: true }"
-                            color="accent"
-                            icon="edit_square"
-                            label="CREATE RISK"
-                            class="text-black text-bold text-center shadow-5"
-                            style="width: 10%"
-                          />
-
-                          <q-dialog v-model="RiskDictionary" persistent>
-                            <q-card
-                              class="bg-warning"
-                              style="height: 60%; width: 40%"
-                            >
-                              <q-card-section
-                                class="bg-accent"
-                                style="height: 13%"
-                              >
-                                <div class="RiskText">ADD RISK DICTIONARY</div>
-                              </q-card-section>
-                              <q-card-section class="q-gutter-md">
-                                <q-input
-                                  square
-                                  outlined
-                                  v-model="DomainCode"
-                                  label="DOMAIN CODE "
-                                  class="text-uppercase"
-                                  hint="*FORMANT: [ST-01]"
-                                ></q-input>
-                                <q-input
-                                  square
-                                  outlined
-                                  v-model="RiskDomain"
-                                  label="RISK DOMAIN"
-                                ></q-input>
-                                <q-input
-                                  square
-                                  outlined
-                                  v-model="Risk"
-                                  label="RISK"
-                                ></q-input>
-                                <q-input
-                                  square
-                                  outlined
-                                  autogrow
-                                  v-model="RiskDescription"
-                                  label="RISK DESCRIPTION"
-                                ></q-input>
-                              </q-card-section>
-
-                              <q-card-actions
-                                align="right"
-                                class="footer-actions"
-                              >
-                                <q-btn
-                                  push
-                                  label="CANCEL"
-                                  @click="onCancelRiskDic"
-                                  color="secondary"
-                                  class="button1"
-                                ></q-btn>
-                                <q-btn
-                                  push
-                                  label="SAVE"
-                                  @click="submitRiskDic"
-                                  color="accent text-black"
-                                  class="button1"
-                                ></q-btn>
-                              </q-card-actions>
-                            </q-card>
-                          </q-dialog>
-
-                          <q-dialog
-                            v-model="waiting"
-                            persistent
-                            content-class="non-transparent-dialog"
-                          >
-                            <div class="risk-card">
-                              <q-card-section>
-                                <div class="spinner-container">
-                                  <q-spinner-facebook
-                                    size="200px"
-                                  ></q-spinner-facebook>
-                                  <div class="risk-wait">
-                                    Doing something. Please wait...
-                                  </div>
-                                </div>
-                              </q-card-section>
-                            </div>
-                          </q-dialog>
-                        </q-card-section>
-
-                        <div style="max-height: 600px; overflow-y: auto">
-                          <q-markup-table class="custom-q-table">
-                            <thead>
-                              <tr>
-                                <th
-                                  v-for="column in disRiskDicColumns"
-                                  :key="column.name"
-                                  class="custom-header"
-                                >
-                                  {{ column.label }}
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr
-                                v-for="row in filteredDisRiskDic"
-                                :key="row.id"
-                              >
-                                <td
-                                  v-for="column in disRiskDicColumns"
-                                  :key="column.name"
-                                  class="custom-cell"
-                                >
-                                  {{ row[column.field] }}
-                                </td>
-                              </tr>
-                            </tbody>
-                          </q-markup-table>
-                        </div>
-                      </q-tab-panel>
-                    </q-tab-panels>
-                  </q-card>
-                </div>
-              </q-card-section>
-            </q-card>
-          </q-dialog>
-        </q-card-section>
-
-        <!-- //////////////////////////////////////////////////AUDIT TABLE/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-        <q-spinner-ball
-          class="spinner"
-          v-if="spiloading"
-          size="150px"
-          color="primary"
-        />
-        <q-table
-          v-show="showTable"
-          :rows="filteredDisAll"
-          :pagination="{ rowsPerPage: 8 }"
-          :columns="disColumns"
-          row-key="IRNo"
-          :loading="spiloading"
-        >
-          <!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-          <template v-slot:body-cell-viewIR="props">
-            <q-td>
-              <q-btn
-                push
-                @click="viewIReport(props.row.iRNo)"
-                :ripple="{ center: true }"
-                color="accent"
-                icon="description"
-                class="text-black text-bold text-center shadow-5"
+              <AuditTables
+                v-show="showTable"
+                :items="filteredDisAll"
+                :columns="disColumns"
+                :rows-per-page-options="[10]"
+                :loading="loading"
+                flat
+                bordered
+                class="my-custom-scroll"
               />
-              <q-dialog maximized v-model="IRDialog" persistent>
-                <q-card class="ADDialog">
-                  <q-card-section class="ADIR">
-                    <div class="row items-center justify-between">
-                      <div class="ADText">INCIDENT REPORT</div>
-                      <q-btn
-                        style="margin-left: 25px"
-                        round
-                        push
-                        icon="close"
-                        class="bg-accent text-black"
-                        @click="IRDialog = false"
-                        v-close-popup
-                      />
-                    </div>
-                  </q-card-section>
+            </div>
 
-                  <q-item-section class="custom-item-section">
-                    <div style="padding: 20px">
-                      <div class="ADTitlelist">
-                        <div class="ADTextlist">INCIDENT INFORMATION</div>
-                      </div>
-
-                      <div class="ADDesContent">
-                        <div
-                          style="display: flex; justify-content: space-between"
-                        >
-                          <div class="ADDesign">
-                            <div class="ADDes">
-                              <b>INCIDENT REPORT NUMBER:</b>
-                              {{ IRQADetailss.iRNo }}
-                              <br />
-                              <b>INCIDENT REPORT DATE CREATED:</b>
-                              {{ FormatDateIR(IRQADetailss.dateTimeCreated) }}
-                              <br />
-                              <div
-                                style="
-                                  background-color: #ffc619;
-                                  height: 2px;
-                                  margin: 5px 0;
-                                "
-                              ></div>
-                              <div
-                                style="
-                                  display: flex;
-                                  justify-content: space-between;
-                                "
-                              >
-                                <div>
-                                  <b>PRIMARY(DEPARTMENT):</b>
-                                  {{ IRQADetailss.primaryDept }}
-                                </div>
-                                <div>
-                                  <b>SECONDARY(DEPARTMENT/S):</b>
-                                  {{ IRQADetailss.deptCodeInvDescriptions }}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div class="ADDesign2">
-                            <div
-                              v-if="
-                                IRQADetailss.subjectFile &&
-                                IRQADetailss.subjectFile.length
-                              "
-                              class="ADFileDes column flex-center"
-                            >
-                              <div class="text-black text-bold text-center">
-                                ATTACHED FILE
-                              </div>
-                              <div
-                                style="
-                                  display: flex;
-                                  align-items: center;
-                                  gap: 8px;
-                                  background: #e3f2fd;
-                                  padding: 8px;
-                                  border-radius: 4px;
-                                "
-                                @click.stop="viewPDF(IRQADetailss.subjectFile)"
-                              >
-                                <q-icon
-                                  name="description"
-                                  class="text-h3"
-                                  color="red"
-                                ></q-icon>
-                                <div class="text-dark text-left text-subtitle1">
-                                  {{ IRQADetailss.subjectFileName }}
-                                </div>
-                              </div>
-                            </div>
-
-                            <div class="ADFileDes column flex-center" v-else>
-                              <div class="text-black text-bold text-center">
-                                ATTACHED FILE
-                              </div>
-                              <div
-                                style="
-                                  text-align: center;
-                                  font-size: 30px;
-                                  color: #a9a9a9;
-                                "
-                              >
-                                <p><i>~NO FILE ATTACHED~</i></p>
-                              </div>
-                            </div>
-
-                            <q-dialog v-model="pdfDisplayDialog" persistent>
-                              <q-card style="width: 90vw; max-width: 1100px">
-                                <div class="bg-primary text-white">
-                                  <div class="ADIRND">
-                                    ATTACHED FILES CONTENT
-                                  </div>
-                                  <q-btn
-                                    icon="close"
-                                    flat
-                                    round
-                                    dense
-                                    @click="closepdf"
-                                    class="absolute-top-right"
-                                  />
-                                </div>
-                                <q-card-section>
-                                  <iframe
-                                    v-if="pdfUrl"
-                                    :src="pdfUrl"
-                                    width="100%"
-                                    height="600px"
-                                    style="border: none"
-                                  ></iframe>
-                                </q-card-section>
-                              </q-card>
-                            </q-dialog>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="ADDesContent">
-                        <div class="ADFixDesign">
-                          <div class="ADDes1">
-                            <div v-if="IRQADetailss.subjectSpecificExam">
-                              <b>SUBJECT OF THE INCIDENT:</b>
-                              {{ IRQADetailss.subjectName }} -
-                              {{ IRQADetailss.subjectSpecificExam }}
-                            </div>
-                            <div
-                              v-else-if="
-                                IRQADetailss.subjectSpecificExam === null
-                              "
-                            >
-                              <b>SUBJECT OF THE INCIDENT:</b>
-                              {{ IRQADetailss.subjectName }}
-                            </div>
-                            <div
-                              style="
-                                background-color: #ffc619;
-                                height: 2px;
-                                margin: 5px 0;
-                              "
-                            ></div>
-                            <div>
-                              <b>LOCATION OF THE INCIDENT:</b>
-                              {{ IRQADetailss.subjectLoc }}
-                            </div>
-                            <div
-                              style="
-                                display: flex;
-                                justify-content: space-between;
-                              "
-                            >
-                              <div>
-                                <b>DATE OF THE INCIDENT:</b>
-                                {{ FormatDate(IRQADetailss.subjectDate) }}
-                              </div>
-                              <div>
-                                <b>TIME OF THE INCIDENT:</b>
-                                {{ FormatTime(IRQADetailss.subjectTime) }}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="ADDesContent">
-                        <div class="ADFixDesign">
-                          <div class="ADDes1">
-                            <div>
-                              <b>NARRATIVE DESCRIPTION OF THE INCIDENT</b>
-                            </div>
-                            <q-separator
-                              style="
-                                background-color: #ffc619;
-                                height: 2px;
-                                margin: 5px 0;
-                              "
-                            ></q-separator>
-                            <div>
-                              <p>{{ IRQADetailss.subjectNote }}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="ADDesContent">
-                        <div class="ADFixDesign">
-                          <div class="ADDes1">
-                            <div><b>POSSIBLE CAUSES OF THE INCIDENT</b></div>
-                            <q-separator
-                              style="
-                                background-color: #ffc619;
-                                height: 2px;
-                                margin: 5px 0;
-                              "
-                            ></q-separator>
-                            <div>
-                              <p>{{ IRQADetailss.subjectCause }}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="ADDesContent">
-                        <div class="ADFixDesign">
-                          <div class="ADDes1">
-                            <div><b>IMMEDIATE RESPONSE</b></div>
-                            <q-separator
-                              style="
-                                background-color: #ffc619;
-                                height: 2px;
-                                margin: 5px 0;
-                              "
-                            ></q-separator>
-                            <div>
-                              <p>{{ IRQADetailss.subjectResponse }}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="ADlist">
-                        <div class="ADVGT">
-                          ROOT CAUSE ANALYSIS (RCA) ACTION ITEMS
-                        </div>
-                      </div>
-
-                      <div
-                        class="ADDesContent"
-                        v-if="
-                          IRQADetailss.actionItem &&
-                          IRQADetailss.actionItem.length
-                        "
-                      >
-                        <div class="ADFixDesign">
-                          <div class="ADDes1">
-                            <div
-                              v-for="(item, index) in IRQADetailss.actionItem"
-                              :key="index"
-                            >
-                              <p>
-                                <b>Action Item {{ index + 1 }}:</b> {{ item }}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="ADDesContent" v-else>
-                        <div class="ADFixDesign">
-                          <div class="ADDes1">
-                            <div
-                              style="
-                                text-align: center;
-                                font-size: 30px;
-                                color: #a9a9a9;
-                              "
-                            >
-                              <p><i>~ACTION DETAILS IS EMPTY~</i></p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="ADlist">
-                        <div class="ADVGT">HUMAN RESOURCES(HR) NOTES</div>
-                      </div>
-
-                      <div class="ADDesContent">
-                        <div class="ADFixDesign">
-                          <div class="ADDes1">
-                            <div v-if="IRQADetailss.newHRNote">
-                              <div><b>NOTE:</b></div>
-                              <div>
-                                <p>{{ IRQADetailss.newHRNote }}</p>
-                              </div>
-                            </div>
-                            <div v-else>
-                              <div
-                                style="
-                                  text-align: center;
-                                  font-size: 30px;
-                                  color: #a9a9a9;
-                                "
-                              >
-                                <p><i>~HR NOTE IS EMPTY~</i></p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </q-item-section>
-                </q-card>
-              </q-dialog>
-            </q-td>
-          </template>
-          <!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-          <template v-slot:body-cell-QA="props">
-            <q-td :props="props">
-              <span class="text-dark text-bold text-center">{{
-                props.row.mainFullName
-              }}</span>
-              <!-- <span class="text-dark text-bold text-center">
-                {{ props.row.MainFullName }}
-              </span>
-              <br />
-              <span
-                v-if="props.row.TransferFullName !== null"
-                class="text-dark text-bold text-center"
-              >
-                REDIRECTED TO:
-                <b style="background: #ffc619">{{
-                  props.row.TransferFullName
-                }}</b>
-              </span> -->
-            </q-td>
-          </template>
-          <!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-          <template v-slot:body-cell-note="props">
-            <q-td :props="props">
-              <q-btn
-                @click="noteTab(props.row.iRNo)"
-                push
-                icon="note"
-                :ripple="{ center: true }"
-                style="width: 90px"
-                class="bg-primary text-white text-bold text-center shadow-5"
-              />
-
-              <q-dialog full-width v-model="noteDia" persistent>
-                <q-card class="ADNDIA">
-                  <q-card-section class="ADNHead">
-                    <div class="ADNText">REMARKS</div>
-
-                    <div class="button-container">
-                      <q-btn
-                        @click="editDia(selectedIrNo)"
-                        color="secondary "
-                        icon="post_add"
-                        label="Add Remarks"
-                        style="
-                          background-color: #024089;
-                          border: 0.2em solid #f3f4f7;
-                          border-radius: 0.5em;
-                        "
-                      />
-                      <q-btn
-                        style="margin-left: 25px"
-                        round
-                        push
-                        icon="close"
-                        class="bg-accent text-black"
-                        @click="cancelNote()"
-                        v-close-popup
-                      />
-
-                      <q-dialog v-model="editDialog" persistent>
-                        <q-card class="ADANDIA">
-                          <q-card-section class="ADANHead">
-                            <div class="ADANText">ADD REMARKS</div>
-                          </q-card-section>
-                          <q-card-section>
-                            <q-input
-                              outlined
-                              v-model="IrNo"
-                              label="IRNo."
-                              style="display: none"
-                            />
-                            <q-input
-                              class="q-pt-sd"
-                              outlined
-                              v-model="policyCode"
-                              label="Policy"
-                            />
-                            <q-input
-                              v-model="addNote"
-                              filled
-                              label="Note"
-                              type="textarea"
-                              class="q-mt-md"
-                              auto-focus
-                            ></q-input>
-                          </q-card-section>
-
-                          <q-separator
-                            style="
-                              background-color: #d5d7da;
-                              height: 2px;
-                              margin: 5px 0;
-                            "
-                          ></q-separator>
-                          <q-card-actions class="q-pt-sd" align="right">
-                            <q-btn
-                              push
-                              label="CANCEL"
-                              color="secondary"
-                              @click="onCancel"
-                            />
-                            <q-btn
-                              push
-                              label="SAVE"
-                              color="accent"
-                              class="text-black"
-                              @click.prevent="NoteSubmit(selectedIrNo)"
-                            />
-                          </q-card-actions>
-                        </q-card>
-                      </q-dialog>
-
-                      <q-dialog v-model="waitplease" persistent>
-                        <q-card class="centered-card">
-                          <q-card-section>
-                            <div class="spinner-container">
-                              <q-spinner-ios size="130px"></q-spinner-ios>
-                              <div class="please-wait">
-                                Doing something. Please wait...
-                              </div>
-                            </div>
-                          </q-card-section>
-                        </q-card>
-                      </q-dialog>
-                    </div>
-                  </q-card-section>
-
-                  <q-card-section>
-                    <q-list bordered>
-                      <q-item v-for="(note, index) in noteDetails" :key="index">
-                        <q-item-section class="ADANCon" v-if="note">
-                          <div class="ADANPolicy">{{ note.policyCode }}</div>
-                          <div>
-                            <p>{{ note.newNote }}</p>
-                          </div>
-                          <div class="ADANPolicy text-right">
-                            {{ FormatDate(note.dateTimeCreated) }}
-                          </div>
-                        </q-item-section>
-
-                        <q-item-section side>
-                          <q-btn
-                            icon="edit"
-                            color="accent"
-                            @click="editNote(note.id)"
-                          />
-                          <q-dialog v-model="editNoteDialog" persistent>
-                            <q-card class="ADENDia">
-                              <q-card-section class="ADENHead">
-                                <div class="ADENText">EDIT NOTE</div>
-                              </q-card-section>
-                              <q-card-section>
-                                <q-input
-                                  outlined
-                                  v-model="Id"
-                                  label="Id Number"
-                                  style="display: none"
-                                />
-                                <q-input
-                                  v-model="newNote"
-                                  filled
-                                  label="Note"
-                                  type="textarea"
-                                  class="q-mt-md"
-                                  auto-focus
-                                ></q-input>
-                              </q-card-section>
-                              <q-separator
-                                style="
-                                  background-color: #d5d7da;
-                                  height: 2px;
-                                  margin: 5px 0;
-                                "
-                              ></q-separator>
-                              <q-card-actions align="right">
-                                <q-btn
-                                  push
-                                  label="CANCEL"
-                                  color="secondary"
-                                  @click="onCancelNote"
-                                />
-                                <q-btn
-                                  push
-                                  label="SAVE"
-                                  color="accent"
-                                  class="text-black"
-                                  @click.prevent="confirmEdit(note.iRNo)"
-                                />
-                              </q-card-actions>
-                            </q-card>
-                          </q-dialog>
-                          <q-btn
-                            class="q-mt-sm"
-                            icon="delete"
-                            color="negative"
-                            @click="deleteNote(note.id, note.iRNo)"
-                          />
-                        </q-item-section>
-                      </q-item>
-
-                      <q-item v-if="noteDetails.length === 0">
-                        <q-item-section>
-                          <div
-                            style="
-                              text-align: center;
-                              font-size: 30px;
-                              color: #a9a9a9;
-                            "
-                          >
-                            <p><i>~REMARKS IS EMPTY~</i></p>
-                          </div>
-                        </q-item-section>
-                      </q-item>
-                    </q-list>
-                  </q-card-section>
-                </q-card>
-              </q-dialog>
-
-              <q-dialog
-                v-model="itemWait"
-                persistent
-                content-class="non-transparent-dialog"
-              >
-                <q-card class="centered-card">
-                  <q-card-section>
-                    <div class="spinner-container">
-                      <q-spinner-facebook size="100px"></q-spinner-facebook>
-                      <div class="please-wait">
-                        Doing something. Please wait...
-                      </div>
-                    </div>
-                  </q-card-section>
-                </q-card>
-              </q-dialog>
-            </q-td>
-          </template>
-          <!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-          <template v-slot:body-cell-auditstatus="props">
-            <q-td>
-              <q-btn
-                push
-                @click="editIRAudit(props.row.iRNo, false)"
-                v-if="props.row.auditStatus === true"
-                :ripple="{ center: true }"
-                style="width: 100px"
-                class="bg-positive text-white text-bold text-center shadow-5"
-                >OPEN</q-btn
-              >
-              <q-btn
-                push
-                :disable="props.row.AuditStatus === false"
-                v-if="props.row.auditStatus === false"
-                :ripple="{ center: true }"
-                style="width: 100px"
-                class="bg-negative text-white text-bold text-center shadow-5"
-                >CLOSED</q-btn
-              >
-
-              <q-dialog v-model="setAuditDialogs">
-                <q-card>
-                  <q-card-section class="ADStatus">
-                    <div class="row items-center justify-between">
-                      <div class="ADSText">CONFIRM CLOSE</div>
-                    </div>
-                  </q-card-section>
-                  <q-card-section>
-                    <div>DO YOU WANT TO CLOSE THE INCIDENT REPORT?</div>
-                  </q-card-section>
-                  <q-separator
-                    style="
-                      background-color: #d5d7da;
-                      height: 2px;
-                      margin: 5px 0;
-                    "
-                  ></q-separator>
-                  <q-card-actions align="right">
-                    <q-btn
-                      push
-                      label="NO"
-                      color="secondary"
-                      @click="setAuditDialogs = false"
-                    />
-                    <q-btn
-                      push
-                      label="YES"
-                      color="accent"
-                      class="text-black"
-                      @click="saveIRAuditStatus"
-                    />
-                  </q-card-actions>
-                </q-card>
-              </q-dialog>
-
-              <q-dialog
-                v-model="itemWait"
-                persistent
-                content-class="non-transparent-dialog"
-              >
-                <q-card class="centered-card">
-                  <q-card-section>
-                    <div class="spinner-container">
-                      <q-spinner-facebook size="100px"></q-spinner-facebook>
-                      <div class="please-wait">
-                        Doing something. Please wait...
-                      </div>
-                    </div>
-                  </q-card-section>
-                </q-card>
-              </q-dialog>
-            </q-td>
-          </template>
-          <!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-        </q-table>
-      </div>
+          </q-card-section>
+        </q-card-section>
+      </q-card-section>
     </div>
   </div>
+
+  <!-- BACKGROUND -->
   <img
     src="../assets/OMBRE-GRAY.jpg"
-    style="
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-    "
+    style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:0;"
   />
 </template>
 
 <script>
+import AuditTables from "../components/AuditTable.vue"
 import { mapGetters } from "vuex";
 
 export default {
+  components: { AuditTables },
+
   data() {
     return {
-      disAll: [],
-      IRDetails: [],
-      IRQADetailss: [],
-      disAllSubject: [],
-      spiloading: true,
-      showTable: false,
-      setAuditDialogs: false,
-      IRDialog: false,
-      editDialog: false,
-      editNoteDialog: false,
-      noteDia: false,
-      waitplease: false,
-      SubIncident: false,
-      itemWait: false,
-      newNote: "",
-      addNote: "",
-      IrNo: "",
-      Id: "",
-      searchQuery: "",
-      search: "",
+      disAllDetails: [],
+      disAllDiv: [],
+      selectedArea: null,
       selectedStatus: null,
-      noteDetails: [],
-      selectedIrNo: "",
-      policyCode: "",
+      searchQuery: "",
+      loading: true,
+      showTable: false,
+
       disColumns: [
+        { name: "viewIR", label: "INCIDENT REPORT DETAILS", align: "left" },
+        { name: "IRNo", label: "IR NUMBER", align: "left", field: "iRNo" },
+        { name: "departmentNumber", label: "INCIDENT RESPONDER (DEPARTMENT)", align: "left", field: "department_Description" },
+        { name: "subject", label: "SUBJECT OF THE INCIDENT", align: "left", field: "subjectName" },
         {
-          name: "viewIR",
-          label: "INCIDENT REPORT DETAILS",
+          name: "topic",
+          label: "TOPIC",
           align: "left",
-          field: "id",
-        },
-        { name: "IRNo", label: "IRNUMBER ", align: "left", field: "iRNo" },
-        {
-          name: "departmentNumber",
-          label: "INCIDENT RESPONDER (DEPARTMENT)",
-          align: "left",
-          field: "department_Description",
+          field: "subjectTopic",
         },
         {
-          name: "subject",
-          label: "SUBJECT OF THE INCIDENT",
+          name: "divisionCode",
+          label: "AREA",
           align: "left",
-          field: "subjectName",
-        },
-        { name: "QA", label: "QA IN-CHARGE", align: "left", field: "id" },
-        { name: "note", label: "POLICY", align: "center" },
-        {
-          name: "auditstatus",
-          label: "STATUS",
-          align: "left",
-          field: "auditStatus",
-        },
+          field: "divisionCode"
+        }
       ],
-      auditStats: [
+
+      areaValue: [
+        { label: "ACADEME", value: "ACD-01" },
+        { label: "HOSPITAL", value: "HST-02" },
+        { label: "ADMIN", value: "ADM-03" },
+      ],
+
+      qaStats: [
         { label: "OPEN", value: true },
         { label: "CLOSED", value: false },
       ],
-      showDeleteDialog: false,
-      shouldShowInput: true,
-
-      FullContent: false,
-      tab: "repIncident",
-      disAllDomain: [],
-      selectedRiskDomain: null,
-      dropdownOpen: false, // Data property to control dropdown visibility
-      selectedSubject: null,
-      dropdownOpen2: false,
-
-      disQA: [],
-      disSubColumns: [
-        // {
-        //   name: "domain",
-        //   label: "RISK DOMAIN",
-        //   align: "left",
-        //   field: "riskDomain",
-        // },
-        // { name: "risk", label: "RISK", align: "left", field: "risk" },
-        // {
-        //   name: "description",
-        //   label: "RISK DESCRIPTION",
-        //   align: "left",
-        //   field: "riskDescription",
-        // },
-        {
-          name: "subjectcode",
-          label: "REPORTABLE INCIDENT CODE",
-          align: "left",
-          field: "subjectCode",
-        },
-        {
-          name: "subject",
-          label: "REPORTABLE INCIDENT",
-          align: "left",
-          field: "subjectName",
-        },
-        {
-          name: "subjectDescription",
-          label: "REPORTABLE INCIDENT DEFINITION",
-          align: "left",
-          field: "subjectReptDescription",
-        },
-        { name: "qa", label: "QA IN-CHARGE", align: "left", field: "qAName" },
-      ],
-      EmployeeCode: "",
-      SecondaryQA: "",
-      SubjectPolicy: [],
-      SubjectRiskCode: "",
-      SubjectName: "",
-      SubjectReptDescription: "",
-      waiting: false,
-      isAddRiskOpen: true,
-      isRiskDetailsOpen: false,
-
-      RiskDictionary: false,
-      isRiskDicOpen: false,
-      isAddRiskDicOpen: false,
-      searchRisk: "",
-      disAllRisk: [],
-      disRiskDicColumns: [
-        {
-          name: "domain",
-          label: "RISK DOMAIN",
-          align: "left",
-          field: "riskDomain",
-        },
-        {
-          name: "riskCode",
-          label: "RISK CODE",
-          align: "left",
-          field: "riskCode",
-        },
-        { name: "risk", label: "RISK", align: "left", field: "risk" },
-        {
-          name: "description",
-          label: "RISK DESCRIPTION",
-          align: "left",
-          field: "riskDescription",
-        },
-      ],
-      DomainCode: "",
-      RiskDomain: "",
-      Risk: "",
-      RiskDescription: "",
-
-      ChilIncident: false,
-      SubjectCode: null,
-      SubjectSpecificExam: "",
-      PrimaryChilQA: null,
-      SubjectReptChilDescription: "",
-      disAllRiskChild: [],
-      dropdownRI: false,
-      selectedRiskChild: null,
-      searchRiskChild: "",
-      disRiskChildColumns: [
-        {
-          name: "subjectchilcode",
-          label: "REPORTABLE CHILD CODE",
-          align: "left",
-          field: "subjectChilCode",
-        },
-        {
-          name: "subjectspecexam",
-          label: "SPECIFIC EXAMPLE",
-          align: "left",
-          field: "subjectSpecificExam",
-        },
-        {
-          name: "subject",
-          label: "REPORTABLE INCIDENT",
-          align: "left",
-          field: "subjectName",
-        },
-      ],
-
-      pdfDisplayDialog: false,
-      pdfUrl: null,
-      maximizedToggle: null,
-      subjectFileName: null,
-    };
+    }
   },
 
   computed: {
     ...mapGetters({
       getForm: "ApplyStore/getForm",
-      getSubject: "ApplyStore/getSubject",
-      getRiskChild: "ApplyStore/getRiskChild",
-      getQA: "ApplyStore/getQA",
-      getAllRisk: "ApplyStore/getAllRisk",
-      getRisk: "ApplyStore/getRisk",
-      getAudit: "ApplyStore/getAudit",
-      getHR: "ApplyStore/getHR",
+      division: "ApplyStore/division",
+      qaStats: "ApplyStore/getQaStats"
     }),
 
     filteredDisAll() {
-      const { disAll, selectedStatus, searchQuery } = this;
-      let filteredData = [...disAll];
+      const { disAllDetails, selectedStatus,  selectedArea, searchQuery } = this;
+
+      let filteredData = [...disAllDetails];
 
       if (selectedStatus && typeof selectedStatus === "object") {
         const { value: statusValue } = selectedStatus;
         filteredData = filteredData.filter(
-          (item) => item.auditStatus === statusValue
+          (item) => item.qAStatus === statusValue
         );
       }
+
+      if (selectedArea && typeof selectedArea === "object") {
+        const { divisionCode: areaValue } = selectedArea;
+        filteredData = filteredData.filter( (item) => item.divisionCode === areaValue );
+      }
+
       if (searchQuery && typeof searchQuery === "string") {
         const query = searchQuery.toLowerCase();
         filteredData = filteredData.filter((item) =>
@@ -1659,829 +212,68 @@ export default {
           )
         );
       }
+
       return filteredData;
     },
 
-    filteredDisSub() {
-      const { disAllSubject, selectedSubject, search } = this;
-      let filteredSub = [...disAllSubject];
-
-      if (selectedSubject && typeof selectedSubject === "object") {
-        const { domainCode: statusValue } = selectedSubject;
-        filteredSub = filteredSub.filter(
-          (item) => item.domainCode === statusValue
-        );
-      }
-
-      if (search && typeof search === "string") {
-        const query = search.toLowerCase();
-        filteredSub = filteredSub.filter((item) =>
-          Object.values(item).some(
-            (val) =>
-              typeof val === "string" && val.toLowerCase().includes(query)
-          )
-        );
-      }
-      return filteredSub;
-    },
-
-    filteredDisRiskDic() {
-      const { disAllRisk, selectedRiskDomain, searchRisk } = this;
-      let filteredRisk = [...disAllRisk];
-
-      if (selectedRiskDomain && typeof selectedRiskDomain === "object") {
-        const { domainCode: statusValue } = selectedRiskDomain;
-        filteredRisk = filteredRisk.filter(
-          (item) => item.domainCode === statusValue
-        );
-      }
-
-      if (searchRisk && typeof searchRisk === "string") {
-        const query = searchRisk.toLowerCase();
-        filteredRisk = filteredRisk.filter((item) =>
-          Object.values(item).some(
-            (val) =>
-              typeof val === "string" && val.toLowerCase().includes(query)
-          )
-        );
-      }
-
-      return filteredRisk;
-    },
-
-    filteredDisRiskChild() {
-      const { disAllRiskChild, selectedRiskChild, searchRiskChild } = this;
-      let filteredRiskChild = [...disAllRiskChild];
-
-      if (selectedRiskChild && typeof selectedRiskChild === "object") {
-        const { subjectCode: statusValue } = selectedRiskChild;
-        filteredRiskChild = filteredRiskChild.filter(
-          (item) => item.subjectCode === statusValue
-        );
-      }
-
-      if (searchRiskChild && typeof searchRiskChild === "string") {
-        const query = searchRiskChild.toLowerCase();
-        filteredRiskChild = filteredRiskChild.filter((item) =>
-          Object.values(item).some(
-            (val) =>
-              typeof val === "string" && val.toLowerCase().includes(query)
-          )
-        );
-      }
-      return filteredRiskChild;
-    },
+    totalReport() {
+      return this.filteredDisAll.length;
+    }
   },
 
   mounted() {
+    // 🔹 Initial delay (3 seconds)
     setTimeout(() => {
       this.showTable = true;
-      this.disAll;
-      this.spiloading = false;
-    }, 3000); // Simulating 2 seconds of loading time
+      this.disAllDetails;
+      this.loading = false;
+    }, 3000);
+
+    // 🔹 Auto fetch every 60 seconds
+    this.interval = setInterval(() => {
+      this.getForm();
+    }, 60000);
   },
+
 
   created() {
     this.getInc();
-    this.getSubjecttab();
-    this.getRiskchildtab();
-    this.getDomainOption();
-    this.getRiskTable();
-    this.getQAtrans();
+    this.getDivision();
   },
 
   methods: {
     async getInc() {
       try {
         await this.$store.dispatch("ApplyStore/disTab");
-        this.disAll = this.getForm;
+        this.disAllDetails = this.getForm;
       } catch (error) {
-        console.error("Error Displaying data:", error);
+        console.error("Error loading incidents:", error);
       }
     },
 
-    async getSubjecttab() {
+    async getDivision() {
       try {
-        await this.$store.dispatch("ApplyStore/disSubjectTab");
-        this.disAllSubject = this.getSubject;
+        await this.$store.dispatch("ApplyStore/disFilterDivision");
+        this.disAllDiv = this.division;
       } catch (error) {
-        console.error("Error Displaying data:", error);
+        console.error("Error loading division:", error);
       }
     },
 
-    async getRiskchildtab() {
-      try {
-        await this.$store.dispatch("ApplyStore/disRiskChildTab");
-        this.disAllRiskChild = this.getRiskChild;
-      } catch (error) {
-        console.error("Error Displaying data:", error);
-      }
-    },
+    search() {},
 
-    async getDomainOption() {
-      try {
-        await this.$store.dispatch("ApplyStore/disDomainCode");
-        this.disAllDomain = this.getRisk;
-      } catch (error) {
-        console.error("Error Displaying data:", error);
-      }
-    },
-
-    async getRiskTable() {
-      try {
-        await this.$store.dispatch("ApplyStore/disRiskTab");
-        this.disAllRisk = this.getAllRisk;
-      } catch (error) {
-        console.error("Error Displaying data:", error);
-      }
-    },
-
-    async getQAtrans() {
-      try {
-        await this.$store.dispatch("ApplyStore/disQAs");
-        this.disQA = this.getQA;
-      } catch (error) {
-        console.error("Error displaying data:", error);
-      }
-    },
-
-    /////////////////////////////////////////////////////////////////////////REPORTABLE INCIDENT ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //  RISK FILTER IN REPORTABLE  //
-    // FilterFn(val, update) {
-    //   if (val === "") {
-    //     update(() => {
-    //       this.disAllRisk = this.getAllRisk;
-    //     });
-    //     return;
-    //   }
-
-    //   update(() => {
-    //     const needle = val.toLowerCase();
-    //     this.disAllRisk = this.getAllRisk.filter((option) => {
-    //       return option.risk.toLowerCase().indexOf(needle) > -1;
-    //     });
-    //   });
-    // },
-
-    FilterFn(val, update) {
-      if (val === "") {
-        update(() => {
-          this.disAllDomain = this.getRisk;
-        });
-        return;
-      }
-
-      update(() => {
-        const needle = val.toLowerCase();
-        this.disAllDomain = this.getRisk.filter((option) => {
-          return option.riskDomain.toLowerCase().indexOf(needle) > -1;
-        });
-      });
-    },
-
-    createValue(val, done) {
-      this.SubjectPolicy.push(val);
-      done(val, "add-unique");
-    },
-
-    getPlainArray(arr) {
-      return Array.from(arr);
-    },
-
-    subjectIncident() {
-      this.SubIncident = true;
-    },
-
-    onCancelRisk() {
-      this.SubjectName = "";
-      this.SubjectPolicy = [];
-      this.SubjectRiskCode = "";
-      this.SubjectReptDescription = "";
-      this.EmployeeCode = "";
-      this.SecondaryQA = "";
-      this.SubIncident = false;
-    },
-
-    validateRisk() {
-      return this.SubjectName && this.SubjectRiskCode && this.EmployeeCode;
-    },
-
-    async submitRisk() {
-      try {
-        if (!this.validateRisk()) {
-          this.$q.notify({
-            type: "negative",
-            message: "ALL ITEMS ARE REQUIRED",
-            position: "top",
-            timeout: 1000,
-            progress: true,
-          });
-          return;
-        }
-        this.waiting = true;
-        await this.saveRisk();
-        setTimeout(() => {
-          this.getSubjecttab();
-          this.waiting = false;
-          this.isAddRiskOpen = false;
-          this.isRiskDetailsOpen = true;
-        }, 2000); // Refresh the page after 3 seconds
-        this.$q.notify({
-          color: "green-8",
-          position: "top",
-          message: "SUCCESS ADDING RISK",
-          icon: "check",
-          iconColor: "white",
-          timeout: 3000,
-          progress: true,
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    },
-
-    async saveRisk() {
-      try {
-        const riskdata = {
-          SubjectName: this.SubjectName,
-          SubjectPolicy: this.getPlainArray(this.SubjectPolicy),
-          SubjectRiskCode: this.SubjectRiskCode.domainCode,
-          SubjectReptDescription: this.SubjectReptDescription,
-          EmployeeCode: this.EmployeeCode,
-          SecondaryQA: this.SecondaryQA,
-        };
-        this.onCancelRisk();
-        await this.$store.dispatch("ApplyStore/addSubjectDetails", riskdata);
-      } catch (error) {
-        console.error("Error inserting data:", error);
-      }
-    },
-
-    //////////////////////////////////////////////////////////////////// REPORTABLE INCIDENT CHILDREN  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    incidentChildren() {
-      this.ChilIncident = true;
-    },
-
-    FilterFnChil(val, update) {
-      if (val === "") {
-        update(() => {
-          this.disAllSubject = this.getSubject;
-        });
-        return;
-      }
-
-      update(() => {
-        const needle = val.toLowerCase();
-        this.disAllSubject = this.getSubject.filter((option) => {
-          return option.subjectName.toLowerCase().indexOf(needle) > -1;
-        });
-      });
-    },
-
-    onCancelRiskChil() {
-      (this.SubjectCode = ""),
-        (this.SubjectSpecificExam = ""),
-        (this.PrimaryChilQA = null),
-        (this.SubjectReptChilDescription = ""),
-        (this.ChilIncident = false);
-    },
-
-    validateRiskChil() {
-      return this.SubjectSpecificExam;
-    },
-
-    async submitRiskChild() {
-      try {
-        if (!this.validateRiskChil()) {
-          this.$q.notify({
-            type: "negative",
-            message: "ALL ITEMS ARE REQUIRED",
-            position: "top",
-            timeout: 1000,
-            progress: true,
-          });
-          return;
-        }
-        this.waiting = true;
-        await this.saveRiskChil();
-        this.getRiskchildtab();
-        setTimeout(() => {
-          this.waiting = false;
-        }, 2000);
-        this.$q.notify({
-          color: "green-8",
-          position: "top",
-          message: "SUCCESS ADDING REPORTABLE CHILDREN",
-          icon: "check",
-          iconColor: "white",
-          timeout: 3000,
-          progress: true,
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    },
-
-    async saveRiskChil() {
-      try {
-        const riskChilddata = {
-          SubjectCode: this.SubjectCode ? this.SubjectCode.subjectCode : null,
-          SubjectSpecificExam: this.SubjectSpecificExam,
-          SubjectReptChilDescription: this.SubjectReptChilDescription,
-          PrimaryChilQA: this.PrimaryChilQA,
-        };
-        this.onCancelRiskChil();
-        await this.$store.dispatch("ApplyStore/addRiskChild", riskChilddata);
-      } catch (error) {
-        console.error("Error inserting data:", error);
-      }
-    },
-    //////////////////////////////////////////////////OVERALL CONTENT ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    async selectRickDics(option) {
-      this.selectedRiskDomain = option;
-      this.dropdownOpen = false; // Close the dropdown
-    },
-
-    async selectSubjectCode(option) {
-      this.selectedSubject = option;
-      this.dropdownOpen2 = false; // Close the dropdown
-    },
-
-    async selectRiskChildCode(option) {
-      this.selectedRiskChild = option;
-      this.dropdownIR = false; // Close the dropdown
-    },
-
-    content() {
-      this.FullContent = true;
-    },
-
-    //////////////////////////////////////////////////RISK DICTIONARY///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    riskDisctionary() {
-      this.RiskDictionary = true;
-    },
-
-    onCancelRiskDic() {
-      this.DomainCode = "";
-      this.RiskDomain = "";
-      this.Risk = "";
-      this.RiskDescription = "";
-      this.RiskDictionary = false;
-    },
-
-    validateRiskDic() {
-      return (
-        this.DomainCode && this.RiskDomain && this.Risk && this.RiskDescription
-      );
-    },
-
-    async submitRiskDic() {
-      try {
-        if (!this.validateRiskDic()) {
-          this.$q.notify({
-            type: "negative",
-            message: "ALL ITEMS ARE REQUIRED",
-            position: "top",
-            timeout: 1000,
-            progress: true,
-          });
-          return;
-        }
-        this.waiting = true;
-        await this.saveRiskDic();
-        this.getRiskTable();
-        setTimeout(() => {
-          this.waiting = false;
-          this.isAddRiskDicOpen = false;
-          this.isRiskDicOpen = true;
-        }, 2000); // Refresh the page after 3 seconds
-        this.$q.notify({
-          color: "green-8",
-          position: "top",
-          message: "SUCCESS ADDING NEW RISK DICTIONARY",
-          icon: "check",
-          iconColor: "white",
-          timeout: 3000,
-          progress: true,
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    },
-
-    async saveRiskDic() {
-      try {
-        const riskdic = {
-          DomainCode: this.DomainCode,
-          RiskDomain: this.RiskDomain,
-          Risk: this.Risk,
-          RiskDescription: this.RiskDescription,
-        };
-        this.onCancelRiskDic();
-        await this.$store.dispatch("ApplyStore/addRiskDictionary", riskdic);
-      } catch (error) {
-        console.error("Error inserting data:", error);
-      }
-    },
-
-    //////////////////////////////////////////////////INCIDENT FORM///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    FormatDate(SubjectDate) {
-      const date = new Date(SubjectDate);
-      const options = { year: "numeric", month: "long", day: "2-digit" };
-      const formattedDate = date
-        .toLocaleDateString("en-US", options)
-        .toUpperCase()
-        .replace(/\s/g, " ");
-      return formattedDate;
-    },
-
-    FormatDateIR(DateTimeCreated) {
-      const date = new Date(DateTimeCreated);
-      const options = { year: "numeric", month: "long", day: "2-digit" };
-      const formattedDate = date
-        .toLocaleDateString("en-US", options)
-        .toUpperCase()
-        .replace(/\s/g, " ");
-      return formattedDate;
-    },
-
-    FormatTime(SubjectTime) {
-      const date = new Date(SubjectTime);
-      let hours = date.getHours();
-      const minutes = date.getMinutes().toString().padStart(2, "0");
-      const ampm = hours >= 12 ? "PM" : "AM";
-
-      hours = hours % 12;
-      hours = hours ? hours : 12; // the hour '0' should be '12'
-      const formattedTime = `${hours}:${minutes} ${ampm}`;
-
-      return formattedTime;
-    },
-
-    async viewIReport(IRNo) {
-      try {
-        this.IRDialog = true;
-        const data = {
-          iRNo: IRNo,
-        };
-        this.selectedIrNo = IRNo;
-        const response = await this.$store.dispatch(
-          "ApplyStore/disIrpHR",
-          data
-        );
-        this.IRQADetailss = this.getHR;
-      } catch (error) {
-        console.error("Error inserting data:", error);
-      }
-    },
-
-    viewPDF(subjectFile) {
-      this.pdfUrl = "data:application/pdf;base64," + subjectFile;
-      this.pdfDisplayDialog = true;
-    },
-
-    closepdf() {
-      this.pdfDisplayDialog = false;
-      this.SubjectFile = null;
-    },
-
-    //////////////////////////////////////////////////// POLICY /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    async selectStatus(option) {
+    selectStatus(option) {
       this.selectedStatus = option;
     },
 
-    async noteTab(IRNo) {
-      this.noteDia = true;
-      try {
-        const data = {
-          iRNo: IRNo,
-        };
-        this.selectedIrNo = IRNo;
-        await this.$store.dispatch("ApplyStore/disNote", data);
-        this.noteDetails = this.getAudit;
-      } catch (error) {
-        console.error("Error inserting data:", error);
-      }
+    selectArea(option) {
+      this.selectedArea = option;
     },
-
-    async NoteSubmit(IRNo) {
-      try {
-        this.selectedIrNo = IRNo;
-        await this.saveNote();
-        setTimeout(() => {
-          this.noteTab(IRNo);
-          this.waitplease = false;
-        }, 2000); // Refresh the page after 3 seconds
-      } catch (error) {
-        console.error(error);
-      }
-    },
-
-    editDia(selectedIrNo) {
-      this.editDialog = true;
-      this.IrNo = selectedIrNo;
-    },
-
-    async saveNote() {
-      try {
-        if (!this.validateRemarks()) {
-          this.$q.notify({
-            type: "negative",
-            message: "Note & Policy are required",
-            position: "top",
-            timeout: 1000,
-            progress: true,
-          });
-          this.editDialog = true;
-          return;
-        }
-        const data = {
-          note: this.addNote,
-          iRNo: this.IrNo,
-          policyCode: this.policyCode,
-        };
-        await this.$store.dispatch("ApplyStore/AddAud", data);
-        this.cancelNote();
-        this.onCancel();
-        this.waitplease = true;
-        this.$q.notify({
-          color: "green-8",
-          position: "top",
-          message: "SUCCESS ADDING REMARKS",
-          icon: "check",
-          iconColor: "white",
-          timeout: 3000,
-          progress: true,
-        });
-      } catch (error) {
-        console.error("Error inserting data:", error);
-        this.$q.notify({
-          type: "negative",
-          message: "Failed to save note. Please try again later.",
-          position: "top",
-          timeout: 1000,
-          progress: true,
-        });
-      }
-    },
-
-    validateRemarks() {
-      return this.IrNo && this.addNote && this.policyCode;
-    },
-
-    cancelNote() {
-      this.IrNo = "";
-      this.noteDetails = []; // Clears the array noteDetails by assigning an empty array
-    },
-
-    onCancel() {
-      this.IrNo = "";
-      this.policyCode = "";
-      this.addNote = "";
-      this.editDialog = false;
-    },
-
-    editNote(Id) {
-      this.editNoteDialog = true;
-      this.Id = Id;
-    },
-
-    async confirmEdit(IRNo) {
-      try {
-        if (!this.newNote) {
-          this.$q.notify({
-            color: "negative",
-            position: "top",
-            message: "REQUIRED ALL FIELDS",
-            icon: "report_problem",
-            iconColor: "white",
-            timeout: 1000,
-            progress: true,
-          });
-          this.editNoteDialog = true;
-          return;
-        }
-        const payload = {
-          Id: this.Id,
-          newNote: this.newNote,
-        };
-        this.onCancelNote();
-        await this.$store.dispatch("ApplyStore/putEdNote", payload);
-        this.itemWait = true;
-        setTimeout(() => {
-          this.noteTab(IRNo);
-          this.itemWait = false;
-        }, 1000);
-        this.$q.notify({
-          color: "green-8",
-          position: "top",
-          message: "SUCCESS EDITING REMARKS",
-          icon: "check",
-          iconColor: "white",
-          timeout: 1000,
-          progress: true,
-        });
-      } catch (error) {
-        // console.error('Error inserting data:', error);
-      }
-    },
-
-    onCancelNote() {
-      this.Id = "";
-      this.newNote = "";
-      this.editNoteDialog = false;
-    },
-
-    validateEdit() {
-      return this.Id && this.newNote;
-    },
-
-    async deleteNote(Id, IRNo) {
-      try {
-        const data = {
-          Id: Id,
-        };
-        await this.$store.dispatch("ApplyStore/putNote", data);
-        this.itemWait = true;
-        setTimeout(() => {
-          this.noteTab(IRNo);
-          this.itemWait = false;
-        }, 1000);
-        this.$q.notify({
-          color: "green-8",
-          position: "top",
-          message: "SUCCESS DELETING REMARKS",
-          icon: "check",
-          iconColor: "white",
-          timeout: 1000,
-          progress: true,
-        });
-      } catch (error) {
-        console.error("Error deleting data:", error);
-      }
-    },
-
-    ///////////////////////////////////AUDIT Status//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    editIRAudit(IRNo) {
-      this.setAuditDialogs = true;
-      this.IrNo = IRNo;
-    },
-
-    async saveIRAuditStatus() {
-      try {
-        const payload = { IRNo: this.IrNo, AuditStatus: false };
-        const response = await this.$store.dispatch(
-          "ApplyStore/putauditIR",
-          payload
-        );
-        this.itemWait = true;
-        setTimeout(() => {
-          this.getInc();
-          this.itemWait = false;
-        }, 2000);
-        this.$q.notify({
-          color: "green-8",
-          position: "top",
-          message: "SUCCESS CLOSING STATUS",
-          icon: "check",
-          iconColor: "white",
-          timeout: 1000,
-          progress: true,
-        });
-        this.setAuditDialogs = false;
-        this.AuditStatus = "";
-      } catch (error) {
-        console.error("Error updating status:", error);
-        // Optionally, you can show an error message to the user
-      }
-    },
-  },
-};
+  }
+}
 </script>
 
 <style>
-/* ///////////////////////////////////////QAHEADER////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
-
-.my-card {
-  height: 500px;
-  width: 100%;
-  margin-bottom: 25px;
-}
-.filtertab {
-  background-color: #0f4d91;
-  font-weight: bold;
-  border: 0.1em solid #f3f4f7;
-  box-shadow: 0 4px 8px rgba(243, 238, 238, 0.1);
-  font-style: Arial Black;
-}
-.IRAHText {
-  font-weight: bold;
-  font-style: roboto;
-  font-family: Arial Black;
-  display: flex;
-  color: #ffc619;
-  font-size: 35px;
-  justify-content: center;
-}
-
-.spinner {
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  margin-top: 50px;
-  margin-left: 45%;
-}
-
-/* ///////////////////////////////////////ALL CONTENT////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
-
-.RiskText {
-  font-weight: bold;
-  font-style: roboto;
-  display: flex;
-  color: #003566;
-  font-size: 25px;
-  justify-content: center;
-}
-
-.footer-actions {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  background: white; /* or any color to match the card */
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
-  border-top: 0.2em solid #d5d7da;
-}
-
-.footer-actions-reportable {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  background: white;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
-  border-top: 0.2em solid #d5d7da;
-  display: flex;
-  justify-content: flex-end; /* Aligns buttons to the right */
-  padding: 10px; /* Adds padding */
-}
-
-.button1 {
-  width: auto; /* Adjusts button width */
-  margin-left: 10px; /* Adds spacing between buttons */
-}
-
-/* ///////////////////////////////////////TABLE////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
-
-.SIODialog {
-  background-color: #ffffff;
-}
-.SIOTRANS {
-  padding: 1em;
-  width: auto;
-  height: 200px;
-  margin-top: 15px;
-  margin-left: 15px;
-  margin-right: 15px;
-  background-color: #ccc;
-}
-.SIOCARD {
-  height: 690px;
-  width: 840px;
-  background-color: #ccc;
-}
-.AuditIR {
-  height: 75px;
-  border: 0.2em solid #f3f4f7;
-  background-color: #003566;
-  border: 0.6em solid #d5d7da;
-}
-.AuditText {
-  font-weight: bold;
-  font-style: roboto;
-  display: flex;
-  color: #ffc619;
-  font-size: 25px;
-  justify-content: center;
-}
-
-/* ///////////////////////////////////////TABLE////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
-
-.table-with-border {
-  border-bottom: 2em solid hsl(220, 22%, 81%);
-  border-collapse: collapse;
-  margin-top: 25px;
-}
-.q-table-container {
-  border-radius: 5px;
-  overflow: hidden;
-}
 .q-table td,
 .q-table th {
   padding: 8px;
@@ -2491,14 +283,17 @@ export default {
   word-wrap: break-word; /* Enable word wrapping */
   white-space: normal; /* Allow the text to wrap to the next line */
 }
+
 .q-table th {
   background-color: #0f4d91;
   color: #fff;
 }
+
 .q-table tbody tr:nth-child(odd) {
   background-color: #f4f4f4;
   padding: 8px;
 }
+
 .q-table button {
   height: 30px; /* Set your desired height */
   width: 80px; /* Set your desired width */
@@ -2507,301 +302,80 @@ export default {
   padding: 0;
 }
 
-/* ///////////////////////////////////////IRDETAILS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+/* ///////////////////////////////////////HRIR///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 .custom-item-section {
   border: 1px solid #ccc; /* Border style */
   border-radius: 1px; /* Border radius */
   padding: 5px; /* Optional padding */
 }
-.ADDialog {
-  background-color: #ffffff;
-  max-height: 100%; /* You can adjust the units based on your preference, 'vw' for viewport width */
-  border: 0.2em solid #f3f4f7;
-}
-.ADIR {
-  height: 85px;
-  border: 0.2em solid #f3f4f7;
-  background-color: #003566;
-  border: 0.6em solid #d5d7da;
-}
-.ADText {
-  font-weight: bold;
-  font-style: roboto;
-  display: flex;
-  color: #ffc619;
-  font-size: 25px;
-  justify-content: center;
-}
-.ADlist {
-  height: 15%;
-  width: 100%;
-  border: 0.1em solid #cacaca;
-  background-color: #003566;
-}
-.ADDes {
-  padding: 8px;
-  margin-top: 5px;
-  width: 98%;
-  font-size: 15px;
-  border: 0.1em solid #ffffff;
+.HRVDia {
+  background-image: url("../assets/BGCORE.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #f4f7fc;
+  padding-top: 20px;
+  padding-bottom: 40px;
+  min-height: 100vh;
 }
 
-.ADTitlelist {
-  height: 40%;
-  width: 100%;
-  padding: 8px;
-  border: 0.1em solid #cacaca;
-  background-color: #003566;
+.formseparatorYellow {
+  background-color: #ffc619;
+  height: 2px;
+  margin-top: 15px;
+  margin-bottom: 15px;
 }
-.ADTextlist {
-  font-weight: bold;
-  display: flex;
-  color: #ffc619;
-  font-size: 22px;
-  justify-content: center;
-}
-.ADDesContent {
-  border: 0.1em solid #cacaca;
+
+.formseparatorBlue {
+  background-color: #6b7c93;
+  height: 2px;
   margin-top: 5px;
+  margin-bottom: 5px;
 }
-.ADDesign {
-  width: 70%;
-  margin: 5px;
-  font-size: 15px;
+
+.formseparatorWhite {
+  background-color: #fff;
+  height: 2px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.contentFormHR {
+  border: 2px solid #f0f2f5;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 25px;
+  padding: 20px;
   background-color: #ffffff;
+  width: 1100px;
+  height: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
-.ADDesign2 {
-  width: 25%;
-  margin: 5px;
-  font-size: 15px;
-  background-color: #ffffff;
-}
-.ADFixDesign {
+
+.HRFixDesign {
   width: 99.5%;
   margin: 5px;
   font-size: 15px;
   background-color: #ffffff;
 }
-.ADFileDes {
+
+.HRDes1 {
+  font-size: 15px;
+  border: 0.1em solid #ffffff;
+}
+
+.HRDes {
+  font-size: 15px;
+  border: 0.1em solid #ffffff;
+}
+
+.HRFileDes {
   padding: 8px;
   margin-top: 5px;
   font-size: 15px;
   border: 0.1em solid #003566;
   background-color: #e3f2fd;
 }
-.ADFixDesign {
-  width: 99.5%;
-  margin: 5px;
-  font-size: 15px;
-  background-color: #ffffff;
-}
-.ADIRND {
-  font-weight: bold;
-  display: flex;
-  color: #ffc619;
-  font-size: 20px;
-  justify-content: center;
-}
-.ADDes1 {
-  padding: 8px;
-  margin: 5px;
-  font-size: 15px;
-  border: 0.1em solid #ffffff;
-}
-.ADText {
-  font-weight: bold;
-  font-style: roboto;
-  display: flex;
-  color: #ffc619;
-  font-size: 30px;
-  justify-content: center;
-}
-.ADVGT {
-  font-weight: bold;
-  display: flex;
-  color: #ffc619;
-  font-size: 20px;
-  justify-content: center;
-}
-.ADlist {
-  height: 30%;
-  width: 100%;
-  margin-top: 15px;
-  border: 0.1em solid #cacaca;
-  background-color: #003566;
-}
-/* ///////////////////////////////////////AUDIT NOTE////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
-.ADNDIA {
-  background-color: #ffffff;
-  height: 95%; /* You can adjust the units based on your preference, 'vw' for viewport width */
-  border: 0.2em solid #f3f4f7;
-}
-.ADNHead {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 90px;
-  width: 100%;
-  border: 0.2em solid #f3f4f7;
-  background-color: #003566;
-  border: 0.6em solid #d5d7da;
-}
-.ADNText {
-  font-weight: bold;
-  font-style: Arial Black;
-  display: flex;
-  color: #ffc619;
-  font-size: 30px;
-  justify-content: center;
-}
-.button-container {
-  display: flex;
-}
-
-/* ///////////////////////////////////////ADD NOTE////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
-
-.ADANDIA {
-  background-color: #ffffff;
-  width: 450px;
-  height: 395px;
-  border: 0.2em solid #f3f4f7;
-  font-weight: bold;
-  font-style: Arial Black;
-}
-.ADANHead {
-  height: 75px;
-  border: 0.2em solid #f3f4f7;
-  background-color: #003566;
-  border: 0.6em solid #d5d7da;
-}
-.ADANText {
-  font-weight: bold;
-  font-style: Arial Black;
-  display: flex;
-  color: #ffc619;
-  font-size: 30px;
-  justify-content: center;
-}
-
-/* ///////////////////////////////////////ADD NOTE////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
-
-.ADANCon {
-  border: 1px solid #ccc; /* Border style */
-  border-radius: 1px; /* Border radius */
-  padding: 10px; /* Optional padding */
-  font-size: 15px;
-  font-style: Arial Black;
-}
-.ADANPolicy {
-  font-style: Arial Black;
-  font-weight: bold;
-  font-size: 18px;
-}
-.ADENDia {
-  background-color: #ffffff;
-  width: 480px;
-  height: 338px;
-  border: 0.2em solid #f3f4f7;
-  font-weight: bold;
-  font-style: Arial Black;
-}
-.ADENHead {
-  height: 75px;
-  border: 0.2em solid #f3f4f7;
-  background-color: #003566;
-  border: 0.6em solid #d5d7da;
-}
-.ADENText {
-  font-weight: bold;
-  font-style: Arial Black;
-  display: flex;
-  color: #ffc619;
-  font-size: 30px;
-  justify-content: center;
-}
-
-/* ///////////////////////////////////////HRSTATUS///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
-
-.ADStatus {
-  height: 75px;
-  border: 0.2em solid #f3f4f7;
-  background-color: #003566;
-  border: 0.6em solid #d5d7da;
-}
-.ADSText {
-  font-weight: bold;
-  font-style: roboto;
-  display: flex;
-  color: #ffc619;
-  font-size: 25px;
-  justify-content: center;
-}
-
-/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
-.non-transparent-dialog {
-  background-color: white; /* Change to the desired background color */
-}
-
-.centered-card {
-  width: 450px;
-  height: 220px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #003566;
-  border: 0.6em solid #d5d7da;
-}
-
-.spinner-container {
-  display: flex;
-  flex-direction: column;
-  color: #dfe8f0;
-  align-items: center;
-}
-
-.please-wait {
-  margin-top: 10px;
-  font-style: roboto;
-  font-weight: bold;
-  font-size: 20px;
-  color: #ffc619;
-  display: flex;
-}
-
-/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
-.AuditRisk {
-  width: 80%;
-  margin-right: 10px;
-  background-color: #083d73;
-}
-
-.BorderDesign {
-  border: 2px solid #ffc619;
-}
-
-.disAllAudit {
-  border-left: 0.5px solid #fffdfd;
-  border-right: 0.5px solid #ececec;
-  border-top: 0.5px solid #ececec;
-  border-bottom: none;
-  background-color: #ffffff;
-  color: #083d73;
-  font-size: 14px;
-  font-weight: 600;
-  font-family: Roboto, sans-serif;
-  width: 20%;
-}
-
-.disAuditRisk {
-  font-size: 16px;
-  font-weight: 600;
-  font-family: Roboto, sans-serif;
-  border: 0.5px solid #ffc412;
-  background-color: #ffc412;
-  color: #083d73;
-  border-top-right-radius: 155px;
-  width: 20%;
-}
 </style>

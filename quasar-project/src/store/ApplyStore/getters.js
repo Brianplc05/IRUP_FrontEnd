@@ -52,4 +52,11 @@ export default {
   getSecondary: (state) => state.getSecondary,
   employees: (state) => state.employees,
   demerit: (state) => state.demerit,
+  getCountRep: (state) => state.getCountRep,
+  getCountPar: (state) => state.getCountPar,
+  getCountRepTaT: (state) => state.getCountRepTaT,
+  getCountRCATaT: (state) => state.getCountRCATaT,
+  getCountActionTaT: (state) => state.getCountActionTaT,
+  getCountAveRCA: (state)  => state.getCountAveRCA,
+  getCountAveAction: (state)  => state.getCountAveAction,
 };
