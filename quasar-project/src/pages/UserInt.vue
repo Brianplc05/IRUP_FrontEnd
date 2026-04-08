@@ -1,28 +1,27 @@
 <template>
-  <div style="position: relative; z-index: 1">
-    <div style="height: 100%; width: 100%">
+  <div id="q-app" style="position: relative; z-index: 1">
+    <div style="height: 100%; width: 100%" class="q-pa-lg">
       <div
-        class="rowContent row justify-center q-pa-xl"
-        style="border: 2px solid #003566"
+        class="rowContent column items-center q-pa-md"
+        style="border: 2px solid #003566; border-radius: 12px"
       >
-        <div
-          class="text-primary text-weight-bold"
-          style="font-size: 60px; color: #020101"
-        >
+        <div class="report-title q-ma-sm">
           INCIDENT REPORT
         </div>
 
-        <div class="text2">
+        <div class="report-description q-mb-lg q-pa-md text-center">
           <p>
-            Welcome to the Incident Report Management System! <br />This
-            platform empowers everyone at the Medical Center to contribute to a
+            Welcome to the Incident Report Management System! <br />
+            This platform empowers everyone at the Medical Center to contribute to a
             safer, more efficient environment by reporting incidents openly and
-            without fear of retaliation. Your reports are essential for
-            identifying opportunities to improve our systems and processes,
-            ensuring better outcomes for all. Together, we can create a culture
-            of accountability, collaboration, and continuous improvement.
-            Sensitive information shall be handled with utmost confidentiality
-            in accordance with laws.
+            without fear of retaliation.
+            <br /><br />
+            Your reports are essential for identifying opportunities to improve our
+            systems and processes, ensuring better outcomes for all.
+            <br /><br />
+            Together, we can create a culture of accountability, collaboration, and
+            continuous improvement. Sensitive information shall be handled with utmost
+            confidentiality in accordance with laws.
           </p>
         </div>
 
@@ -32,8 +31,8 @@
           push
           label="CREATE REPORT"
           @click="basic = true"
-          class="buttonSaveDesign bg-accent q-pa-sm"
-          style="font-weight: bold; width: 40%"
+          class="buttonSaveDesign q-ma-sm bg-accent"
+          style="font-weight: bold; min-width: 250px"
         />
       </div>
     </div>
@@ -852,6 +851,7 @@
 
     <footer class="footer"></footer>
   </div>
+
   <img
     src="../assets/BGCORE2.png"
     style="
@@ -1268,10 +1268,10 @@ export default {
           formData.SubjectCode = this.SubjectCode.subjectCode;
         }
 
-        // const response = await this.$store.dispatch(
-        //   "ApplyStore/addIReport",
-        //   formData
-        // );
+        const response = await this.$store.dispatch(
+          "ApplyStore/addIReport",
+          formData
+        );
       } catch (error) {
         console.error("Error inserting data:", error);
       }
@@ -1709,6 +1709,20 @@ export default {
   margin-top: 100px;
 } */
 
+.report-title {
+  font-size: 48px;
+  font-weight: bold;
+  color: #003566;
+  text-align: center;
+}
+
+.report-description {
+  max-width: 700px;
+  font-size: 16px;
+  color: #333;
+  line-height: 1.6;
+}
+
 .rowContent {
   border: 2px solid #f0f2f5;
   margin: 5%;
@@ -1822,10 +1836,10 @@ export default {
 .buttonSaveDesign {
   border-color: #ffc412;
   font-size: 15px;
-  margin: 5px;
   box-shadow: #000000;
   border-radius: 20px;
   font-weight: bold;
+  margin: 5px;
   width: 130px;
   border: 2px solid #ffc412;
 }

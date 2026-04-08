@@ -6,7 +6,7 @@
           flat
           rounded
           push
-          @click="viewIReport(props.row.iRNo)"
+          @click="viewIReportDetails(props.row.iRNo)"
           :ripple="{ center: true }"
           icon="description"
           class="bg-accent text-black text-bold text-center shadow-5"
@@ -708,12 +708,6 @@
                     border: 2px solid #166ecc;
                   "
                 >
-                  <q-input
-                    outlined
-                    v-model="IrNo"
-                    label="IRNo."
-                    style="display: none"
-                  />
                   <div class="QARTGTestlist">
                     <span class="text-primary text-weight-bold">
                       Add actions
@@ -732,7 +726,7 @@
 
                 <div
                   v-for="(party, index) in actionparties"
-                  :key="index"
+                  :key="party.id || index"
                   style="
                     margin-top: 5px;
                     margin-bottom: 5px;
@@ -741,6 +735,7 @@
                     padding: 5px;
                   "
                 >
+                  <!-- Corrective Action -->
                   <q-input
                     v-model="party.ActionItem"
                     label-slot
@@ -748,35 +743,46 @@
                     outlined
                     autogrow
                     style="width: 70%"
+                    :rules="[val => !!val && val.trim().length > 0 || 'Required field']"
                   >
                     <template v-slot:label>
-                        CORRECTIVE ACTION
+                      CORRECTIVE ACTION
                       <span class="text-red">*</span>
                     </template>
                   </q-input>
 
+                  <!-- Timeline From -->
                   <q-input
                     v-model="party.TimelineFromDate"
                     rounded
                     outlined
                     label-slot
                     style="width: 20%; margin-left: 15px; margin-right: 10px"
-                    @click="showActionDatePickerFrom = true"
+                    :disable="!party.ActionItem"
+                    :rules="[
+                      val => {
+                        if (party.ActionItem) {
+                          return !!val || 'Required field'
+                        }
+                        return true
+                      }
+                    ]"
+                    @click="party.showFrom = true"
                   >
                     <template v-slot:label>
-                        TIMELINE FROM
-                      <span class="text-red">*</span>
+                      TIMELINE FROM
+                      <span v-if="party.ActionItem" class="text-red">*</span>
                     </template>
 
                     <template v-slot:append>
                       <q-icon
                         name="event"
                         class="cursor-pointer"
-                        @click="showActionDatePickerFrom = true"
+                        @click="party.showFrom = true"
                       />
                     </template>
 
-                    <q-dialog v-model="showActionDatePickerFrom">
+                    <q-dialog v-model="party.showFrom">
                       <q-card>
                         <q-card-section>
                           <q-date
@@ -789,28 +795,38 @@
                     </q-dialog>
                   </q-input>
 
+                  <!-- Timeline To -->
                   <q-input
                     v-model="party.TimelineToDate"
                     rounded
                     outlined
                     label-slot
                     style="width: 20%; margin-left: 5px; margin-right: 5px"
-                    @click="showActionDatePickerTo = true"
+                    :disable="!party.ActionItem"
+                    :rules="[
+                      val => {
+                        if (party.ActionItem) {
+                          return !!val || 'Required field'
+                        }
+                        return true
+                      }
+                    ]"
+                    @click="party.showTo = true"
                   >
                     <template v-slot:label>
-                        TIMELINE TO
-                      <span class="text-red">*</span>
+                      TIMELINE TO
+                      <span v-if="party.ActionItem" class="text-red">*</span>
                     </template>
 
                     <template v-slot:append>
                       <q-icon
                         name="event"
                         class="cursor-pointer"
-                        @click="showActionDatePickerTo = true"
+                        @click="party.showTo = true"
                       />
                     </template>
 
-                    <q-dialog v-model="showActionDatePickerTo">
+                    <q-dialog v-model="party.showTo">
                       <q-card>
                         <q-card-section>
                           <q-date
@@ -824,6 +840,7 @@
                     </q-dialog>
                   </q-input>
 
+                  <!-- Remove Button -->
                   <q-btn
                     rounded
                     outlined
@@ -855,13 +872,63 @@
                     push
                     label="Save"
                     class="buttonSaveDesign bg-accent text-black"
-                    @click="submitActionItemDataEmail()"
+                    @click="handleFormSubmit()"
                     style="width: 195px"
                   />
                 </div>
               </q-card-actions>
             </q-card>
           </div>
+        </q-dialog>
+
+        <!-- ////////////////////////////////////////////////////////////////////////// LOADING /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+        <q-dialog v-model="confirmAction" persistent>
+          <q-card class="IRCON">
+            <q-card-section class="q-mb-sm row items-center justify-between">
+              <div
+                class="text-secondary text-weight-bold"
+                style="font-size: 25px; color: #002b5c"
+              >
+                CONFIRM
+              </div>
+              <q-btn
+                flat
+                icon="close"
+                style="color: #166ecc; background-color: rgba(22, 110, 204, 0.1)"
+                @click="confirmAction = false"
+                v-close-popup
+              />
+            </q-card-section>
+
+            <q-separator class="sepDesign" />
+
+            <q-card-actions align="center" class="q-mt-md column items-center">
+              <div class="q-mb-sm" style="font-size: 17px; color: #000000">
+                Would you like to save this Corrective Action?
+              </div>
+
+              <div class="row q-gutter-xxl; justify-center">
+                <q-btn
+                  flat
+                  rounded
+                  push
+                  label="NO"
+                  class="buttonCancelDesign text-info"
+                  @click="confirmAction = false"
+                />
+
+                <q-btn
+                  flat
+                  rounded
+                  push
+                  label="YES"
+                  class="buttonSaveDesign bg-accent text-black"
+                  @click="submitActionItemDataEmail"
+                />
+              </div>
+            </q-card-actions>
+          </q-card>
         </q-dialog>
 
         <!-- ////////////////////////////////////////////////////////////////////////// LOADING /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
@@ -991,7 +1058,7 @@
                                 rounded
                                 outlined
                                 :model-value="
-                                  FormatActionDate(props.row.subjectDate)
+                                  FormatActionDate(IRQADetailss.subjectDate)
                                 "
                                 disable
                               />
@@ -1007,7 +1074,7 @@
                                 rounded
                                 outlined
                                 :model-value="
-                                  FormatActionTime(props.row.subjectDate)
+                                  FormatActionTime(IRQADetailss.subjectDate)
                                 "
                                 disable
                               />
@@ -1022,7 +1089,7 @@
                               <q-input
                                 rounded
                                 outlined
-                                :model-value="props.row.subjectLoc"
+                                :model-value="IRQADetailss.subjectLoc"
                                 disable
                               />
                             </div>
@@ -1048,7 +1115,7 @@
                           autogrow
                           rounded
                           outlined
-                          :model-value="props.row.subjectResponse"
+                          :model-value="IRQADetailss.subjectResponse"
                           disable
                           input-class="q-pa-md"
                         />
@@ -1590,7 +1657,7 @@
                             rounded
                             outlined
                             :model-value="
-                              FormatActionDate(props.row.subjectDate)
+                              FormatActionDate(IRQADetailss.subjectDate)
                             "
                             disable
                           />
@@ -1608,7 +1675,7 @@
                             rounded
                             outlined
                             :model-value="
-                              FormatActionTime(props.row.subjectDate)
+                              FormatActionTime(IRQADetailss.subjectDate)
                             "
                             disable
                           />
@@ -1625,7 +1692,7 @@
                           <q-input
                             rounded
                             outlined
-                            :model-value="props.row.subjectLoc"
+                            :model-value="IRQADetailss.subjectLoc"
                             disable
                           />
                         </div>
@@ -1657,7 +1724,7 @@
                           autogrow
                           rounded
                           outlined
-                          :model-value="props.row.subjectResponse"
+                          :model-value="IRQADetailss.subjectResponse"
                           disable
                           input-class="q-pa-md"
                         />
@@ -2005,7 +2072,9 @@ export default {
       selectedIRNo: "",
       DateActAccomplish: "",
       showActAccomDatePicker: false,
-      accomplishActLoading: false
+      accomplishActLoading: false,
+
+      confirmAction: false,
     };
   },
 
@@ -2101,11 +2170,20 @@ export default {
       return formattedTime;
     },
 
-    async viewIReport(IRNo) {
+    async viewIReportDetails(IRNo) {
       try {
         this.IRDialog = true;
-        this.isLoadingIRDetails = true
+        this.isLoadingIRDetails = true;
+        await this.viewIReport(IRNo); // ✅ wait for it to finish
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        this.isLoadingIRDetails = false; // ✅ runs after await
+      }
+    },
 
+    async viewIReport(IRNo) {
+      try {
         const data = {
           iRNo: IRNo,
         };
@@ -2114,9 +2192,6 @@ export default {
         this.IRQADetailss = this.getQACon;
       } catch (error) {
         console.error("Error inserting data:", error);
-      } finally {
-        // Stop loading regardless of success or error
-        this.isLoadingIRDetails = false
       }
     },
 
@@ -2192,7 +2267,7 @@ export default {
     },
 
     onCancelItemAction() {
-      this.IrNo = "";
+      this.selectedIrNo = "";
       this.actionparties = [];
     },
 
@@ -2204,11 +2279,12 @@ export default {
 
     ///////////////////////////////////////////////////ACTION DETAILS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    async submitActionItemDataEmail() {
+
+    handleFormSubmit(){
       if (!this.validateActionItem()) {
         this.$q.notify({
           color: "negative",
-          position: "center",
+          position: "top",
           message: "REQUIRED ALL FIELDS",
           icon: "report_problem",
           iconColor: "white",
@@ -2217,13 +2293,17 @@ export default {
         });
         return;
       }
+      this.confirmAction = true;
+    },
 
+    async submitActionItemDataEmail() {
+      this.confirmAction = false;
       this.setActionItems = false;
       this.ActionLoadingItem = true;
 
       try {
         const payload = {
-          IRNo: this.IrNo,
+          IRNo: this.selectedIrNo,
           ActionItem: this.actionparties.map((party) => party.ActionItem),
           TimelineFromDate: this.actionparties.map(
             (party) => party.TimelineFromDate
@@ -2243,6 +2323,7 @@ export default {
           timeout: 3000,
           progress: true,
         });
+        this.onCancelItemAction();
 
         setTimeout( async () => {
           this.ActionLoadingItem = false;
@@ -2326,6 +2407,7 @@ export default {
 
     async viewActionItemVLDetails(IRNo) {
       this.setActionItemDialogs = true;
+      this.viewIReport(IRNo);
       this.viewActionDetailsForm(IRNo);
     },
 
@@ -2447,6 +2529,7 @@ export default {
 
     async viewApprovedAction(IRNo) {
       this.setActionApprovedDetails = true;
+      this.viewIReport(IRNo);
       this.viewApprovedActionItemVL(IRNo);
     },
 

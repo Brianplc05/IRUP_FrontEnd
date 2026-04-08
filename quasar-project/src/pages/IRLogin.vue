@@ -168,7 +168,7 @@ export default {
   padding: 1em;
   width: 1250px; /* Optional: set a max-width for the card */
   height: 580px;
-  margin-top: 150px;
+  margin-top: 95px;
   background-color: transparent;
 }
 .signin {

@@ -32,15 +32,11 @@
       <div style="display: flex; gap: 16px; background: #fff; padding: 16px; border-radius: 10px; border: 2px solid #e0e0e0;">
         <!-- Left Column -->
         <div style="flex: 2; border-radius: 10px; border: 2px solid #e0e0e0; padding: 8px;">
-          <div style="text-align: center; font-weight: bold; font-size: 1.25rem; color: #1976d2; margin-bottom: 16px;">
+          <div style="text-align: center; font-weight: bold; font-size: 1.25rem; color: #1976d2; margin-bottom: 10px;">
             REPORTABLE INCIDENT
           </div>
 
-          <BarGraph
-            :options="chartOptions"
-            :series="series"
-            :height="400"
-          />
+          <BarGraph :options="chartOptions" :series="series"/>
         </div>
 
         <!-- Right Column -->
@@ -65,7 +61,7 @@
             </q-list>
           </q-btn-dropdown>
 
-          <div style="text-align: center; font-weight: bold; font-size: 1.1rem; color: #1976d2; text-transform: uppercase; margin: 16px 0;">
+          <div style="text-align: center; font-weight: bold; font-size: 1.1rem; color: #1976d2; text-transform: uppercase; margin: 10px 0;">
             {{ disCountPar?.[0]?.subjectName || 'PARTICULAR INCIDENT' }}
           </div>
 
@@ -161,6 +157,7 @@
 
 <script>
 import PieGraph from "src/components/Charts/PieGraph.vue";
+// import RepGraph from "src/components/Charts/RepPieGraph.vue";
 import BarGraph from "src/components/Charts/BarGraph.vue";
 import LineGraph from "src/components/Charts/LineGraph.vue";
 import { mapGetters } from "vuex";
@@ -342,6 +339,13 @@ export default {
       ]
     },
 
+    months() {
+      return [
+        "January","February","March","April","May","June",
+        "July","August","September","October","November","December"
+      ];
+    },
+
     chartOptionsTAT() {
       if (!this.disCountRepTaT.length) return {};
 
@@ -375,7 +379,7 @@ export default {
         },
 
         xaxis: {
-          categories: this.disCountRepTaT.map((item) => item.monthName),
+          categories: this.months
         },
 
         yaxis: {
@@ -441,7 +445,7 @@ export default {
         },
 
         xaxis: {
-          categories: this.disRCATaT.map(item => item.monthName)
+          categories: this.months
         },
 
         yaxis: {
@@ -464,13 +468,6 @@ export default {
           name: "Corrective Action TAT",
           data: this.disActionTaT.map(item => item.avg_TAT_Days)
         }
-      ];
-    },
-
-    months() {
-      return [
-        "January","February","March","April","May","June",
-        "July","August","September","October","November","December"
       ];
     },
 
@@ -545,7 +542,7 @@ export default {
     },
   },
 
-  components: { BarGraph, PieGraph, LineGraph},
+  components: {PieGraph, LineGraph, BarGraph},
 
   mounted() {
     setTimeout(() => {

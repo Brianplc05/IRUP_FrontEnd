@@ -666,7 +666,6 @@
     </template>
 
     <template v-slot:body-cell-actionitem="props">
-
       <q-td>
         <q-btn
           flat
@@ -1775,13 +1774,13 @@
 
                   <q-separator class="formseparatorYellow" />
 
-                  <div class="q-mx-xl">
+                  <div class="q-mx-sm">
                     <div
-                      class="q-pa-md"
+                      class="q-pa-sm"
                       v-for="(item, index) in IRReturnACAPDetailss"
                       :key="index"
                     >
-                      <div class="row q-col-gutter-md">
+                      <div class="row q-col-gutter-sm">
                         <div class="col-8">
                           <div
                             class="text-weight-bold"

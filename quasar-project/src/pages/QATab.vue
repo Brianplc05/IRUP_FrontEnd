@@ -1438,19 +1438,21 @@
               <q-btn-dropdown
                 v-if="loggedInUser.AreaCode === null"
                 rounded
-                label="FILTER AREA"
+                :label="selectedArea?.division || 'FILTER AREA'"
                 menu-anchor="top right"
                 style="width: 25ch"
                 class="bg-info text-white q-mr-sm"
               >
                 <q-list>
                   <q-item
-                    v-for="option in disAllDiv"
+                    v-for="option in areaOptions"
                     :key="option.divisionCode"
                     clickable
                     @click="selectArea(option)"
                   >
-                    <q-item-section>{{ option.division }}</q-item-section>
+                    <q-item-section>
+                      {{ option.division }}
+                    </q-item-section>
                   </q-item>
                 </q-list>
               </q-btn-dropdown>
@@ -1700,6 +1702,7 @@
       </q-card-section>
     </div>
   </div>
+
   <img
     src="../assets/OMBRE-GRAY.jpg"
     style="
@@ -1727,7 +1730,7 @@ export default {
       FullContent: false,
       FullDepartmentContent: false,
       selectedStatus: null,
-      selectedArea: null,
+      selectedArea: { divisionCode: "ALL", division: "ALL" },
       searchQuery: "",
       disAllQA: [],
       disAllHead: [],
@@ -2148,8 +2151,10 @@ export default {
     }),
 
     filteredDisAll() {
-      const { disAllQA, selectedStatus,  selectedArea, searchQuery } = this;
+      const { disAllQA, selectedStatus, selectedArea, searchQuery } = this;
+
       let filteredData = [...disAllQA];
+
       if (selectedStatus && typeof selectedStatus === "object") {
         const { value: statusValue } = selectedStatus;
         filteredData = filteredData.filter(
@@ -2157,9 +2162,15 @@ export default {
         );
       }
 
-      if (selectedArea && typeof selectedArea === "object") {
+      if (
+        selectedArea &&
+        typeof selectedArea === "object" &&
+        selectedArea.divisionCode !== "ALL"
+      ) {
         const { divisionCode: areaValue } = selectedArea;
-        filteredData = filteredData.filter( (item) => item.divisionCode === areaValue );
+        filteredData = filteredData.filter(
+          (item) => item.divisionCode === areaValue
+        );
       }
 
       if (searchQuery && typeof searchQuery === "string") {
@@ -2167,7 +2178,8 @@ export default {
         filteredData = filteredData.filter((item) =>
           Object.values(item).some(
             (val) =>
-              typeof val === "string" && val.toLowerCase().includes(query)
+              typeof val === "string" &&
+              val.toLowerCase().includes(query)
           )
         );
       }
@@ -2286,6 +2298,13 @@ export default {
           typeof val === "string" && val.toLowerCase().includes(query)
         )
       );
+    },
+
+    areaOptions() {
+      return [
+        { divisionCode: "ALL", division: "ALL" },
+        ...this.disAllDiv
+      ];
     },
 
 

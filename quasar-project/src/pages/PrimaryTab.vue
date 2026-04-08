@@ -343,7 +343,8 @@ export default {
 
     // 🔹 Auto fetch every 60 seconds
     this.interval = setInterval(() => {
-      this.getPrimary();
+      this.getPrimaryDeptACT();
+      this.getPrimaryDeptRCA();
     }, 60000);
   },
 
@@ -896,6 +897,48 @@ export default {
 .PrimaryAccomStatus {
   height: 260px;
   width: 500px;
+}
+
+/* ......................................SAVE CONTENT ..................................... */
+.IRCON {
+  background-color: #ffffff;
+  height: 220px;
+  width: 450px;
+}
+
+.IRCONText {
+  font-weight: bold;
+  font-style: roboto;
+  display: flex;
+  color: #ffc619;
+  font-size: 25px;
+  justify-content: center;
+}
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.downbtn {
+  padding: 5px;
+  width: 15%;
+  color: #003566;
+  font-weight: bold;
+}
+.no-scroll-dialog .q-dialog__inner {
+  overflow: hidden !important;
+}
+
+.no-scroll-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden !important;
+}
+
+.q-card-section {
+  flex: 1;
+  overflow: auto;
 }
 
 

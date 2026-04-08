@@ -1422,7 +1422,7 @@
                     <div
                       class="row q-col-gutter-md q-mt-xs q-mb-xs items-center"
                       v-for="(partycorrective, index) in correctiveparties"
-                      :key="index"
+                      :key="partycorrective.id || index"
                     >
                       <!-- Corrective Action -->
                       <div class="col-4">
@@ -1431,10 +1431,11 @@
                           rounded
                           outlined
                           v-model="partycorrective.CorrectiveAction"
+                          :rules="[val => !!val || 'Required field']"
                           label-slot
                         >
                           <template v-slot:label>
-                              CORRECTIVE ACTION
+                            CORRECTIVE ACTION
                             <span class="text-red">*</span>
                           </template>
                         </q-input>
@@ -1448,23 +1449,35 @@
                           outlined
                           clearable
                           label-slot
-                          @click="showcorDatePickerfrom = true"
+                          :disable="!partycorrective.CorrectiveAction"
+                          :rules="[
+                            val => {
+                              if (partycorrective.CorrectiveAction) {
+                                return !!val || 'Required field'
+                              }
+                              return true
+                            }
+                          ]"
+                          @click="partycorrective.showFrom = true"
                         >
                           <template v-slot:label>
-                              TIMELINE FROM
-                            <span class="text-red">*</span>
+                            TIMELINE FROM
+                            <span
+                              v-if="partycorrective.CorrectiveAction"
+                              class="text-red"
+                            >*</span>
                           </template>
 
                           <template v-slot:append>
                             <q-icon
                               name="event"
                               class="cursor-pointer"
-                              @click="showcorDatePickerfrom = true"
+                              @click="partycorrective.showFrom = true"
                             />
                           </template>
                         </q-input>
 
-                        <q-dialog v-model="showcorDatePickerfrom">
+                        <q-dialog v-model="partycorrective.showFrom">
                           <q-card>
                             <q-card-section>
                               <q-date
@@ -1485,23 +1498,35 @@
                           outlined
                           clearable
                           label-slot
-                          @click="showcorDatePickerto = true"
+                          :disable="!partycorrective.CorrectiveAction"
+                          :rules="[
+                            val => {
+                              if (partycorrective.CorrectiveAction) {
+                                return !!val || 'Required field'
+                              }
+                              return true
+                            }
+                          ]"
+                          @click="partycorrective.showTo = true"
                         >
                           <template v-slot:label>
-                              TIMELINE TO
-                            <span class="text-red">*</span>
+                            TIMELINE TO
+                            <span
+                              v-if="partycorrective.CorrectiveAction"
+                              class="text-red"
+                            >*</span>
                           </template>
 
                           <template v-slot:append>
                             <q-icon
                               name="event"
                               class="cursor-pointer"
-                              @click="showcorDatePickerto = true"
+                              @click="partycorrective.showTo = true"
                             />
                           </template>
                         </q-input>
 
-                        <q-dialog v-model="showcorDatePickerto">
+                        <q-dialog v-model="partycorrective.showTo">
                           <q-card>
                             <q-card-section>
                               <q-date
@@ -1527,19 +1552,31 @@
                           label-slot
                           emit-value
                           map-options
-                          :option-value="(option) => option.employeeCode"
-                          :option-label="(option) => option.fullName"
+                          :option-value="option => option.employeeCode"
+                          :option-label="option => option.fullName"
+                          :disable="!partycorrective.CorrectiveAction"
+                          :rules="[
+                            val => {
+                              if (partycorrective.CorrectiveAction) {
+                                return !!val || 'Required field'
+                              }
+                              return true
+                            }
+                          ]"
                         >
                           <template v-slot:label>
-                              ACCOUNTABLE PERSON/S
-                            <span class="text-red">*</span>
+                            ACCOUNTABLE PERSON/S
+                            <span
+                              v-if="partycorrective.CorrectiveAction"
+                              class="text-red"
+                            >*</span>
                           </template>
 
                           <template v-slot:no-option>
                             <q-item>
-                              <q-item-section class="text-grey"
-                                >No results</q-item-section
-                              >
+                              <q-item-section class="text-grey">
+                                No results
+                              </q-item-section>
                             </q-item>
                           </template>
                         </q-select>
@@ -1558,165 +1595,6 @@
                     </div>
                   </div>
                 </div>
-
-                <!-- <q-separator class="formseparatorWhite" />
-
-                <div
-                  class="QADes1"
-                  style="
-                    border: 2px solid #6b7c93;
-                    border-radius: 40px;
-                    padding: 30px;
-                  "
-                >
-                  <div
-                    class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                  >
-                    Preventive Measures
-                  </div>
-                  <div class="q-mb-sm" style="font-size: 15px; color: #737373">
-                    Outline long-term preventive measures, considering changes
-                    to policies, procedures, training, and organizational
-                    culture. You may add more fields as needed.
-                  </div>
-
-                  <q-item-section
-                    class="q-mt-md rounded-borders bg-warning"
-                    style="
-                      background-color: rgba(22, 110, 204, 0.1);
-                      border: 2px solid #ccc;
-                    "
-                  >
-                    <div
-                      class="row justify-between items-center text-primary text-subtitle1 text-weight-bold q-mx-md"
-                    >
-                      Add Preventive Measures
-                      <q-btn
-                        class="q-ml-sm"
-                        flat
-                        round
-                        dense
-                        icon="add"
-                        @click="addPreventiveItem"
-                      />
-                    </div>
-                  </q-item-section>
-
-                  <div class="q-mx-xl">
-                    <div
-                      class="row q-col-gutter-md q-mt-xs q-mb-xs items-center"
-                      v-for="(partypreventive, index) in partypreventive"
-                      :key="index"
-                    >
-                      <div class="col-4">
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          v-model="partypreventive.PreventiveMeasure"
-                          label="Preventive Measure:"
-                        />
-                      </div>
-
-                      <div class="col-2">
-                        <q-input
-                          v-model="partypreventive.PreTimelineFromDate"
-                          rounded
-                          outlined
-                          clearable
-                          label="Timeline From:"
-                          @click="showpreDatePickerfrom = true"
-                        >
-                          <template v-slot:append>
-                            <q-icon
-                              name="event"
-                              class="cursor-pointer"
-                              @click="showpreDatePickerfrom = true"
-                            />
-                          </template>
-                        </q-input>
-
-                        <q-dialog v-model="showpreDatePickerfrom">
-                          <q-card>
-                            <q-card-section>
-                              <q-date
-                                v-model="partypreventive.PreTimelineFromDate"
-                                @input="updateSubjectDate"
-                                :options="dateAfterOrToday"
-                              />
-                            </q-card-section>
-                          </q-card>
-                        </q-dialog>
-                      </div>
-
-                      <div class="col-2">
-                        <q-input
-                          v-model="partypreventive.PreTimelineToDate"
-                          rounded
-                          outlined
-                          clearable
-                          label="Timeline To:"
-                          @click="showpreDatePickerto = true"
-                        >
-                          <template v-slot:append>
-                            <q-icon
-                              name="event"
-                              class="cursor-pointer"
-                              @click="showpreDatePickerto = true"
-                            />
-                          </template>
-                        </q-input>
-
-                        <q-dialog v-model="showpreDatePickerto">
-                          <q-card>
-                            <q-card-section>
-                              <q-date
-                                v-model="partypreventive.PreTimelineToDate"
-                                @input="updateSubjectDate"
-                                :options="dateAfterOrToday"
-                              />
-                            </q-card-section>
-                          </q-card>
-                        </q-dialog>
-                      </div>
-
-                      <div class="col-3">
-                        <q-select
-                          use-input
-                          rounded
-                          outlined
-                          clearable
-                          v-model="partypreventive.ResponsiblePer"
-                          :options="disEmployeeName"
-                          @filter="FilterFn"
-                          label="Responsible Person/s:"
-                          emit-value
-                          map-options
-                          :option-value="(option) => option.employeeCode"
-                          :option-label="(option) => option.fullName"
-                        >
-                          <template v-slot:no-option>
-                            <q-item>
-                              <q-item-section class="text-grey">
-                                No results
-                              </q-item-section>
-                            </q-item>
-                          </template>
-                        </q-select>
-                      </div>
-
-                      <div class="col-auto">
-                        <q-btn
-                          @click="removePreventiveItem(index)"
-                          color="negative"
-                          icon="remove_circle"
-                          class="q-ml-md"
-                          size="sm"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div> -->
 
                 <q-separator class="formseparatorWhite" />
 
@@ -1773,10 +1651,11 @@
                         rounded
                         outlined
                         v-model="partyrisk.RiskItems"
+                        :rules="[val => !!val || 'Required field']"
                         label-slot
                       >
                         <template v-slot:label>
-                            RISK ITEMS
+                          RISK ITEMS
                           <span class="text-red">*</span>
                         </template>
                       </q-input>
@@ -1813,7 +1692,7 @@
                     push
                     label="Save"
                     class="buttonSaveDesign bg-accent text-black"
-                    @click="submitRCAItemData()"
+                    @click="handleFormSubmit()"
                     style="width: 195px"
                   />
                 </div>
@@ -1822,6 +1701,57 @@
           </div>
         </q-dialog>
 
+        <!-- ////////////////////////////////////////////////////////////////////////// CONFIRMATION /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+        <q-dialog v-model="confirmRCA" persistent>
+          <q-card class="IRCON">
+            <q-card-section class="q-mb-sm row items-center justify-between">
+              <div
+                class="text-secondary text-weight-bold"
+                style="font-size: 25px; color: #002b5c"
+              >
+                CONFIRM
+              </div>
+              <q-btn
+                flat
+                icon="close"
+                style="color: #166ecc; background-color: rgba(22, 110, 204, 0.1)"
+                @click="confirmRCA = false"
+                v-close-popup
+              />
+            </q-card-section>
+
+            <q-separator class="sepDesign" />
+
+            <q-card-actions align="center" class="q-mt-md column items-center">
+              <div class="q-mb-sm" style="font-size: 17px; color: #000000">
+                Would you like to save this Root Cause Analysis Report?
+              </div>
+
+              <div class="row q-gutter-xxl; justify-center">
+                <q-btn
+                  flat
+                  rounded
+                  push
+                  label="NO"
+                  class="buttonCancelDesign text-info"
+                  @click="confirmRCA = false"
+                />
+
+                <q-btn
+                  flat
+                  rounded
+                  push
+                  label="YES"
+                  class="buttonSaveDesign bg-accent text-black"
+                  @click="submitRCAItemData"
+                />
+              </div>
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+
+        <!-- ////////////////////////////////////////////////////////////////////////// LOADING /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
         <q-dialog v-model="waitingRCA" persistent maximized>
           <div
             class="fullscreen flex flex-center column q-gutter-md"
@@ -5261,6 +5191,8 @@ export default {
       selectedId: "",
       selectedIRNo: "",
       accomplishLoading: false,
+
+      confirmRCA: false,
     };
   },
   computed: {
@@ -5549,6 +5481,16 @@ export default {
       this.riskparties.splice(index, 1);
     },
 
+    validateRCAItem() {
+      return (
+        this.actionableRoot &&
+        this.domainActionable &&
+        this.riskparties.every(
+          party => party.RiskItems && party.RiskItems.length > 0
+        )
+      );
+    },
+
     ///////////////////////////////////////////////////////////////////// INSERT RCA //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     onCancelRCAItem() {
@@ -5595,9 +5537,26 @@ export default {
       ];
     },
 
+    handleFormSubmit(){
+      if (!this.validateRCAItem()) {
+        this.$q.notify({
+          color: "negative",
+          position: "top",
+          message: "REQUIRED ALL FIELDS",
+          icon: "report_problem",
+          iconColor: "white",
+          timeout: 2000,
+          progress: true,
+        });
+        return;
+      }
+      this.confirmRCA = true;
+    },
+
     async submitRCAItemData() {
       this.waitingRCA = true;
       this.setRCAForm = false;
+      this.confirmRCA = false;
       this.IRQADetailss = [];
       try {
         const payload = {

@@ -46,20 +46,20 @@
             <div class="row items-center justify-between q-mb-md">
               <q-btn-dropdown
                 rounded
-                label="FILTER AREA"
+                :label="selectedAreaValue?.division || 'FILTER AREA'"
                 menu-anchor="top right"
                 style="width: 25ch"
                 class="bg-info text-white q-mr-sm"
               >
                 <q-list>
                   <q-item
-                    v-for="option in areaDivValue"
-                    :key="option.value"
+                    v-for="option in areaValueOptions"
+                    :key="option.divisionCode"
                     clickable
                     @click="selectArea(option)"
                   >
 
-                    <q-item-section>{{ option.label }}</q-item-section>
+                    <q-item-section>{{ option.division  }}</q-item-section>
                   </q-item>
                 </q-list>
               </q-btn-dropdown>
@@ -83,22 +83,22 @@
 
           <q-tab-panel name="hrReferral">
             <div class="row items-center justify-between q-mb-md">
-                <q-btn-dropdown
+              <q-btn-dropdown
                 rounded
-                label="FILTER AREA"
+                :label="selectedAreaValue?.division || 'FILTER AREA'"
                 menu-anchor="top right"
                 style="width: 25ch"
                 class="bg-info text-white q-mr-sm"
               >
                 <q-list>
                   <q-item
-                    v-for="option in areaDivValue"
-                    :key="option.value"
+                    v-for="option in areaValueOptions"
+                    :key="option.divisionCode"
                     clickable
                     @click="selectArea(option)"
                   >
 
-                    <q-item-section>{{ option.label }}</q-item-section>
+                    <q-item-section>{{ option.division  }}</q-item-section>
                   </q-item>
                 </q-list>
               </q-btn-dropdown>
@@ -278,13 +278,14 @@ export default {
       PenaltiesCode: null,
 
       searchRepQuery: "",
-      selectedAreaValue: null,
+      selectedAreaValue: { division: "ALL", divisionCode: null },
       selectedRepStatus: null,
 
-      areaDivValue: [
-        { label: "ACADEME", value: "ACD-01" },
-        { label: "HOSPITAL", value: "HST-02" },
-        { label: "ADMIN", value: "ADM-03" },
+      areaValueOptions: [
+        { division: "ALL", divisionCode: null },
+        { division: "ACADEME", divisionCode: "ACD-01" },
+        { division: "ADMIN", divisionCode: "ADM-03" },
+        { division: "HOSPITAL", divisionCode: "HST-02" },
       ]
     };
   },
@@ -307,12 +308,12 @@ export default {
         );
       }
 
-      if (selectedAreaValue && typeof selectedAreaValue === "object") {
-        const { value: areaValue } = selectedAreaValue;
+      if (selectedAreaValue && selectedAreaValue.divisionCode) {
         filteredData = filteredData.filter(
-          item => item.divisionCode === areaValue
+          (item) => item.divisionCode === selectedAreaValue.divisionCode
         );
       }
+
 
       if (searchRefQuery && typeof searchRefQuery === "string") {
         const query = searchRefQuery.toLowerCase();
@@ -336,10 +337,9 @@ export default {
         );
       }
 
-      if (selectedAreaValue && typeof selectedAreaValue === "object") {
-        const { value: areaValue } = selectedAreaValue;
+      if (selectedAreaValue && selectedAreaValue.divisionCode) {
         filteredData = filteredData.filter(
-          item => item.divisionCode === areaValue
+          (item) => item.divisionCode === selectedAreaValue.divisionCode
         );
       }
 

@@ -31,13 +31,13 @@
               <!-- FILTER AREA -->
               <q-btn-dropdown
                 rounded
-                label="FILTER AREA"
+                :label="selectedArea?.division || 'FILTER AREA'"
                 style="width: 25ch"
                 class="bg-info text-white q-mr-sm"
               >
                 <q-list>
                   <q-item
-                    v-for="option in disAllDiv"
+                    v-for="option in areaOptions"
                     :key="option.divisionCode"
                     clickable
                     @click="selectArea(option)"
@@ -141,7 +141,7 @@ export default {
     return {
       disAllDetails: [],
       disAllDiv: [],
-      selectedArea: null,
+      selectedArea: { division: "ALL", divisionCode: null },
       selectedStatus: null,
       searchQuery: "",
       loading: true,
@@ -166,10 +166,11 @@ export default {
         }
       ],
 
-      areaValue: [
-        { label: "ACADEME", value: "ACD-01" },
-        { label: "HOSPITAL", value: "HST-02" },
-        { label: "ADMIN", value: "ADM-03" },
+      areaOptions: [
+        { division: "ALL", divisionCode: null },
+        { division: "ACADEME", divisionCode: "ACD-01" },
+        { division: "ADMIN", divisionCode: "ADM-03" },
+        { division: "HOSPITAL", divisionCode: "HST-02" },
       ],
 
       qaStats: [
@@ -187,10 +188,11 @@ export default {
     }),
 
     filteredDisAll() {
-      const { disAllDetails, selectedStatus,  selectedArea, searchQuery } = this;
+      const { disAllDetails, selectedStatus, selectedArea, searchQuery } = this;
 
       let filteredData = [...disAllDetails];
 
+      // ✅ STATUS FILTER
       if (selectedStatus && typeof selectedStatus === "object") {
         const { value: statusValue } = selectedStatus;
         filteredData = filteredData.filter(
@@ -198,17 +200,21 @@ export default {
         );
       }
 
-      if (selectedArea && typeof selectedArea === "object") {
-        const { divisionCode: areaValue } = selectedArea;
-        filteredData = filteredData.filter( (item) => item.divisionCode === areaValue );
+      // ✅ AREA FILTER (SKIP IF ALL)
+      if (selectedArea && selectedArea.divisionCode) {
+        filteredData = filteredData.filter(
+          (item) => item.divisionCode === selectedArea.divisionCode
+        );
       }
 
+      // ✅ SEARCH FILTER
       if (searchQuery && typeof searchQuery === "string") {
         const query = searchQuery.toLowerCase();
         filteredData = filteredData.filter((item) =>
           Object.values(item).some(
             (val) =>
-              typeof val === "string" && val.toLowerCase().includes(query)
+              typeof val === "string" &&
+              val.toLowerCase().includes(query)
           )
         );
       }
