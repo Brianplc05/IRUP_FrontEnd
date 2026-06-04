@@ -110,12 +110,13 @@
 
               <ActionPrimaryTab
                 v-show="showACTable"
-                :rows="filteredPrimaryACT"
-                :pagination="{ rowsPerPage: 8 }"
-                row-key="IRNo"
+                :items="filteredPrimaryACT"
                 :columns="disACTColumns"
                 :acloading="acloading"
                 :getPrimaryDeptACT="getPrimaryDeptACT"
+                :rows-per-page-options="[5]"
+                flat
+                bordered
               />
             </q-tab-panel>
 
@@ -148,11 +149,12 @@
               </div>
 
               <RCAPrimaryTab
-                :rows="filteredPrimaryRCA"
-                :pagination="{ rowsPerPage: 8 }"
-                row-key="IRNo"
+                :items="filteredPrimaryRCA"
                 :columns="disRCAColumns"
                 :getPrimaryDeptRCA="getPrimaryDeptRCA"
+                :rows-per-page-options="[5]"
+                flat
+                bordered
               />
             </q-tab-panel>
           </q-tab-panels>
@@ -162,7 +164,7 @@
   </div>
 
   <img
-    src="../assets/OMBRE-GRAY.jpg"
+    src="../assets/BGCORE.png"
     style="
       position: absolute;
       top: 0;
@@ -446,11 +448,7 @@ export default {
 /* ///////////////////////////////////////IRDETAILS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 .QADialog {
-  background-image: url("../assets/BGCORE.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-color: #f4f7fc;
+  background-color: #2f5d80;
   padding-top: 20px;
   padding-bottom: 40px;
   min-height: 100vh;
@@ -463,7 +461,7 @@ export default {
   border-radius: 25px;
   padding: 20px;
   background-color: #ffffff;
-  width: 1100px;
+  width: 1200px;
   height: auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -734,6 +732,17 @@ export default {
   border: 2px solid #ffc412;
 }
 
+.buttonSaveDraftDesign {
+  border-color: #166ecc;
+  font-size: 15px;
+  margin: 5px;
+  box-shadow: #000000;
+  border-radius: 20px;
+  font-weight: bold;
+  width: 130px;
+  border: 2px solid #166ecc;
+}
+
 .borderDesign {
   margin-top: 15px;
 }
@@ -813,11 +822,7 @@ export default {
 }
 
 .QADialogAction {
-  background-image: url("../assets/BGCORE.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-color: #f4f7fc;
+  background-color: #2f5d80;
   padding-top: 20px;
   padding-bottom: 40px;
   min-height: 100vh;
@@ -829,7 +834,7 @@ export default {
   border-radius: 25px;
   padding: 20px;
   background-color: #ffffff;
-  width: 1700px;
+  width: 1200px;
   height: auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -841,7 +846,7 @@ export default {
   border-radius: 25px;
   padding: 20px;
   background-color: #ffffff;
-  width: 1800px;
+  width: 1500px;
   height: auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }

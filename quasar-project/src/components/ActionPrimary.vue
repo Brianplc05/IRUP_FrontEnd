@@ -540,11 +540,28 @@
           rounded
           push
           :disable="[2, 3, 4, 5].includes(props.row.actionSubStatus)"
-          v-if="props.row.actionSubStatus === 1"
+          v-if="props.row.actionSubStatus === 1 && props.row.isDraft === false"
           @click="viewActionItem(props.row.iRNo)"
           :ripple="{ center: true }"
           icon="lightbulb"
           class="bg-positive text-black text-center shadow-5"
+          style="border-radius: 20px; width: 125px"
+        >
+          <q-tooltip class="bg-info text-white">
+            Creating Action Items for the Incident Report
+          </q-tooltip>
+        </q-btn>
+
+        <q-btn
+          flat
+          rounded
+          push
+          :disable="[2, 3, 4, 5].includes(props.row.actionSubStatus)"
+          v-if="props.row.actionSubStatus === 1 && props.row.isDraft === true"
+          @click="viewActionDraft(props.row.iRNo)"
+          :ripple="{ center: true }"
+          icon="drafts"
+          class="bg-accent text-black text-center shadow-5"
           style="border-radius: 20px; width: 125px"
         >
           <q-tooltip class="bg-info text-white">
@@ -587,7 +604,7 @@
                     color: #003566;
                     background-color: rgba(22, 110, 204, 0.1);
                   "
-                  @click="setActionItems = false"
+                  @click="onCancelItemAction()"
                   v-close-popup
                 >
                   <q-tooltip class="bg-info text-white"> Close Form </q-tooltip>
@@ -595,264 +612,275 @@
               </q-card-section>
 
               <q-card-section
-                class="rounded-borders shadow-2 q-mb-md"
-                style="border: 2px solid #ddd"
+                v-if="isLoadingActionCreation"
+                class="column flex-center q-pa-xl"
+                style="height: 600px"
               >
-                <div class="QADesContent">
-                  <div class="QAFixDesign">
-                    <div class="QADes1">
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                      >
-                        Problem Background
-                      </div>
-                      <div
-                        class="q-mb-sm"
-                        style="font-size: 15px; color: #737373"
-                      >
-                        This section contains essential details regarding the
-                        incident, including the date, time, location,
-                        individuals involved, and the nature of the incident.
-                      </div>
-                      <q-separator class="formseparatorYellow" />
-
-                      <div class="row q-col-gutter-md q-mx-lg">
-                        <div class="col-4">
-                          <div
-                            class="text-weight-bold"
-                            style="font-size: 15px; color: #03254b"
-                          >
-                            Date of the Incident
-                          </div>
-
-                          <q-input
-                            rounded
-                            outlined
-                            :model-value="FormatDate(IRQADetailss.subjectDate)"
-                            disable
-                          />
-                        </div>
-
-                        <div class="col-4">
-                          <div
-                            class="text-weight-bold"
-                            style="font-size: 15px; color: #03254b"
-                          >
-                            Time of the Incident
-                          </div>
-
-                          <q-input
-                            rounded
-                            outlined
-                            :model-value="FormatTime(IRQADetailss.subjectDate)"
-                            disable
-                          />
-                        </div>
-
-                        <div class="col-4">
-                          <div
-                            class="text-weight-bold"
-                            style="font-size: 15px; color: #03254b"
-                          >
-                            Location of the Incident
-                          </div>
-
-                          <q-input
-                            rounded
-                            outlined
-                            :model-value="IRQADetailss.subjectLoc"
-                            disable
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="QADesContent">
-                  <div class="QAFixDesign">
-                    <div class="QADes1">
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                      >
-                        Immediate Response
-                      </div>
-                      <div
-                        class="q-mb-sm"
-                        style="font-size: 15px; color: #737373"
-                      >
-                        Action taken by the concerned department or by the
-                        Informant to ease the incident.
-                      </div>
-                      <q-separator class="formseparatorYellow" />
-                      <div class="q-mx-xl">
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          :model-value="IRQADetailss.subjectResponse"
-                          disable
-                          input-class="q-pa-md"
-                        />
-                      </div>
-                    </div>
-                  </div>
+                <q-spinner size="80px" color="primary" />
+                <div class="q-mt-md text-primary text-weight-medium">
+                  Loading Details...
                 </div>
               </q-card-section>
 
-              <q-item-section style="padding: 20px; border: 2px solid #ddd">
-                <q-item-section
-                  class="q-mb-xs rounded-borders"
-                  style="
-                    background-color: rgba(22, 110, 204, 0.1);
-                    border: 2px solid #166ecc;
-                  "
+              <q-card-section style="border: 2px solid #6b7c93" v-else>
+                <q-card-section
+                  class="rounded-borders q-mb-md"
+                  style="border: 2px solid #ddd"
                 >
-                  <div class="QARTGTestlist">
-                    <span class="text-primary text-weight-bold">
-                      Add actions
-                    </span>
+                  <div class="QADesContent">
+                    <div class="QAFixDesign">
+                      <div class="QADes1">
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                        >
+                          Problem Background
+                        </div>
+                        <div
+                          class="q-mb-sm"
+                          style="font-size: 15px; color: #737373"
+                        >
+                          This section contains essential details regarding the
+                          incident, including the date, time, location,
+                          individuals involved, and the nature of the incident.
+                        </div>
+                        <q-separator class="formseparatorYellow" />
 
-                    <q-btn
-                      class="text-primary q-ml-auto"
-                      flat
-                      round
-                      dense
-                      icon="add"
-                      @click="addActionItem"
-                    />
+                        <div class="row q-col-gutter-md q-mx-lg">
+                          <div class="col-4">
+                            <div
+                              class="text-weight-bold"
+                              style="font-size: 15px; color: #03254b"
+                            >
+                              Date of the Incident
+                            </div>
+
+                            <q-input
+                              rounded
+                              outlined
+                              :model-value="FormatDate(IRQADetailss.subjectDate)"
+                              disable
+                            />
+                          </div>
+
+                          <div class="col-4">
+                            <div
+                              class="text-weight-bold"
+                              style="font-size: 15px; color: #03254b"
+                            >
+                              Time of the Incident
+                            </div>
+
+                            <q-input
+                              rounded
+                              outlined
+                              :model-value="FormatTime(IRQADetailss.subjectDate)"
+                              disable
+                            />
+                          </div>
+
+                          <div class="col-4">
+                            <div
+                              class="text-weight-bold"
+                              style="font-size: 15px; color: #03254b"
+                            >
+                              Location of the Incident
+                            </div>
+
+                            <q-input
+                              rounded
+                              outlined
+                              :model-value="IRQADetailss.subjectLoc"
+                              disable
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="QADesContent">
+                    <div class="QAFixDesign">
+                      <div class="QADes1">
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                        >
+                          Immediate Response
+                        </div>
+                        <div
+                          class="q-mb-sm"
+                          style="font-size: 15px; color: #737373"
+                        >
+                          Action taken by the concerned department or by the
+                          Informant to ease the incident.
+                        </div>
+                        <q-separator class="formseparatorYellow" />
+                        <div class="q-mx-xl">
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            :model-value="IRQADetailss.subjectResponse"
+                            disable
+                            input-class="q-pa-md"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </q-card-section>
+
+                <q-item-section style="padding: 20px; border: 2px solid #ddd">
+                  <q-item-section
+                    class="q-mb-xs rounded-borders"
+                    style="
+                      background-color: rgba(22, 110, 204, 0.1);
+                      border: 2px solid #166ecc;
+                    "
+                  >
+                    <div class="QARTGTestlist">
+                      <span class="text-primary text-weight-bold">
+                        Add actions
+                      </span>
+
+                      <q-btn
+                        class="text-primary q-ml-auto"
+                        flat
+                        round
+                        dense
+                        icon="add"
+                        @click="addActionItem"
+                      />
+                    </div>
+                  </q-item-section>
+
+                  <div
+                    v-for="(party, index) in actionparties"
+                    :key="party.id || index"
+                    class="row q-col-gutter-md items-start q-mb-md q-mt-xs"
+                  >
+                    <!-- Corrective Action -->
+                    <div class="col-12 col-md-5">
+                      <q-input
+                        v-model="party.ActionItem"
+                        label-slot
+                        rounded
+                        outlined
+                        autogrow
+                        :rules="[val => !!val && val.trim().length > 0 || 'Required field']"
+                      >
+                        <template v-slot:label>
+                          CORRECTIVE ACTION
+                          <span class="text-red">*</span>
+                        </template>
+                      </q-input>
+                    </div>
+
+                    <!-- Timeline From -->
+                    <div class="col-12 col-md-3">
+                      <q-input
+                        v-model="party.TimelineFromDate"
+                        rounded
+                        outlined
+                        label-slot
+                        :disable="!party.ActionItem"
+                        :rules="[
+                          val => {
+                            if (party.ActionItem) {
+                              return !!val || 'Required field'
+                            }
+                            return true
+                          }
+                        ]"
+                        @click="party.showFrom = true"
+                      >
+                        <template v-slot:label>
+                          TIMELINE FROM
+                          <span v-if="party.ActionItem" class="text-red">*</span>
+                        </template>
+
+                        <template v-slot:append>
+                          <q-icon
+                            name="event"
+                            class="cursor-pointer"
+                            @click="party.showFrom = true"
+                          />
+                        </template>
+
+                        <q-dialog v-model="party.showFrom">
+                          <q-card>
+                            <q-card-section>
+                              <q-date
+                                v-model="party.TimelineFromDate"
+                                @input="updateSubjectDateFrom"
+                                :options="dateAfterOrSubjectDate"
+                              />
+                            </q-card-section>
+                          </q-card>
+                        </q-dialog>
+                      </q-input>
+                    </div>
+
+                    <!-- Timeline To -->
+                    <div class="col-12 col-md-3">
+                      <q-input
+                        v-model="party.TimelineToDate"
+                        rounded
+                        outlined
+                        label-slot
+                        :disable="!party.ActionItem"
+                        :rules="[
+                          val => {
+                            if (party.ActionItem) {
+                              return !!val || 'Required field'
+                            }
+                            return true
+                          }
+                        ]"
+                        @click="party.showTo = true"
+                      >
+                        <template v-slot:label>
+                          TIMELINE TO
+                          <span v-if="party.ActionItem" class="text-red">*</span>
+                        </template>
+
+                        <template v-slot:append>
+                          <q-icon
+                            name="event"
+                            class="cursor-pointer"
+                            @click="party.showTo = true"
+                          />
+                        </template>
+
+                        <q-dialog v-model="party.showTo">
+                          <q-card>
+                            <q-card-section>
+                              <q-date
+                                landscape
+                                v-model="party.TimelineToDate"
+                                @input="updateSubjectDateTo"
+                                :options="dateAfterOrSubjectDate"
+                              />
+                            </q-card-section>
+                          </q-card>
+                        </q-dialog>
+                      </q-input>
+                    </div>
+
+                    <!-- Remove Button -->
+                    <div class="col-12 col-md-1 flex flex-center">
+                      <q-btn
+                        rounded
+                        outlined
+                        @click="removeActionItem(index)"
+                        color="negative"
+                        class="q-mt-md"
+                        icon="remove_circle"
+                        size="sm"
+                      />
+                    </div>
                   </div>
                 </q-item-section>
-
-                <div
-                  v-for="(party, index) in actionparties"
-                  :key="party.id || index"
-                  style="
-                    margin-top: 5px;
-                    margin-bottom: 5px;
-                    display: flex;
-                    align-items: center;
-                    padding: 5px;
-                  "
-                >
-                  <!-- Corrective Action -->
-                  <q-input
-                    v-model="party.ActionItem"
-                    label-slot
-                    rounded
-                    outlined
-                    autogrow
-                    style="width: 70%"
-                    :rules="[val => !!val && val.trim().length > 0 || 'Required field']"
-                  >
-                    <template v-slot:label>
-                      CORRECTIVE ACTION
-                      <span class="text-red">*</span>
-                    </template>
-                  </q-input>
-
-                  <!-- Timeline From -->
-                  <q-input
-                    v-model="party.TimelineFromDate"
-                    rounded
-                    outlined
-                    label-slot
-                    style="width: 20%; margin-left: 15px; margin-right: 10px"
-                    :disable="!party.ActionItem"
-                    :rules="[
-                      val => {
-                        if (party.ActionItem) {
-                          return !!val || 'Required field'
-                        }
-                        return true
-                      }
-                    ]"
-                    @click="party.showFrom = true"
-                  >
-                    <template v-slot:label>
-                      TIMELINE FROM
-                      <span v-if="party.ActionItem" class="text-red">*</span>
-                    </template>
-
-                    <template v-slot:append>
-                      <q-icon
-                        name="event"
-                        class="cursor-pointer"
-                        @click="party.showFrom = true"
-                      />
-                    </template>
-
-                    <q-dialog v-model="party.showFrom">
-                      <q-card>
-                        <q-card-section>
-                          <q-date
-                            v-model="party.TimelineFromDate"
-                            @input="updateSubjectDateFrom"
-                            :options="dateAfterOrSubjectDate"
-                          />
-                        </q-card-section>
-                      </q-card>
-                    </q-dialog>
-                  </q-input>
-
-                  <!-- Timeline To -->
-                  <q-input
-                    v-model="party.TimelineToDate"
-                    rounded
-                    outlined
-                    label-slot
-                    style="width: 20%; margin-left: 5px; margin-right: 5px"
-                    :disable="!party.ActionItem"
-                    :rules="[
-                      val => {
-                        if (party.ActionItem) {
-                          return !!val || 'Required field'
-                        }
-                        return true
-                      }
-                    ]"
-                    @click="party.showTo = true"
-                  >
-                    <template v-slot:label>
-                      TIMELINE TO
-                      <span v-if="party.ActionItem" class="text-red">*</span>
-                    </template>
-
-                    <template v-slot:append>
-                      <q-icon
-                        name="event"
-                        class="cursor-pointer"
-                        @click="party.showTo = true"
-                      />
-                    </template>
-
-                    <q-dialog v-model="party.showTo">
-                      <q-card>
-                        <q-card-section>
-                          <q-date
-                            landscape
-                            v-model="party.TimelineToDate"
-                            @input="updateSubjectDateTo"
-                            :options="dateAfterOrSubjectDate"
-                          />
-                        </q-card-section>
-                      </q-card>
-                    </q-dialog>
-                  </q-input>
-
-                  <!-- Remove Button -->
-                  <q-btn
-                    rounded
-                    outlined
-                    @click="removeActionItem(index)"
-                    color="negative"
-                    icon="remove_circle"
-                    class="q-ml-md"
-                    style="margin-right: 15px"
-                    size="sm"
-                  />
-                </div>
-              </q-item-section>
+              </q-card-section>
 
               <q-card-actions align="center" class="q-mt-xs column items-center">
                 <div class="row q-gutter-xl; justify-center">
@@ -860,9 +888,9 @@
                     flat
                     rounded
                     push
-                    label="Cancel"
+                    label="Save Draft"
                     class="buttonCancelDesign text-info"
-                    @click="onCancelItemAction"
+                    @click="handleSaveDraft"
                     style="width: 195px"
                   />
 
@@ -881,7 +909,57 @@
           </div>
         </q-dialog>
 
-        <!-- ////////////////////////////////////////////////////////////////////////// LOADING /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+        <!-- ////////////////////////////////////////////////////////////////////////// DRAFT /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+        <q-dialog v-model="draftActionItem" persistent>
+          <q-card class="IRCON">
+            <q-card-section class="q-mb-sm row items-center justify-between">
+              <div
+                class="text-secondary text-weight-bold"
+                style="font-size: 25px; color: #002b5c"
+              >
+                SAVE DRAFT
+              </div>
+              <q-btn
+                flat
+                icon="close"
+                style="color: #166ecc; background-color: rgba(22, 110, 204, 0.1)"
+                @click="draftActionItem = false"
+                v-close-popup
+              />
+            </q-card-section>
+
+            <q-separator class="sepDesign" />
+
+            <q-card-actions align="center" class="q-mt-md column items-center">
+              <div class="q-mb-sm" style="font-size: 17px; color: #000000">
+                Do you want to save this draft?
+              </div>
+
+              <div class="row q-gutter-xxl; justify-center">
+                <q-btn
+                  flat
+                  rounded
+                  push
+                  label="NO"
+                  class="buttonCancelDesign text-info"
+                  @click="onCancelActionDraft()"
+                />
+
+                <q-btn
+                  flat
+                  rounded
+                  push
+                  label="YES"
+                  class="buttonSaveDesign bg-accent text-black"
+                  @click="submitActionItemDraft()"
+                />
+              </div>
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+
+        <!-- ////////////////////////////////////////////////////////////////////////// CONFIRMATION /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
 
         <q-dialog v-model="confirmAction" persistent>
           <q-card class="IRCON">
@@ -947,6 +1025,412 @@
             </div>
           </div>
         </q-dialog>
+
+        <!-- ////////////////////////////////////////////////////////////////////////// SAVE DRAFT /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+        <q-dialog maximized v-model="setDraftActionitem" persistent>
+          <div class="QADialog">
+            <q-card class="contentFormAction">
+              <q-card-section class="q-mb-xs row items-center justify-between">
+                <div>
+                  <div
+                    class="text-secondary text-weight-bold"
+                    style="font-size: 25px; color: #002b5c"
+                  >
+                    Incident Report: Action Item Creation
+                  </div>
+                  <div style="font-size: 18px; color: #333333" class="text-bold">
+                    Instruction: Identify and list the immediate corrective actions that can be implemented to address the incident.
+                  </div>
+                </div>
+
+                <q-btn
+                  flat
+                  icon="close"
+                  style="
+                    color: #003566;
+                    background-color: rgba(22, 110, 204, 0.1);
+                  "
+                  @click="onCancelDraftAction()"
+                  v-close-popup
+                >
+                  <q-tooltip class="bg-info text-white"> Close Form </q-tooltip>
+                </q-btn>
+              </q-card-section>
+
+              <q-card-section
+                v-if="isLoadingDraft"
+                class="column flex-center q-pa-xl"
+                style="height: 600px"
+              >
+                <q-spinner size="80px" color="primary" />
+                <div class="q-mt-md text-primary text-weight-medium">
+                  Loading Draft Details...
+                </div>
+              </q-card-section>
+
+              <q-card-section style="border: 2px solid #6b7c93" v-else>
+                <q-card-section
+                  class="q-mb-md"
+                  style="border: 2px solid #ddd"
+                >
+                  <div class="QADesContent">
+                    <div class="QAFixDesign">
+                      <div class="QADes1">
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                        >
+                          Problem Background
+                        </div>
+                        <div
+                          class="q-mb-sm"
+                          style="font-size: 15px; color: #737373"
+                        >
+                          This section contains essential details regarding the
+                          incident, including the date, time, location,
+                          individuals involved, and the nature of the incident.
+                        </div>
+                        <q-separator class="formseparatorYellow" />
+
+                        <div class="row q-col-gutter-md q-mx-lg">
+                          <div class="col-4">
+                            <div
+                              class="text-weight-bold"
+                              style="font-size: 15px; color: #03254b"
+                            >
+                              Date of the Incident
+                            </div>
+
+                            <q-input
+                              rounded
+                              outlined
+                              :model-value="FormatDate(IRQADetailss.subjectDate)"
+                              disable
+                            />
+                          </div>
+
+                          <div class="col-4">
+                            <div
+                              class="text-weight-bold"
+                              style="font-size: 15px; color: #03254b"
+                            >
+                              Time of the Incident
+                            </div>
+
+                            <q-input
+                              rounded
+                              outlined
+                              :model-value="FormatTime(IRQADetailss.subjectDate)"
+                              disable
+                            />
+                          </div>
+
+                          <div class="col-4">
+                            <div
+                              class="text-weight-bold"
+                              style="font-size: 15px; color: #03254b"
+                            >
+                              Location of the Incident
+                            </div>
+
+                            <q-input
+                              rounded
+                              outlined
+                              :model-value="IRQADetailss.subjectLoc"
+                              disable
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="QADesContent">
+                    <div class="QAFixDesign">
+                      <div class="QADes1">
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                        >
+                          Immediate Response
+                        </div>
+                        <div
+                          class="q-mb-sm"
+                          style="font-size: 15px; color: #737373"
+                        >
+                          Action taken by the concerned department or by the
+                          Informant to ease the incident.
+                        </div>
+                        <q-separator class="formseparatorYellow" />
+                        <div class="q-mx-xl">
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            :model-value="IRQADetailss.subjectResponse"
+                            disable
+                            input-class="q-pa-md"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </q-card-section>
+
+                <q-item-section class="q-pa-sm" style="border: 2px solid #ddd">
+                  <!-- HEADER -->
+                  <q-item-section
+                    class="q-mb-xs rounded-borders"
+                    style="
+                      background-color: rgba(22, 110, 204, 0.1);
+                      border: 2px solid #166ecc;
+                    "
+                  >
+                    <div class="QARTGTestlist">
+                      <span class="text-primary text-weight-bold">
+                        Add actions
+                      </span>
+
+                      <q-btn
+                        class="text-primary q-ml-auto"
+                        flat
+                        round
+                        dense
+                        icon="add"
+                        @click="addActionItem"
+                      />
+                    </div>
+                  </q-item-section>
+
+                  <!-- ===================== IRQADRAFT ===================== -->
+                  <div
+                    v-for="(item, index) in IRQADraft.filter(i => !i.isDeleted)"
+                    :key="'draft-' + index"
+                    class="row items-center q-gutter-sm q-my-xs"
+                  >
+                    <!-- ACTION -->
+                    <q-input
+                      v-model="item.actionItem"
+                      label-slot
+                      rounded
+                      outlined
+                      autogrow
+                      class="col-7"
+                    >
+                      <template v-slot:label>
+                        CORRECTIVE ACTION <span class="text-red">*</span>
+                      </template>
+                    </q-input>
+
+                    <!-- FROM -->
+                    <q-input
+                      :model-value="FormatDate(item.timelineFromDate)"
+                      label-slot
+                      rounded
+                      outlined
+                      class="col"
+                      :disable="!item.actionItem"
+                      @click="item.showFrom = true"
+                    >
+                      <template v-slot:label>
+                        TIMELINE FROM
+                        <span v-if="item.actionItem" class="text-red">*</span>
+                      </template>
+
+                      <template v-slot:append>
+                        <q-icon
+                          name="event"
+                          class="cursor-pointer"
+                          @click.stop="item.showFrom = true"
+                        />
+                      </template>
+
+                      <q-dialog v-model="item.showFrom">
+                        <q-card>
+                          <q-card-section>
+                            <q-date
+                              v-model="item.timelineFromDate"
+                              @input="updateSubjectDateFrom"
+                              :options="dateAfterOrSubjectDate"
+                            />
+                          </q-card-section>
+                        </q-card>
+                      </q-dialog>
+                    </q-input>
+
+                    <!-- TO -->
+                    <q-input
+                      :model-value="FormatDate(item.timelineToDate)"
+                      label-slot
+                      rounded
+                      outlined
+                      class="col"
+                      :disable="!item.actionItem"
+                      @click="item.showTo = true"
+                    >
+                      <template v-slot:label>
+                        TIMELINE TO
+                        <span v-if="item.actionItem" class="text-red">*</span>
+                      </template>
+
+                      <template v-slot:append>
+                        <q-icon
+                          name="event"
+                          class="cursor-pointer"
+                          @click.stop="item.showTo = true"
+                        />
+                      </template>
+
+                      <q-dialog v-model="item.showTo">
+                        <q-card>
+                          <q-card-section>
+                            <q-date
+                              landscape
+                              v-model="item.timelineToDate"
+                              @input="updateSubjectDateTo"
+                              :options="dateAfterOrSubjectDate"
+                            />
+                          </q-card-section>
+                        </q-card>
+                      </q-dialog>
+                    </q-input>
+
+                    <!-- REMOVE -->
+                    <q-btn
+                      rounded
+                      outlined
+                      color="negative"
+                      icon="remove_circle"
+                      size="sm"
+                      @click="removeDraftItem(index)"
+                    />
+                  </div>
+
+                  <!-- ===================== ACTION PARTIES ===================== -->
+                  <div
+                    v-for="(party, index) in actionparties"
+                    :key="party.id || index"
+                    class="row items-center q-gutter-sm q-my-xs"
+                  >
+                    <!-- ACTION -->
+                    <q-input
+                      v-model="party.ActionItem"
+                      label-slot
+                      rounded
+                      outlined
+                      autogrow
+                      class="col-7"
+                      :rules="[val => !!val && val.trim().length > 0 || 'Required field']"
+                    >
+                      <template v-slot:label>
+                        CORRECTIVE ACTION <span class="text-red">*</span>
+                      </template>
+                    </q-input>
+
+                    <!-- FROM -->
+                    <q-input
+                      v-model="party.TimelineFromDate"
+                      label-slot
+                      rounded
+                      outlined
+                      class="col"
+                      :disable="!party.ActionItem"
+                      readonly
+                      @click="party.showFrom = true"
+                    >
+                      <template v-slot:label>
+                        TIMELINE FROM
+                        <span v-if="party.ActionItem" class="text-red">*</span>
+                      </template>
+
+                      <template v-slot:append>
+                        <q-icon
+                          name="event"
+                          class="cursor-pointer"
+                          @click.stop="party.showFrom = true"
+                        />
+                      </template>
+
+                      <q-dialog v-model="party.showFrom">
+                        <q-card>
+                          <q-card-section>
+                            <q-date
+                              v-model="party.TimelineFromDate"
+                              @input="updateSubjectDateFrom"
+                              :options="dateAfterOrSubjectDate"
+                            />
+                          </q-card-section>
+                        </q-card>
+                      </q-dialog>
+                    </q-input>
+
+                    <!-- TO -->
+                    <q-input
+                      v-model="party.TimelineToDate"
+                      label-slot
+                      rounded
+                      outlined
+                      class="col"
+                      :disable="!party.ActionItem"
+                      readonly
+                      @click="party.showTo = true"
+                    >
+                      <template v-slot:label>
+                        TIMELINE TO
+                        <span v-if="party.ActionItem" class="text-red">*</span>
+                      </template>
+
+                      <template v-slot:append>
+                        <q-icon
+                          name="event"
+                          class="cursor-pointer"
+                          @click.stop="party.showTo = true"
+                        />
+                      </template>
+
+                      <q-dialog v-model="party.showTo">
+                        <q-card>
+                          <q-card-section>
+                            <q-date
+                              landscape
+                              v-model="party.TimelineToDate"
+                              @input="updateSubjectDateTo"
+                              :options="dateAfterOrSubjectDate"
+                            />
+                          </q-card-section>
+                        </q-card>
+                      </q-dialog>
+                    </q-input>
+
+                    <!-- REMOVE -->
+                    <q-btn
+                      rounded
+                      outlined
+                      color="negative"
+                      icon="remove_circle"
+                      size="sm"
+                      @click="removeActionItem(index)"
+                    />
+                  </div>
+                </q-item-section>
+              </q-card-section>
+
+              <q-card-actions align="center" class="q-mt-xs column items-center">
+                <div class="row q-gutter-xl; justify-center">
+                  <q-btn
+                    flat
+                    rounded
+                    push
+                    label="Save"
+                    class="buttonSaveDesign bg-accent text-black"
+                    @click="handleFormSubmitDraft()"
+                    style="width: 255px"
+                  />
+                </div>
+              </q-card-actions>
+            </q-card>
+          </div>
+        </q-dialog>
+
       </q-td>
     </template>
 
@@ -1025,7 +1509,18 @@
                 </q-btn>
               </q-card-section>
 
-              <q-card-section>
+              <q-card-section
+                v-if="isLoadingActionItems"
+                class="column flex-center q-pa-xl"
+                style="height: 400px"
+              >
+                <q-spinner size="60px" color="primary" />
+                <div class="q-mt-md text-primary text-weight-medium">
+                  Loading Action Items...
+                </div>
+              </q-card-section>
+
+              <q-card-section v-else>
                 <div class="row q-col-gutter-lg q-ma-xs">
                   <div
                     class="col-9 bg-white rounded-borders q-pa-smd"
@@ -1137,14 +1632,15 @@
 
                       <q-separator class="formseparatorYellow q-mr-md" />
 
-                      <div class="row q-col-gutter-xs q-pa-md">
+
+                      <div class="row q-col-gutter-xs q-pa-md" >
                         <div
                           class="col-12"
                           v-for="(item, index) in actionitemDetails"
                           :key="index"
                         >
                           <div
-                            class="q-pa-md q-mb-md rounded-borders"
+                            class="q-pa-sm q-mb-sm rounded-borders"
                             style="border: 1px solid #d0d7e2"
                           >
                             <!-- Action Item Notes -->
@@ -2075,6 +2571,14 @@ export default {
       accomplishActLoading: false,
 
       confirmAction: false,
+      draftActionItem: false,
+
+      draftActionDetails: false,
+      IRQADraft: [],
+      setDraftActionitem: false,
+      isLoadingDraft: false,
+      isLoadingActionItems: false,
+      isLoadingActionCreation: false,
     };
   },
 
@@ -2243,14 +2747,25 @@ export default {
     async viewActionItem(IRNo) {
       try {
         this.setActionItems = true;
-        const data = {
+        this.isLoadingActionCreation = true;
+
+        const payload = {
           iRNo: IRNo,
         };
+
         this.selectedIrNo = IRNo;
-        const response = await this.$store.dispatch("ApplyStore/disIrp", data);
+
+        await this.$store.dispatch("ApplyStore/disIrp", payload);
+
         this.IRQADetailss = this.getQACon;
+
+        // ensure minimum 2 seconds loading
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
       } catch (error) {
-        console.error("Error inserting data:", error);
+        console.error("Error fetching action items:", error);
+      } finally {
+        this.isLoadingActionCreation = false;
       }
     },
 
@@ -2269,6 +2784,7 @@ export default {
     onCancelItemAction() {
       this.selectedIrNo = "";
       this.actionparties = [];
+      this.setActionItems = false;
     },
 
     validateActionItem() {
@@ -2277,8 +2793,180 @@ export default {
       );
     },
 
-    ///////////////////////////////////////////////////ACTION DETAILS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////// SAVE ACTION DETAILS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    handleSaveDraft(){
+      this.draftActionItem = true;
+    },
+
+    async submitActionItemDraft(){
+      this.ActionLoadingItem = true;
+      try {
+        const payload = {
+          IRNo: this.selectedIrNo,
+          ActionItem: this.actionparties.map((party) => party.ActionItem),
+          TimelineFromDate: this.actionparties.map(
+            (party) => party.TimelineFromDate
+          ),
+          TimelineToDate: this.actionparties.map(
+            (party) => party.TimelineToDate
+          ),
+        };
+
+        await this.$store.dispatch("ApplyStore/addActionDraftVL", payload);
+        this.$q.notify({
+          color: "green-8",
+          position: "top",
+          message: "SUCCESS SAVING DRAFT ACTION ITEM",
+          icon: "check",
+          iconColor: "white",
+          timeout: 3000,
+          progress: true,
+        });
+        this.onCancelItemAction();
+
+        setTimeout( async () => {
+          this.ActionLoadingItem = false;
+          this.getPrimaryDeptACT();
+          this.setActionItems = false;
+          this.draftActionItem = false
+        }, 6000);
+      } catch (error) {
+        console.error("Error creating action items:", error);
+      }
+    },
+
+    onCancelActionDraft(){
+      this.draftActionItem = false
+    },
+
+    onCancelDraftAction(){
+      this.setActionItems = false;
+      this.setDraftActionitem = false;
+      this.draftActionDetails = false;
+    },
+
+    // async viewActionDraft(IRNo) {
+    //   try {
+    //     this.setDraftActionitem = true;
+    //     this.isLoadingDraft = true;
+    //     this.selectedIrNo = IRNo;
+    //     this.viewActionItem(IRNo);
+    //     this.displayActionDraft(IRNo);
+    //   } catch (error) {
+    //     console.error("Error inserting data:", error);
+    //   } finally {
+    //     this.isLoadingDraft = false;
+    //   }
+    // },
+
+    async viewActionDraft(IRNo) {
+      try {
+        this.setDraftActionitem = true;
+        this.isLoadingDraft = true;
+        this.selectedIrNo = IRNo;
+
+        // sequential execution
+        await this.viewActionItem(IRNo);
+        await this.displayActionDraft(IRNo);
+
+        // minimum 2 seconds loading
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+      } catch (error) {
+        console.error("Error loading draft:", error);
+      } finally {
+        this.isLoadingDraft = false;
+      }
+    },
+
+    async displayActionDraft(){
+      try {
+        this.setActionItems = true;
+        const data = {
+          iRNo: this.selectedIrNo,
+        };
+        const response = await this.$store.dispatch("ApplyStore/disSaveDraftIrp", data);
+        this.IRQADraft = this.getQACon;
+      } catch (error) {
+        console.error("Error inserting data:", error);
+      }
+    },
+
+    removeDraftItem(index) {
+      const item = this.IRQADraft[index];
+      if (item.id) {
+        this.IRQADraft[index].isDeleted = true;
+      } else {
+        this.IRQADraft.splice(index, 1);
+      }
+    },
+
+    async handleFormSubmitDraft() {
+      this.ActionLoadingItem = true;
+
+      try {
+        const draftItems = this.IRQADraft
+          .filter(item =>
+            item.isDeleted ||
+            (item.actionItem &&
+            item.timelineFromDate &&
+            item.timelineToDate)
+          )
+          .map(item => ({
+            irNo: this.selectedIrNo,
+            code: item.code || null,
+            actionItem: item.actionItem,
+            timelineFromDate: item.timelineFromDate,
+            timelineToDate: item.timelineToDate,
+            isDeleted: item.isDeleted || false,
+            source: 'draft'
+          }));
+
+        // ✅ ACTION PARTIES
+        const actionItems = this.actionparties
+          .filter(party =>
+            party.ActionItem &&
+            party.TimelineFromDate &&
+            party.TimelineToDate
+          )
+          .map(party => ({
+            actionItem: party.ActionItem,
+            timelineFromDate: party.TimelineFromDate,
+            timelineToDate: party.TimelineToDate,
+            source: 'final'
+          }));
+
+        const payload = {
+          irNo: this.selectedIrNo,
+          draftItems,
+          actionItems
+        };
+
+        await this.$store.dispatch("ApplyStore/addConfirmDraftAct", payload);
+        this.$q.notify({
+          color: "green-8",
+          position: "top",
+          message: "SUCCESS SUBMITTING DRAFT ACTION ITEM",
+          icon: "check",
+          iconColor: "white",
+          timeout: 3000,
+          progress: true,
+        });
+        this.onCancelDraftAction();
+
+        setTimeout( async () => {
+          this.ActionLoadingItem = false;
+          this.getPrimaryDeptACT();
+          await this.viewActionDetailsForm(this.selectedIrNo);
+          this.setActionItemDialogs = true;
+        }, 6000);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    },
+
+    ///////////////////////////////////////////////////ACTION DETAILS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     handleFormSubmit(){
       if (!this.validateActionItem()) {
@@ -2406,9 +3094,21 @@ export default {
     },
 
     async viewActionItemVLDetails(IRNo) {
-      this.setActionItemDialogs = true;
-      this.viewIReport(IRNo);
-      this.viewActionDetailsForm(IRNo);
+      try {
+        this.isLoadingActionItems = true;
+        this.setActionItemDialogs = true;
+
+        await this.viewIReport(IRNo);
+        await this.viewActionDetailsForm(IRNo);
+
+        // optional: minimum 2 seconds loading
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        this.isLoadingActionItems = false;
+      }
     },
 
     async viewActionDetailsForm(IRNo) {

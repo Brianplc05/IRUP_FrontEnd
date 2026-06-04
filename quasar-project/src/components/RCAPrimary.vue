@@ -6,7 +6,7 @@
           flat
           rounded
           push
-          @click="viewIReport(props.row.iRNo)"
+          @click="viewIReportDetails(props.row.iRNo)"
           :ripple="{ center: true }"
           color="accent"
           icon="description"
@@ -549,12 +549,25 @@
           rounded
           push
           :disable="['2', '3', '4', '5'].includes(props.row.rCA)"
-          v-if="props.row.rCA === '1'"
+          v-if="props.row.rCA === '1' && props.row.isDraft === false"
           @click="viewRCAForm(props.row.iRNo)"
           :ripple="{ center: true }"
           icon="list_alt"
           style="border-radius: 20px; width: 125px"
           class="bg-positive text-black text-bold text-center shadow-5"
+        />
+
+        <q-btn
+          flat
+          rounded
+          push
+          :disable="['2', '3', '4', '5'].includes(props.row.rCA)"
+          v-if="props.row.rCA === '1' && props.row.isDraft === true"
+          @click = "viewRCADraft(props.row.iRNo)"
+          :ripple="{ center: true }"
+          icon="drafts"
+          style="border-radius: 20px; width: 125px"
+          class="bg-accent text-black text-center shadow-5"
         />
 
         <q-btn
@@ -602,1076 +615,1087 @@
               </q-card-section>
 
               <q-card-section
-                class="rounded-borders shadow-2"
-                style="border: 2px solid #ddd"
+                v-if="isLoadingRCA"
+                class="column flex-center q-pa-xl"
+                style="height: 600px"
               >
-                <div class="QADesContent">
-                  <div class="QAFixDesign">
-                    <div class="QADes1">
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                      >
-                        Problem Background
-                      </div>
-                      <div
-                        class="q-mb-sm"
-                        style="font-size: 15px; color: #737373"
-                      >
-                        This section contains essential details regarding the
-                        incident, including the date, time, location,
-                        individuals involved, and the nature of the incident.
-                      </div>
-                      <q-separator class="formseparatorYellow" />
-
-                      <div class="row q-col-gutter-md q-mx-lg">
-                        <div class="col-4">
-                          <div
-                            class="text-weight-bold"
-                            style="font-size: 15px; color: #03254b"
-                          >
-                            Date of the Incident
-                          </div>
-
-                          <q-input
-                            rounded
-                            outlined
-                            :model-value="FormatDate(IRQADetailss.subjectDate)"
-                            disable
-                          />
-                        </div>
-
-                        <div class="col-4">
-                          <div
-                            class="text-weight-bold"
-                            style="font-size: 15px; color: #03254b"
-                          >
-                            Time of the Incident
-                          </div>
-
-                          <q-input
-                            rounded
-                            outlined
-                            :model-value="FormatTime(IRQADetailss.subjectDate)"
-                            disable
-                          />
-                        </div>
-
-                        <div class="col-4">
-                          <div
-                            class="text-weight-bold"
-                            style="font-size: 15px; color: #03254b"
-                          >
-                            Location of the Incident
-                          </div>
-
-                          <q-input
-                            rounded
-                            outlined
-                            :model-value="IRQADetailss.subjectLoc"
-                            disable
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="QADesContent">
-                  <div class="QAFixDesign">
-                    <div class="QADes1">
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                      >
-                        Immediate Response
-                      </div>
-                      <div
-                        class="q-mb-sm"
-                        style="font-size: 15px; color: #737373"
-                      >
-                        Action taken by the concerned department or by the
-                        Informant to ease the incident.
-                      </div>
-                      <q-separator class="formseparatorYellow" />
-                      <div class="q-mx-xl">
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          :model-value="IRQADetailss.subjectResponse"
-                          disable
-                          input-class="q-pa-md"
-                        />
-                      </div>
-                    </div>
-                  </div>
+                <q-spinner size="80px" color="primary" />
+                <div class="q-mt-md text-primary text-weight-medium">
+                  Loading Details...
                 </div>
               </q-card-section>
 
-              <q-card-section
-                class="rounded-borders shadow-2 q-mt-md"
-                style="border: 2px solid #ddd"
-              >
-                <div class="QADes1 column items-center justify-center q-mb-md">
-                  <div
-                    class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                  >
-                    Fishbone / Ishikawa Diagram and 5 Whys Analysis
-                  </div>
-                  <div
-                    class="text-center q-mb-md text-bold"
-                    style="font-size: 15px; color: #737373"
-                  >
-                    Identify potential root causes using a Fishbone Diagram,
-                    then apply the 5 Whys technique to each cause to determine
-                    the true root issue.
-                  </div>
-                </div>
-
-                <!-- //////////////MP&MH////////////////// -->
-                <div class="row q-col-gutter-xl q-ml-sm q-mr-sm">
-                  <div class="col-6 q-px-sx">
-                    <div
-                      class="fishboneDesign q-pa-sm bg-white"
-                      style="
-                        border: 5px solid rgba(211, 47, 47, 0.6);
-                        border-radius: 40px;
-                      "
-                    >
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                      >
-                        Manpower/s
-                      </div>
-
-                      <div
-                        class="text-center text-black q-mb-md"
-                        style="font-size: 15px"
-                      >
-                          This refers to the manpowers involved in the process,
-                          including skills, <br/> training, experience, communication, and accountability.
-                      </div>
-
-                      <div class="q-mx-xl">
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          v-model="ManProbStatement"
-                          label="PROBLEM STATEMENT"
-                        />
-                      </div>
-
-                      <q-item-section
-                        class="q-mt-md rounded-borders bg-warning"
-                        style="
-                          background-color: rgba(22, 110, 204, 0.1);
-                          border: 2px solid #ccc;
-                        "
-                      >
-                        <div
-                          class="row justify-between items-center text-black text-subtitle1 text-weight-bold q-mx-md"
-                        >
-                          Add Why?
-                          <q-btn
-                            class="q-ml-sm"
-                            flat
-                            round
-                            dense
-                            icon="add"
-                            @click="addManpower"
-                          />
-                        </div>
-                      </q-item-section>
-
-                      <div class="q-mx-xl">
-                        <div
-                          class="text-center text-black q-ma-md"
-                          style="font-size: 15px"
-                        >
-                          How does equipment used in the process impact the
-                          problem?
-                        </div>
-                        <div
-                          v-for="(item, index) in manparties"
-                          :key="index"
-                          style="display: flex; align-items: center"
-                        >
-                          <q-input
-                            class="q-ma-sm"
-                            autogrow
-                            rounded
-                            label=""
-                            outlined
-                            v-model="item.Manwhy"
-                            :rules="ManProbStatement ? [val => !!val || 'Required field'] : []"
-                            style="width: 100%"
-                          >
-                            <template v-slot:label>
-                              WHY?
-                              <span v-if="ManProbStatement" class="text-red">*</span>
-                            </template>
-                          </q-input>
-
-                          <q-btn
-                            @click="removeManpower(index)"
-                            color="negative"
-                            icon="remove_circle"
-                            class="q-ml-md"
-                            size="sm"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="col-6 q-px-sx">
-                    <div
-                      class="fishboneDesign q-pa-sm bg-white"
-                      style="
-                        border: 5px solid rgba(255, 193, 7, 0.6);
-                        border-radius: 40px;
-                      "
-                    >
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                      >
-                        Method/s
-                      </div>
-
-                      <div
-                        class="text-center text-black q-mb-md"
-                        style="font-size: 15px"
-                      >
-                        This refers to the methods and procedures an
-                        organization <br> uses to produce or deliver its product or
-                        service.
-                      </div>
-
-                      <div class="q-mx-xl">
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          v-model="MethodStatement"
-                          label="PROBLEM STATEMENT"
-                        />
-                      </div>
-
-                      <q-item-section
-                        class="q-mt-md rounded-borders bg-warning"
-                        style="
-                          background-color: rgba(22, 110, 204, 0.1);
-                          border: 2px solid #ccc;
-                        "
-                      >
-                        <div
-                          class="row justify-between items-center text-black text-subtitle1 text-weight-bold q-mx-md"
-                        >
-                          Add Why?
-                          <q-btn
-                            class="q-ml-sm"
-                            flat
-                            round
-                            dense
-                            icon="add"
-                            @click="addMethod"
-                          />
-                        </div>
-                      </q-item-section>
-
-                      <div class="q-mx-xl">
-                        <div
-                          class="text-center text-black q-ma-md"
-                          style="font-size: 15px"
-                        >
-                          How does the way the work is performed impact the
-                          problem?
-                        </div>
-                        <div
-                          v-for="(item, index) in methodparties"
-                          :key="index"
-                          style="display: flex; align-items: center"
-                        >
-                          <q-input
-                            class="q-ma-sm"
-                            autogrow
-                            rounded
-                            outlined
-                            label
-                            v-model="item.Methodwhy"
-                            :rules="MethodStatement ? [val => !!val || 'Required field'] : []"
-                            style="width: 100%"
-                          >
-                            <template v-slot:label>
-                              WHY?
-                              <span v-if="MethodStatement" class="text-red">*</span>
-                            </template>
-                          </q-input>
-
-                          <q-btn
-                            @click="removeMethod(index)"
-                            color="negative"
-                            icon="remove_circle"
-                            class="q-ml-md"
-                            size="sm"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="col-6 q-px-sx">
-                    <div
-                      class="fishboneDesign q-pa-sm bg-white"
-                      style="
-                        border: 5px solid rgba(233, 30, 99, 0.6);
-                        border-radius: 40px;
-                      "
-                    >
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                      >
-                        Machine/s
-                      </div>
-
-                      <div
-                        class="text-center text-black q-mb-md"
-                        style="font-size: 15px"
-                      >
-                        This refers to the assets such as machines and
-                        equipement <br> used to create or provide the product or
-                        services
-                      </div>
-
-                      <div class="q-mx-xl">
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          v-model="MachineStatement"
-                          label="PROBLEM STATEMENT"
-                        />
-                      </div>
-
-                      <q-item-section
-                        class="q-mt-md rounded-borders bg-warning"
-                        style="
-                          background-color: rgba(22, 110, 204, 0.1);
-                          border: 2px solid #ccc;
-                        "
-                      >
-                        <div
-                          class="row justify-between items-center text-black text-subtitle1 text-weight-bold q-mx-md"
-                        >
-                          Add Why?
-                          <q-btn
-                            class="q-ml-sm"
-                            flat
-                            round
-                            dense
-                            icon="add"
-                            @click="addMachine"
-                          />
-                        </div>
-                      </q-item-section>
-
-                      <div class="q-mx-xl">
-                        <div
-                          class="text-center text-black q-ma-md"
-                          style="font-size: 15px"
-                        >
-                          How does equipment used in the process impact the
-                          problem?
-                        </div>
-                        <div
-                          v-for="(item, index) in machineparties"
-                          :key="index"
-                          style="display: flex; align-items: center"
-                        >
-                          <q-input
-                            class="q-ma-sm"
-                            autogrow
-                            rounded
-                            label=""
-                            outlined
-                            v-model="item.Machinewhy"
-                            :rules="MachineStatement ? [val => !!val || 'Required field'] : []"
-                            style="width: 100%"
-                          >
-                            <template v-slot:label>
-                              WHY?
-                              <span v-if="MachineStatement" class="text-red">*</span>
-                            </template>
-                          </q-input>
-
-                          <q-btn
-                            @click="removeMachine(index)"
-                            color="negative"
-                            icon="remove_circle"
-                            class="q-ml-md"
-                            size="sm"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="col-6 q-px-sx">
-                    <div
-                      class="fishboneDesign q-pa-sm bg-white"
-                      style="
-                        border: 5px solid rgba(156, 39, 176, 0.6);
-                        border-radius: 40px;
-                      "
-                    >
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                      >
-                        Material/s
-                      </div>
-
-                      <div
-                        class="text-center text-black q-mb-md"
-                        style="font-size: 15px"
-                      >
-                        This refers to any physical or non-physical components
-                        <br> of the system, including people, resources, and tools.
-                      </div>
-
-                      <div class="q-mx-xl">
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          v-model="MaterialStatement"
-                          label="PROBLEM STATEMENT"
-                        />
-                      </div>
-
-                      <q-item-section
-                        class="q-mt-md rounded-borders bg-warning"
-                        style="
-                          background-color: rgba(22, 110, 204, 0.1);
-                          border: 2px solid #ccc;
-                        "
-                      >
-                        <div
-                          class="row justify-between items-center text-black text-subtitle1 text-weight-bold q-mx-md"
-                        >
-                          Add Why?
-                          <q-btn
-                            class="q-ml-sm"
-                            flat
-                            round
-                            dense
-                            icon="add"
-                            @click="addMaterial"
-                          />
-                        </div>
-                      </q-item-section>
-
-                      <div class="q-mx-xl">
-                        <div
-                          class="text-center text-black q-ma-md"
-                          style="font-size: 15px"
-                        >
-                          How do quality and type of materials used impact the
-                          problem?
-                        </div>
-                        <div
-                          v-for="(item, index) in materialparties"
-                          :key="index"
-                          style="display: flex; align-items: center"
-                        >
-                          <q-input
-                            class="q-ma-sm"
-                            autogrow
-                            rounded
-                            label=""
-                            outlined
-                            v-model="item.Materialwhy"
-                            :rules="MaterialStatement ? [val => !!val || 'Required field'] : []"
-                            style="width: 100%"
-                          >
-                            <template v-slot:label>
-                              WHY?
-                              <span v-if="MaterialStatement" class="text-red">*</span>
-                            </template>
-                          </q-input>
-
-                          <q-btn
-                            @click="removeMaterial(index)"
-                            color="negative"
-                            icon="remove_circle"
-                            class="q-ml-md"
-                            size="sm"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="col-6 q-px-sx">
-                    <div
-                      class="fishboneDesign q-pa-sm bg-white"
-                      style="
-                        border: 5px solid rgba(3, 169, 244, 0.6);
-                        border-radius: 40px;
-                      "
-                    >
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                      >
-                        Measurement/s
-                      </div>
-
-                      <div
-                        class="text-center text-black q-mb-md"
-                        style="font-size: 15px"
-                      >
-                        This refers to the tools and methods that organizations
-                        <br> use to effectively measure progress, outcomes, and
-                        overall performance.
-                      </div>
-
-                      <div class="q-mx-xl">
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          v-model="MeasurementStatement"
-                          label="PROBLEM STATEMENT"
-                        />
-                      </div>
-
-                      <q-item-section
-                        class="q-mt-md rounded-borders bg-warning"
-                        style="
-                          background-color: rgba(22, 110, 204, 0.1);
-                          border: 2px solid #ccc;
-                        "
-                      >
-                        <div
-                          class="row justify-between items-center text-black text-subtitle1 text-weight-bold q-mx-md"
-                        >
-                          Add Why?
-                          <q-btn
-                            class="q-ml-sm"
-                            flat
-                            round
-                            dense
-                            icon="add"
-                            @click="addMeasurement"
-                          />
-                        </div>
-                      </q-item-section>
-
-                      <div class="q-mx-xl">
-                        <div
-                          class="text-center text-black q-ma-md"
-                          style="font-size: 15px"
-                        >
-                          How do the metrics measuring activity progress impact the problem?
-                        </div>
-                        <div
-                          v-for="(item, index) in measurementparties"
-                          :key="index"
-                          style="display: flex; align-items: center"
-                        >
-                          <q-input
-                            class="q-ma-sm"
-                            autogrow
-                            rounded
-                            label=""
-                            outlined
-                            v-model="item.Measurementwhy"
-                            :rules="MeasurementStatement ? [val => !!val || 'Required field'] : []"
-                            style="width: 100%"
-                          >
-                            <template v-slot:label>
-                              WHY?
-                              <span v-if="MeasurementStatement" class="text-red">*</span>
-                            </template>
-                          </q-input>
-
-                          <q-btn
-                            @click="removeMeasurement(index)"
-                            color="negative"
-                            icon="remove_circle"
-                            class="q-ml-md"
-                            size="sm"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="col-6 q-px-sx">
-                    <div
-                      class="fishboneDesign q-pa-sm bg-white"
-                      style="
-                        border: 5px solid rgba(76, 175, 80, 0.6);
-                        border-radius: 40px;
-                      "
-                    >
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                      >
-                        Environment/s
-                      </div>
-
-                      <div
-                        class="text-center text-black q-mb-md"
-                        style="font-size: 15px"
-                      >
-                        This refers to the external factors that affect the
-                        <br> system including weather, geography, and regulation.
-                      </div>
-
-                      <div class="q-mx-xl">
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          v-model="EnvironmentStatement"
-                          label="PROBLEM STATEMENT"
-                        />
-                      </div>
-
-                      <q-item-section
-                        class="q-mt-md rounded-borders bg-warning"
-                        style="
-                          background-color: rgba(22, 110, 204, 0.1);
-                          border: 2px solid #ccc;
-                        "
-                      >
-                        <div
-                          class="row justify-between items-center text-black text-subtitle1 text-weight-bold q-mx-md"
-                        >
-                          Add Why?
-                          <q-btn
-                            class="q-ml-sm"
-                            flat
-                            round
-                            dense
-                            icon="add"
-                            @click="addEnvironment"
-                          />
-                        </div>
-                      </q-item-section>
-
-                      <div class="q-mx-xl">
-                        <div
-                          class="text-center text-black q-ma-md"
-                          style="font-size: 15px"
-                        >
-                          How does the activity’s environment affect or
-                          contribute to the identified problem?
-                        </div>
-                        <div
-                          v-for="(item, index) in environmentparties"
-                          :key="index"
-                          style="display: flex; align-items: center"
-                        >
-                          <q-input
-                            class="q-ma-sm"
-                            autogrow
-                            rounded
-                            label=""
-                            outlined
-                            v-model="item.Environmentwhy"
-                            :rules="EnvironmentStatement ? [val => !!val || 'Required field'] : []"
-                            style="width: 100%"
-                          >
-                            <template v-slot:label>
-                              WHY?
-                              <span v-if="EnvironmentStatement" class="text-red">*</span>
-                            </template>
-                          </q-input>
-
-                          <q-btn
-                            @click="removeEnvironment(index)"
-                            color="negative"
-                            icon="remove_circle"
-                            class="q-ml-md"
-                            size="sm"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </q-card-section>
-
-              <q-card-section
-                class="rounded-borders shadow-2 q-mt-md"
-                style="border: 2px solid #ddd"
-              >
-                <div class="QADes1 column items-center justify-center q-mb-md">
-                  <div
-                    class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                  >
-                    Actionable Root Cause
-                  </div>
-                  <div
-                    class="text-center"
-                    style="font-size: 15px; color: #737373"
-                  >
-                    <b>Instuction : From the results of your Fishbone Diagram and 5 Whys analysis,
-                      identify the most critical underlying cause that requires corrective action to ensure the issue does not reoccur. </b>
-                  </div>
-
-                  <q-select
-                    rounded outlined
-                    class="q-mt-md"
-                    v-model="domainActionable"
-                    :options="domain"
-                    label-slot
-                    style="width: 100%">
-
-                    <template v-slot:label>
-                      DOMAIN
-                      <span class="text-red">*</span>
-                    </template>
-                  </q-select>
-
-                  <q-input
-                    v-model="actionableRoot"
-                    rounded
-                    outlined
-                    label-slot
-                    type="textarea"
-                    class="q-mt-md"
-                    autofocus
-                    style="width: 100%"
-                  >
-                    <template v-slot:label>
-                      SUMMARY ANALYSIS
-                      <span class="text-red">*</span>
-                    </template>
-                  </q-input>
-                </div>
-              </q-card-section>
-
-              <q-card-section
-                class="rounded-borders shadow-2 q-mt-md"
-                style="border: 2px solid #ddd"
-              >
-                <div class="QADes1 column items-center justify-center q-mb-md">
-                  <div
-                    class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                  >
-                    Solution Identification
-                  </div>
-                  <div
-                    class="text-center text-bold"
-                    style="font-size: 15px; color: #737373"
-                  >
-                    Identify effective solutions by proposing corrective actions
-                    to immediately address root causes and preventive measures
-                    to avoid recurrence, specifying responsibilities and
-                    timelines for each.
-                  </div>
-                </div>
-
-                <q-separator class="formseparatorWhite" />
-
-                <div
-                  class="QADes1"
-                  style="
-                    border: 2px solid #6b7c93;
-                    border-radius: 40px;
-                    padding: 30px;
-                  "
+              <q-card-section style="border: 2px solid #6b7c93" v-else>
+                <q-card-section
+                  class="rounded-borders "
+                  style="border: 2px solid #ddd"
                 >
+                  <div class="QADesContent">
+                    <div class="QAFixDesign">
+                      <div class="QADes1">
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                        >
+                          Problem Background
+                        </div>
+                        <div
+                          class="q-mb-sm"
+                          style="font-size: 15px; color: #737373"
+                        >
+                          This section contains essential details regarding the
+                          incident, including the date, time, location,
+                          individuals involved, and the nature of the incident.
+                        </div>
+                        <q-separator class="formseparatorYellow" />
+
+                        <div class="row q-col-gutter-md q-mx-lg">
+                          <div class="col-4">
+                            <div
+                              class="text-weight-bold"
+                              style="font-size: 15px; color: #03254b"
+                            >
+                              Date of the Incident
+                            </div>
+
+                            <q-input
+                              rounded
+                              outlined
+                              :model-value="FormatDate(IRQADetailss.subjectDate)"
+                              disable
+                            />
+                          </div>
+
+                          <div class="col-4">
+                            <div
+                              class="text-weight-bold"
+                              style="font-size: 15px; color: #03254b"
+                            >
+                              Time of the Incident
+                            </div>
+
+                            <q-input
+                              rounded
+                              outlined
+                              :model-value="FormatTime(IRQADetailss.subjectDate)"
+                              disable
+                            />
+                          </div>
+
+                          <div class="col-4">
+                            <div
+                              class="text-weight-bold"
+                              style="font-size: 15px; color: #03254b"
+                            >
+                              Location of the Incident
+                            </div>
+
+                            <q-input
+                              rounded
+                              outlined
+                              :model-value="IRQADetailss.subjectLoc"
+                              disable
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="QADesContent">
+                    <div class="QAFixDesign">
+                      <div class="QADes1">
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                        >
+                          Immediate Response
+                        </div>
+                        <div
+                          class="q-mb-sm"
+                          style="font-size: 15px; color: #737373"
+                        >
+                          Action taken by the concerned department or by the
+                          Informant to ease the incident.
+                        </div>
+                        <q-separator class="formseparatorYellow" />
+                        <div class="q-mx-xl">
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            :model-value="IRQADetailss.subjectResponse"
+                            disable
+                            input-class="q-pa-md"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </q-card-section>
+
+                <q-card-section
+                  class="rounded-borders q-mt-md"
+                  style="border: 2px solid #ddd"
+                >
+                  <div class="QADes1 column items-center justify-center q-mb-md">
+                    <div
+                      class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                    >
+                      Fishbone / Ishikawa Diagram and 5 Whys Analysis
+                    </div>
+                    <div
+                      class="text-center q-mb-md text-bold"
+                      style="font-size: 15px; color: #737373"
+                    >
+                      Identify potential root causes using a Fishbone Diagram,
+                      then apply the 5 Whys technique to each cause to determine
+                      the true root issue.
+                    </div>
+                  </div>
+
+                  <!-- //////////////MP&MH////////////////// -->
+                  <div class="row q-col-gutter-xl q-ml-sm q-mr-sm">
+                    <div class="col-6 q-px-sx">
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(211, 47, 47, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Manpower/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                            This refers to the manpowers involved in the process,
+                            including skills, <br/> training, experience, communication, and accountability.
+                        </div>
+
+                        <div class="q-mx-xl">
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            v-model="ManProbStatement"
+                            label="PROBLEM STATEMENT"
+                          />
+                        </div>
+
+                        <q-item-section
+                          class="q-mt-md rounded-borders bg-warning"
+                          style="
+                            background-color: rgba(22, 110, 204, 0.1);
+                            border: 2px solid #ccc;
+                          "
+                        >
+                          <div
+                            class="row justify-between items-center text-black text-subtitle1 text-weight-bold q-mx-md"
+                          >
+                            Add Why?
+                            <q-btn
+                              class="q-ml-sm"
+                              flat
+                              round
+                              dense
+                              icon="add"
+                              @click="addManpower"
+                            />
+                          </div>
+                        </q-item-section>
+
+                        <div class="q-mx-xl">
+                          <div
+                            class="text-center text-black q-ma-md"
+                            style="font-size: 15px"
+                          >
+                            How does equipment used in the process impact the
+                            problem?
+                          </div>
+                          <div
+                            v-for="(item, index) in manparties"
+                            :key="index"
+                            style="display: flex; align-items: center"
+                          >
+                            <q-input
+                              class="q-ma-sm"
+                              autogrow
+                              rounded
+                              label=""
+                              outlined
+                              v-model="item.Manwhy"
+                              :rules="ManProbStatement ? [val => !!val || 'Required field'] : []"
+                              style="width: 100%"
+                            >
+                              <template v-slot:label>
+                                WHY?
+                                <span v-if="ManProbStatement" class="text-red">*</span>
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              @click="removeManpower(index)"
+                              color="negative"
+                              icon="remove_circle"
+                              class="q-ml-md"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-6 q-px-sx">
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(255, 193, 7, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Method/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to the methods and procedures an
+                          organization <br> uses to produce or deliver its product or
+                          service.
+                        </div>
+
+                        <div class="q-mx-xl">
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            v-model="MethodStatement"
+                            label="PROBLEM STATEMENT"
+                          />
+                        </div>
+
+                        <q-item-section
+                          class="q-mt-md rounded-borders bg-warning"
+                          style="
+                            background-color: rgba(22, 110, 204, 0.1);
+                            border: 2px solid #ccc;
+                          "
+                        >
+                          <div
+                            class="row justify-between items-center text-black text-subtitle1 text-weight-bold q-mx-md"
+                          >
+                            Add Why?
+                            <q-btn
+                              class="q-ml-sm"
+                              flat
+                              round
+                              dense
+                              icon="add"
+                              @click="addMethod"
+                            />
+                          </div>
+                        </q-item-section>
+
+                        <div class="q-mx-xl">
+                          <div
+                            class="text-center text-black q-ma-md"
+                            style="font-size: 15px"
+                          >
+                            How does the way the work is performed impact the
+                            problem?
+                          </div>
+                          <div
+                            v-for="(item, index) in methodparties"
+                            :key="index"
+                            style="display: flex; align-items: center"
+                          >
+                            <q-input
+                              class="q-ma-sm"
+                              autogrow
+                              rounded
+                              outlined
+                              label
+                              v-model="item.Methodwhy"
+                              :rules="MethodStatement ? [val => !!val || 'Required field'] : []"
+                              style="width: 100%"
+                            >
+                              <template v-slot:label>
+                                WHY?
+                                <span v-if="MethodStatement" class="text-red">*</span>
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              @click="removeMethod(index)"
+                              color="negative"
+                              icon="remove_circle"
+                              class="q-ml-md"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-6 q-px-sx">
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(233, 30, 99, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Machine/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to the assets such as machines and
+                          equipement <br> used to create or provide the product or
+                          services
+                        </div>
+
+                        <div class="q-mx-xl">
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            v-model="MachineStatement"
+                            label="PROBLEM STATEMENT"
+                          />
+                        </div>
+
+                        <q-item-section
+                          class="q-mt-md rounded-borders bg-warning"
+                          style="
+                            background-color: rgba(22, 110, 204, 0.1);
+                            border: 2px solid #ccc;
+                          "
+                        >
+                          <div
+                            class="row justify-between items-center text-black text-subtitle1 text-weight-bold q-mx-md"
+                          >
+                            Add Why?
+                            <q-btn
+                              class="q-ml-sm"
+                              flat
+                              round
+                              dense
+                              icon="add"
+                              @click="addMachine"
+                            />
+                          </div>
+                        </q-item-section>
+
+                        <div class="q-mx-xl">
+                          <div
+                            class="text-center text-black q-ma-md"
+                            style="font-size: 15px"
+                          >
+                            How does equipment used in the process impact the
+                            problem?
+                          </div>
+                          <div
+                            v-for="(item, index) in machineparties"
+                            :key="index"
+                            style="display: flex; align-items: center"
+                          >
+                            <q-input
+                              class="q-ma-sm"
+                              autogrow
+                              rounded
+                              label=""
+                              outlined
+                              v-model="item.Machinewhy"
+                              :rules="MachineStatement ? [val => !!val || 'Required field'] : []"
+                              style="width: 100%"
+                            >
+                              <template v-slot:label>
+                                WHY?
+                                <span v-if="MachineStatement" class="text-red">*</span>
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              @click="removeMachine(index)"
+                              color="negative"
+                              icon="remove_circle"
+                              class="q-ml-md"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-6 q-px-sx">
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(156, 39, 176, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Material/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to any physical or non-physical components
+                          <br> of the system, including people, resources, and tools.
+                        </div>
+
+                        <div class="q-mx-xl">
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            v-model="MaterialStatement"
+                            label="PROBLEM STATEMENT"
+                          />
+                        </div>
+
+                        <q-item-section
+                          class="q-mt-md rounded-borders bg-warning"
+                          style="
+                            background-color: rgba(22, 110, 204, 0.1);
+                            border: 2px solid #ccc;
+                          "
+                        >
+                          <div
+                            class="row justify-between items-center text-black text-subtitle1 text-weight-bold q-mx-md"
+                          >
+                            Add Why?
+                            <q-btn
+                              class="q-ml-sm"
+                              flat
+                              round
+                              dense
+                              icon="add"
+                              @click="addMaterial"
+                            />
+                          </div>
+                        </q-item-section>
+
+                        <div class="q-mx-xl">
+                          <div
+                            class="text-center text-black q-ma-md"
+                            style="font-size: 15px"
+                          >
+                            How do quality and type of materials used impact the
+                            problem?
+                          </div>
+                          <div
+                            v-for="(item, index) in materialparties"
+                            :key="index"
+                            style="display: flex; align-items: center"
+                          >
+                            <q-input
+                              class="q-ma-sm"
+                              autogrow
+                              rounded
+                              label=""
+                              outlined
+                              v-model="item.Materialwhy"
+                              :rules="MaterialStatement ? [val => !!val || 'Required field'] : []"
+                              style="width: 100%"
+                            >
+                              <template v-slot:label>
+                                WHY?
+                                <span v-if="MaterialStatement" class="text-red">*</span>
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              @click="removeMaterial(index)"
+                              color="negative"
+                              icon="remove_circle"
+                              class="q-ml-md"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-6 q-px-sx">
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(3, 169, 244, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Measurement/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to the tools and methods that organizations
+                          <br> use to effectively measure progress, outcomes, and
+                          overall performance.
+                        </div>
+
+                        <div class="q-mx-xl">
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            v-model="MeasurementStatement"
+                            label="PROBLEM STATEMENT"
+                          />
+                        </div>
+
+                        <q-item-section
+                          class="q-mt-md rounded-borders bg-warning"
+                          style="
+                            background-color: rgba(22, 110, 204, 0.1);
+                            border: 2px solid #ccc;
+                          "
+                        >
+                          <div
+                            class="row justify-between items-center text-black text-subtitle1 text-weight-bold q-mx-md"
+                          >
+                            Add Why?
+                            <q-btn
+                              class="q-ml-sm"
+                              flat
+                              round
+                              dense
+                              icon="add"
+                              @click="addMeasurement"
+                            />
+                          </div>
+                        </q-item-section>
+
+                        <div class="q-mx-xl">
+                          <div
+                            class="text-center text-black q-ma-md"
+                            style="font-size: 15px"
+                          >
+                            How do the metrics measuring activity progress impact the problem?
+                          </div>
+                          <div
+                            v-for="(item, index) in measurementparties"
+                            :key="index"
+                            style="display: flex; align-items: center"
+                          >
+                            <q-input
+                              class="q-ma-sm"
+                              autogrow
+                              rounded
+                              label=""
+                              outlined
+                              v-model="item.Measurementwhy"
+                              :rules="MeasurementStatement ? [val => !!val || 'Required field'] : []"
+                              style="width: 100%"
+                            >
+                              <template v-slot:label>
+                                WHY?
+                                <span v-if="MeasurementStatement" class="text-red">*</span>
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              @click="removeMeasurement(index)"
+                              color="negative"
+                              icon="remove_circle"
+                              class="q-ml-md"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-6 q-px-sx">
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(76, 175, 80, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Environment/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to the external factors that affect the
+                          <br> system including weather, geography, and regulation.
+                        </div>
+
+                        <div class="q-mx-xl">
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            v-model="EnvironmentStatement"
+                            label="PROBLEM STATEMENT"
+                          />
+                        </div>
+
+                        <q-item-section
+                          class="q-mt-md rounded-borders bg-warning"
+                          style="
+                            background-color: rgba(22, 110, 204, 0.1);
+                            border: 2px solid #ccc;
+                          "
+                        >
+                          <div
+                            class="row justify-between items-center text-black text-subtitle1 text-weight-bold q-mx-md"
+                          >
+                            Add Why?
+                            <q-btn
+                              class="q-ml-sm"
+                              flat
+                              round
+                              dense
+                              icon="add"
+                              @click="addEnvironment"
+                            />
+                          </div>
+                        </q-item-section>
+
+                        <div class="q-mx-xl">
+                          <div
+                            class="text-center text-black q-ma-md"
+                            style="font-size: 15px"
+                          >
+                            How does the activity’s environment affect or
+                            contribute to the identified problem?
+                          </div>
+                          <div
+                            v-for="(item, index) in environmentparties"
+                            :key="index"
+                            style="display: flex; align-items: center"
+                          >
+                            <q-input
+                              class="q-ma-sm"
+                              autogrow
+                              rounded
+                              label=""
+                              outlined
+                              v-model="item.Environmentwhy"
+                              :rules="EnvironmentStatement ? [val => !!val || 'Required field'] : []"
+                              style="width: 100%"
+                            >
+                              <template v-slot:label>
+                                WHY?
+                                <span v-if="EnvironmentStatement" class="text-red">*</span>
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              @click="removeEnvironment(index)"
+                              color="negative"
+                              icon="remove_circle"
+                              class="q-ml-md"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </q-card-section>
+
+                <q-card-section
+                  class="rounded-borders q-mt-md"
+                  style="border: 2px solid #ddd"
+                >
+                  <div class="QADes1 column items-center justify-center q-mb-md">
+                    <div
+                      class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                    >
+                      Actionable Root Cause
+                    </div>
+                    <div
+                      class="text-center"
+                      style="font-size: 15px; color: #737373"
+                    >
+                      <b>Instuction : From the results of your Fishbone Diagram and 5 Whys analysis,
+                        identify the most critical underlying cause that requires corrective action to ensure the issue does not reoccur. </b>
+                    </div>
+
+                    <q-select
+                      rounded outlined
+                      class="q-mt-md"
+                      v-model="domainActionable"
+                      :options="domain"
+                      label-slot
+                      style="width: 100%">
+
+                      <template v-slot:label>
+                        DOMAIN
+                        <span class="text-red">*</span>
+                      </template>
+                    </q-select>
+
+                    <q-input
+                      v-model="actionableRoot"
+                      rounded
+                      outlined
+                      label-slot
+                      type="textarea"
+                      class="q-mt-md"
+                      autofocus
+                      style="width: 100%"
+                    >
+                      <template v-slot:label>
+                        SUMMARY ANALYSIS
+                        <span class="text-red">*</span>
+                      </template>
+                    </q-input>
+                  </div>
+                </q-card-section>
+
+                <q-card-section
+                  class="rounded-borders q-mt-md"
+                  style="border: 2px solid #ddd"
+                >
+                  <div class="QADes1 column items-center justify-center q-mb-md">
+                    <div
+                      class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                    >
+                      Solution Identification
+                    </div>
+                    <div
+                      class="text-center text-bold"
+                      style="font-size: 15px; color: #737373"
+                    >
+                      Identify effective solutions by proposing corrective actions
+                      to immediately address root causes and preventive measures
+                      to avoid recurrence, specifying responsibilities and
+                      timelines for each.
+                    </div>
+                  </div>
+
+                  <q-separator class="formseparatorWhite" />
+
                   <div
-                    class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                  >
-                    Corrective Action
-                  </div>
-
-                  <div class="q-mb-sm text-bold" style="font-size: 15px; color: #737373">
-                    Specify immediate actions to address identified root causes,
-                    including responsible individuals and deadlines for
-                    implementation. You may add more fields as needed.
-                  </div>
-
-                  <q-item-section
-                    class="q-mt-md rounded-borders bg-warning"
+                    class="QADes1"
                     style="
-                      background-color: rgba(22, 110, 204, 0.1);
-                      border: 2px solid #ccc;
+                      border: 2px solid #ddd;
+                      border-radius: 40px;
+                      padding: 30px;
                     "
                   >
                     <div
-                      class="row justify-between items-center text-primary text-subtitle1 text-weight-bold q-mx-md"
+                      class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
                     >
-                      Add Corrective Actions
-                      <q-btn
-                        class="q-ml-sm"
-                        flat
-                        round
-                        dense
-                        icon="add"
-                        @click="addCorrectiveItem"
-                      />
+                      Corrective Action
                     </div>
-                  </q-item-section>
 
-                  <div class="q-mx-xl">
-                    <div
-                      class="row q-col-gutter-md q-mt-xs q-mb-xs items-center"
-                      v-for="(partycorrective, index) in correctiveparties"
-                      :key="partycorrective.id || index"
+                    <div class="q-mb-sm text-bold" style="font-size: 15px; color: #737373">
+                      Specify immediate actions to address identified root causes,
+                      including responsible individuals and deadlines for
+                      implementation. You may add more fields as needed.
+                    </div>
+
+                    <q-item-section
+                      class="q-mt-md rounded-borders bg-warning"
+                      style="
+                        background-color: rgba(22, 110, 204, 0.1);
+                        border: 2px solid #ccc;
+                      "
                     >
-                      <!-- Corrective Action -->
-                      <div class="col-4">
+                      <div
+                        class="row justify-between items-center text-primary text-subtitle1 text-weight-bold q-mx-md"
+                      >
+                        Add Corrective Actions
+                        <q-btn
+                          class="q-ml-sm"
+                          flat
+                          round
+                          dense
+                          icon="add"
+                          @click="addCorrectiveItem"
+                        />
+                      </div>
+                    </q-item-section>
+
+                    <div
+                        class="row q-col-gutter-md q-mt-xs q-mb-xs items-center"
+                        v-for="(partycorrective, index) in correctiveparties"
+                        :key="partycorrective.id || index"
+                      >
+                        <!-- Corrective Action -->
+                        <div class="col-4">
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            v-model="partycorrective.CorrectiveAction"
+                            :rules="[val => !!val || 'Required field']"
+                            label-slot
+                          >
+                            <template v-slot:label>
+                              CORRECTIVE ACTION
+                              <span class="text-red">*</span>
+                            </template>
+                          </q-input>
+                        </div>
+
+                        <!-- Timeline From -->
+                        <div class="col-2">
+                          <q-input
+                            v-model="partycorrective.CorTimelineFromDate"
+                            rounded
+                            outlined
+                            clearable
+                            label-slot
+                            :disable="!partycorrective.CorrectiveAction"
+                            :rules="[
+                              val => {
+                                if (partycorrective.CorrectiveAction) {
+                                  return !!val || 'Required field'
+                                }
+                                return true
+                              }
+                            ]"
+                            @click="partycorrective.showFrom = true"
+                          >
+                            <template v-slot:label>
+                              TIMELINE FROM
+                              <span
+                                v-if="partycorrective.CorrectiveAction"
+                                class="text-red"
+                              >*</span>
+                            </template>
+
+                            <template v-slot:append>
+                              <q-icon
+                                name="event"
+                                class="cursor-pointer"
+                                @click="partycorrective.showFrom = true"
+                              />
+                            </template>
+                          </q-input>
+
+                          <q-dialog v-model="partycorrective.showFrom">
+                            <q-card>
+                              <q-card-section>
+                                <q-date
+                                  v-model="partycorrective.CorTimelineFromDate"
+                                  @input="updateSubjectDate"
+                                  :options="dateAfterOrSubjectDate"
+                                />
+                              </q-card-section>
+                            </q-card>
+                          </q-dialog>
+                        </div>
+
+                        <!-- Timeline To -->
+                        <div class="col-2">
+                          <q-input
+                            v-model="partycorrective.CorTimelineToDate"
+                            rounded
+                            outlined
+                            clearable
+                            label-slot
+                            :disable="!partycorrective.CorrectiveAction"
+                            :rules="[
+                              val => {
+                                if (partycorrective.CorrectiveAction) {
+                                  return !!val || 'Required field'
+                                }
+                                return true
+                              }
+                            ]"
+                            @click="partycorrective.showTo = true"
+                          >
+                            <template v-slot:label>
+                              TIMELINE TO
+                              <span
+                                v-if="partycorrective.CorrectiveAction"
+                                class="text-red"
+                              >*</span>
+                            </template>
+
+                            <template v-slot:append>
+                              <q-icon
+                                name="event"
+                                class="cursor-pointer"
+                                @click="partycorrective.showTo = true"
+                              />
+                            </template>
+                          </q-input>
+
+                          <q-dialog v-model="partycorrective.showTo">
+                            <q-card>
+                              <q-card-section>
+                                <q-date
+                                  v-model="partycorrective.CorTimelineToDate"
+                                  @input="updateSubjectDate"
+                                  :options="dateAfterOrSubjectDate"
+                                />
+                              </q-card-section>
+                            </q-card>
+                          </q-dialog>
+                        </div>
+
+                        <!-- Accountable Person -->
+                        <div class="col-3">
+                          <q-select
+                            use-input
+                            rounded
+                            outlined
+                            clearable
+                            v-model="partycorrective.AccountablePer"
+                            :options="disEmployeeName"
+                            @filter="FilterFn"
+                            label-slot
+                            emit-value
+                            map-options
+                            :option-value="option => option.employeeCode"
+                            :option-label="option => option.fullName"
+                            :disable="!partycorrective.CorrectiveAction"
+                            :rules="[
+                              val => {
+                                if (partycorrective.CorrectiveAction) {
+                                  return !!val || 'Required field'
+                                }
+                                return true
+                              }
+                            ]"
+                          >
+                            <template v-slot:label>
+                              ACCOUNTABLE PERSON/S
+                              <span
+                                v-if="partycorrective.CorrectiveAction"
+                                class="text-red"
+                              >*</span>
+                            </template>
+
+                            <template v-slot:no-option>
+                              <q-item>
+                                <q-item-section class="text-grey">
+                                  No results
+                                </q-item-section>
+                              </q-item>
+                            </template>
+                          </q-select>
+                        </div>
+
+                        <!-- Remove Button -->
+                        <div class="col-auto q-pa-sm">
+                          <q-btn
+                            @click="removeCorrectiveItem(index)"
+                            color="negative"
+                            icon="remove_circle"
+                            class="q-ml-xs"
+                            size="sm"
+                          />
+                        </div>
+                    </div>
+                  </div>
+
+                  <q-separator class="formseparatorWhite" />
+
+                  <div
+                    class="QADes1"
+                    style="
+                      border: 2px solid #ddd;
+                      border-radius: 40px;
+                      padding: 30px;
+                    "
+                  >
+                    <div
+                      class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                    >
+                      Risk
+                    </div>
+
+                    <div class="q-mb-sm text-bold" style="font-size: 15px; color: #737373">
+                      Instruction: Identify the risks associated with or arising from this specific
+                      incident that should be recorded in the risk register to support effective risk management.
+                      <br/> Each risk should be stated using the format: <span class="text-red">Risk of [event/scenario] due to [cause] leading to [consequence].</span>
+                    </div>
+
+                    <q-item-section
+                      class="q-mt-md rounded-borders bg-warning"
+                      style="
+                        background-color: rgba(22, 110, 204, 0.1);
+                        border: 2px solid #ccc;
+                      "
+                    >
+                      <div
+                        class="row justify-between items-center text-primary text-subtitle1 text-weight-bold q-mx-md"
+                      >
+                        Add Risk Items
+                        <q-btn
+                          class="q-ml-sm"
+                          flat
+                          round
+                          dense
+                          icon="add"
+                          @click="addRiskItem"
+                        />
+                      </div>
+                    </q-item-section>
+
+                    <div
+                        class="row q-col-gutter-md q-mt-xs q-mb-xs q-ml-md items-center"
+                        v-for="(partyrisk, index) in riskparties"
+                        :key="index"
+                    >
+                      <div class="col-11">
                         <q-input
                           autogrow
                           rounded
                           outlined
-                          v-model="partycorrective.CorrectiveAction"
+                          v-model="partyrisk.RiskItems"
                           :rules="[val => !!val || 'Required field']"
                           label-slot
                         >
                           <template v-slot:label>
-                            CORRECTIVE ACTION
+                            RISK ITEMS
                             <span class="text-red">*</span>
                           </template>
                         </q-input>
                       </div>
 
-                      <!-- Timeline From -->
-                      <div class="col-2">
-                        <q-input
-                          v-model="partycorrective.CorTimelineFromDate"
-                          rounded
-                          outlined
-                          clearable
-                          label-slot
-                          :disable="!partycorrective.CorrectiveAction"
-                          :rules="[
-                            val => {
-                              if (partycorrective.CorrectiveAction) {
-                                return !!val || 'Required field'
-                              }
-                              return true
-                            }
-                          ]"
-                          @click="partycorrective.showFrom = true"
-                        >
-                          <template v-slot:label>
-                            TIMELINE FROM
-                            <span
-                              v-if="partycorrective.CorrectiveAction"
-                              class="text-red"
-                            >*</span>
-                          </template>
-
-                          <template v-slot:append>
-                            <q-icon
-                              name="event"
-                              class="cursor-pointer"
-                              @click="partycorrective.showFrom = true"
-                            />
-                          </template>
-                        </q-input>
-
-                        <q-dialog v-model="partycorrective.showFrom">
-                          <q-card>
-                            <q-card-section>
-                              <q-date
-                                v-model="partycorrective.CorTimelineFromDate"
-                                @input="updateSubjectDate"
-                                :options="dateAfterOrSubjectDate"
-                              />
-                            </q-card-section>
-                          </q-card>
-                        </q-dialog>
+                      <div class="col-auto q-pa-sm">
+                          <q-btn
+                            @click="removeRiskItem(index)"
+                            color="negative"
+                            icon="remove_circle"
+                            class="q-ml-xs"
+                            size="sm"
+                          />
+                        </div>
                       </div>
-
-                      <!-- Timeline To -->
-                      <div class="col-2">
-                        <q-input
-                          v-model="partycorrective.CorTimelineToDate"
-                          rounded
-                          outlined
-                          clearable
-                          label-slot
-                          :disable="!partycorrective.CorrectiveAction"
-                          :rules="[
-                            val => {
-                              if (partycorrective.CorrectiveAction) {
-                                return !!val || 'Required field'
-                              }
-                              return true
-                            }
-                          ]"
-                          @click="partycorrective.showTo = true"
-                        >
-                          <template v-slot:label>
-                            TIMELINE TO
-                            <span
-                              v-if="partycorrective.CorrectiveAction"
-                              class="text-red"
-                            >*</span>
-                          </template>
-
-                          <template v-slot:append>
-                            <q-icon
-                              name="event"
-                              class="cursor-pointer"
-                              @click="partycorrective.showTo = true"
-                            />
-                          </template>
-                        </q-input>
-
-                        <q-dialog v-model="partycorrective.showTo">
-                          <q-card>
-                            <q-card-section>
-                              <q-date
-                                v-model="partycorrective.CorTimelineToDate"
-                                @input="updateSubjectDate"
-                                :options="dateAfterOrSubjectDate"
-                              />
-                            </q-card-section>
-                          </q-card>
-                        </q-dialog>
-                      </div>
-
-                      <!-- Accountable Person -->
-                      <div class="col-3">
-                        <q-select
-                          use-input
-                          rounded
-                          outlined
-                          clearable
-                          v-model="partycorrective.AccountablePer"
-                          :options="disEmployeeName"
-                          @filter="FilterFn"
-                          label-slot
-                          emit-value
-                          map-options
-                          :option-value="option => option.employeeCode"
-                          :option-label="option => option.fullName"
-                          :disable="!partycorrective.CorrectiveAction"
-                          :rules="[
-                            val => {
-                              if (partycorrective.CorrectiveAction) {
-                                return !!val || 'Required field'
-                              }
-                              return true
-                            }
-                          ]"
-                        >
-                          <template v-slot:label>
-                            ACCOUNTABLE PERSON/S
-                            <span
-                              v-if="partycorrective.CorrectiveAction"
-                              class="text-red"
-                            >*</span>
-                          </template>
-
-                          <template v-slot:no-option>
-                            <q-item>
-                              <q-item-section class="text-grey">
-                                No results
-                              </q-item-section>
-                            </q-item>
-                          </template>
-                        </q-select>
-                      </div>
-
-                      <!-- Remove Button -->
-                      <div class="col-auto">
-                        <q-btn
-                          @click="removeCorrectiveItem(index)"
-                          color="negative"
-                          icon="remove_circle"
-                          class="q-ml-sm"
-                          size="sm"
-                        />
-                      </div>
-                    </div>
                   </div>
-                </div>
-
-                <q-separator class="formseparatorWhite" />
-
-                <div
-                  class="QADes1"
-                  style="
-                    border: 2px solid #6b7c93;
-                    border-radius: 40px;
-                    padding: 30px;
-                  "
-                >
-                  <div
-                    class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                  >
-                    Risk
-                  </div>
-
-                  <div class="q-mb-sm text-bold" style="font-size: 15px; color: #737373">
-                    Instruction: Identify the risks associated with or arising from this specific
-                    incident that should be recorded in the risk register to support effective risk management.
-                    <br/> Each risk should be stated using the format: <span class="text-red">Risk of [event/scenario] due to [cause] leading to [consequence].</span>
-                  </div>
-
-                  <q-item-section
-                    class="q-mt-md rounded-borders bg-warning"
-                    style="
-                      background-color: rgba(22, 110, 204, 0.1);
-                      border: 2px solid #ccc;
-                    "
-                  >
-                    <div
-                      class="row justify-between items-center text-primary text-subtitle1 text-weight-bold q-mx-md"
-                    >
-                      Add Risk Items
-                      <q-btn
-                        class="q-ml-sm"
-                        flat
-                        round
-                        dense
-                        icon="add"
-                        @click="addRiskItem"
-                      />
-                    </div>
-                  </q-item-section>
-
-                  <div
-                      class="row q-col-gutter-md q-mt-xs q-mb-xs q-ml-md items-center"
-                      v-for="(partyrisk, index) in riskparties"
-                      :key="index"
-                  >
-                    <div class="col-11">
-                      <q-input
-                        autogrow
-                        rounded
-                        outlined
-                        v-model="partyrisk.RiskItems"
-                        :rules="[val => !!val || 'Required field']"
-                        label-slot
-                      >
-                        <template v-slot:label>
-                          RISK ITEMS
-                          <span class="text-red">*</span>
-                        </template>
-                      </q-input>
-                    </div>
-
-                    <div class="col-auto">
-                        <q-btn
-                          @click="removeRiskItem(index)"
-                          color="negative"
-                          icon="remove_circle"
-                          class="q-ml-md"
-                          size="sm"
-                        />
-                      </div>
-                    </div>
-                </div>
+                </q-card-section>
               </q-card-section>
 
               <q-card-actions align="center" class="q-mt-xs column items-center">
@@ -1680,9 +1704,9 @@
                     flat
                     rounded
                     push
-                    label="Cancel"
+                    label="SAVE DRAFT"
                     class="buttonCancelDesign text-info"
-                    @click="onCancelRCAItem"
+                    @click="handleSubmitDraft"
                     style="width: 195px"
                   />
 
@@ -1699,6 +1723,56 @@
               </q-card-actions>
             </q-card>
           </div>
+        </q-dialog>
+
+        <!-- ////////////////////////////////////////////////////////////////////////// SAVE AS DRAFT /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+        <q-dialog v-model="draftRCA" persistent>
+          <q-card class="IRCON">
+            <q-card-section class="q-mb-sm row items-center justify-between">
+              <div
+                class="text-secondary text-weight-bold"
+                style="font-size: 25px; color: #002b5c"
+              >
+                SAVE DRAFT
+              </div>
+              <q-btn
+                flat
+                icon="close"
+                style="color: #166ecc; background-color: rgba(22, 110, 204, 0.1)"
+                @click="draftRCA = false"
+                v-close-popup
+              />
+            </q-card-section>
+
+            <q-separator class="sepDesign" />
+
+            <q-card-actions align="center" class="q-mt-md column items-center">
+              <div class="q-mb-sm" style="font-size: 17px; color: #000000">
+                Do you want to save this draft?
+              </div>
+
+              <div class="row q-gutter-xxl; justify-center">
+                <q-btn
+                  flat
+                  rounded
+                  push
+                  label="NO"
+                  class="buttonCancelDesign text-info"
+                  @click="onCancelRCAItem()"
+                />
+
+                <q-btn
+                  flat
+                  rounded
+                  push
+                  label="YES"
+                  class="buttonSaveDesign bg-accent text-black"
+                  @click="submitRCAItemDraft()"
+                />
+              </div>
+            </q-card-actions>
+          </q-card>
         </q-dialog>
 
         <!-- ////////////////////////////////////////////////////////////////////////// CONFIRMATION /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
@@ -1766,6 +1840,1836 @@
             </div>
           </div>
         </q-dialog>
+
+        <!-- //////////////////////////////////////////////////////////////////////////  DRAFT /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+        <q-dialog maximized v-model="setRCADraftForm" persistent>
+          <div class="QADialog">
+            <q-card class="contentFormAction">
+              <q-card-section class="q-mb-xs row items-center justify-between">
+                <div>
+                  <div
+                    class="text-secondary text-weight-bold"
+                    style="font-size: 25px; color: #002b5c"
+                  >
+                    Incident Report: Root Cause Analysis Creation
+                  </div>
+                  <div style="font-size: 18px; color: #333333">
+                    <b>Instruction:</b> In this section, provide a brief
+                    description of the problem or incident that requires
+                    analysis.
+                  </div>
+                </div>
+
+                <q-btn
+                  flat
+                  icon="close"
+                  style="
+                    color: #003566;
+                    background-color: rgba(22, 110, 204, 0.1);
+                  "
+                  @click="setActionItems = false"
+                  v-close-popup
+                >
+                  <q-tooltip class="bg-info text-white"> Close Form </q-tooltip>
+                </q-btn>
+              </q-card-section>
+
+              <q-card-section
+                v-if="isLoadingRCADraft"
+                class="column flex-center q-pa-xl"
+                style="height: 600px"
+              >
+                <q-spinner size="80px" color="primary" />
+                <div class="q-mt-md text-primary text-weight-medium">
+                  Loading Details...
+                </div>
+              </q-card-section>
+
+              <q-card-section style="border: 2px solid #6b7c93" v-else>
+                <q-card-section
+                  class="rounded-borders "
+                  style="border: 2px solid #ddd"
+                >
+                  <div class="QADesContent">
+                    <div class="QAFixDesign">
+                      <div class="QADes1">
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                        >
+                          Problem Background
+                        </div>
+                        <div
+                          class="q-mb-sm"
+                          style="font-size: 15px; color: #737373"
+                        >
+                          This section contains essential details regarding the
+                          incident, including the date, time, location,
+                          individuals involved, and the nature of the incident.
+                        </div>
+                        <q-separator class="formseparatorYellow" />
+
+                        <div class="row q-col-gutter-md q-mx-lg">
+                          <div class="col-4">
+                            <div
+                              class="text-weight-bold"
+                              style="font-size: 15px; color: #03254b"
+                            >
+                              Date of the Incident
+                            </div>
+
+                            <q-input
+                              rounded
+                              outlined
+                              :model-value="FormatDate(IRQADetailss.subjectDate)"
+                              disable
+                            />
+                          </div>
+
+                          <div class="col-4">
+                            <div
+                              class="text-weight-bold"
+                              style="font-size: 15px; color: #03254b"
+                            >
+                              Time of the Incident
+                            </div>
+
+                            <q-input
+                              rounded
+                              outlined
+                              :model-value="FormatTime(IRQADetailss.subjectDate)"
+                              disable
+                            />
+                          </div>
+
+                          <div class="col-4">
+                            <div
+                              class="text-weight-bold"
+                              style="font-size: 15px; color: #03254b"
+                            >
+                              Location of the Incident
+                            </div>
+
+                            <q-input
+                              rounded
+                              outlined
+                              :model-value="IRQADetailss.subjectLoc"
+                              disable
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="QADesContent">
+                    <div class="QAFixDesign">
+                      <div class="QADes1">
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                        >
+                          Immediate Response
+                        </div>
+                        <div
+                          class="q-mb-sm"
+                          style="font-size: 15px; color: #737373"
+                        >
+                          Action taken by the concerned department or by the
+                          Informant to ease the incident.
+                        </div>
+                        <q-separator class="formseparatorYellow" />
+                        <div class="q-mx-xl">
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            :model-value="IRQADetailss.subjectResponse"
+                            disable
+                            input-class="q-pa-md"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </q-card-section>
+
+                <q-card-section
+                  class="rounded-borders q-mt-md"
+                  style="border: 2px solid #ddd"
+                >
+                  <div class="QADes1 column items-center justify-center q-mb-md">
+                    <div
+                      class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                    >
+                      Fishbone / Ishikawa Diagram and 5 Whys Analysis
+                    </div>
+                    <div
+                      class="text-center q-mb-md text-bold"
+                      style="font-size: 15px; color: #737373"
+                    >
+                      Identify potential root causes using a Fishbone Diagram,
+                      then apply the 5 Whys technique to each cause to determine
+                      the true root issue.
+                    </div>
+                  </div>
+
+                  <div class="row q-col-gutter-xl q-ml-sm q-mr-sm">
+
+                    <div class="col-6 q-px-sx">
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(211, 47, 47, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Manpower/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                            This refers to the manpowers involved in the process,
+                            including skills, <br/> training, experience, communication, and accountability.
+                        </div>
+
+                        <div class="q-mx-xl">
+                          <!-- ✅ MAY DATA -->
+                          <template v-if="problemDraftLogs.some(m => m.problemCode === 'MANPOWER')">
+                            <q-input
+                              v-for="(item, index) in problemDraftLogs.filter(m => m.problemCode === 'MANPOWER')"
+                              :key="index"
+                              autogrow
+                              rounded
+                              outlined
+                              v-model="item.description"
+                              label-slot
+                            >
+                              <template v-slot:label>
+                                PROBLEM STATEMENT
+                                <span class="text-red">*</span>
+                              </template>
+                            </q-input>
+                          </template>
+
+                          <!-- ❌ WALANG DATA -->
+                          <template v-else>
+                            <q-input
+                              autogrow
+                              rounded
+                              outlined
+                              v-model="ManProbStatement"
+                              label-slot
+                            >
+                              <template v-slot:label>
+                                PROBLEM STATEMENT
+                                <span class="text-red">*</span>
+                              </template>
+                            </q-input>
+                          </template>
+                        </div>
+
+                        <q-item-section
+                          class="q-mt-md rounded-borders bg-warning"
+                          style="
+                            background-color: rgba(22, 110, 204, 0.1);
+                            border: 2px solid #ccc;
+                          "
+                        >
+                          <div
+                            class="row justify-between items-center text-primary text-subtitle1 text-weight-bold q-mx-md"
+                          >
+                            Add Why?
+                            <q-btn
+                              class="text-primary q-ml-auto"
+                              flat
+                              round
+                              dense
+                              icon="add"
+                              @click="addDraftItem('mandraftparties', 'ManDraftwhy')"
+                            />
+                          </div>
+                        </q-item-section>
+
+                        <!-- ===================== MANPOWER IRQADRAFT ===================== -->
+
+                        <div class="q-mx-xl">
+                          <div
+                            class="text-center text-black q-ma-md"
+                            style="font-size: 15px"
+                          >
+                            How does equipment used in the process impact the
+                            problem?
+                          </div>
+
+                          <div
+                            v-for="(item, index) in manpowerwhyDrafts"
+                            :key="'draft-' + index"
+                            style="display: flex; align-items: center"
+                          >
+                            <q-input
+                              class="q-ma-sm"
+                              autogrow
+                              rounded
+                              label-slot
+                              outlined
+                              v-model="item.description"
+                              style="width: 100%"
+                            >
+                              <template v-slot:label>
+                                WHY?
+                                <span class="text-red">*</span>
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              @click="removeWhyDraft(item)"
+                              color="negative"
+                              icon="remove_circle"
+                              class="q-ml-md"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+
+                        <!-- ===================== MANPOWER PARTIES ===================== -->
+                        <div class="q-mx-xl">
+                          <div
+                            v-for="(item, index) in mandraftparties"
+                            :key="index"
+                            style="display: flex; align-items: center"
+                          >
+                            <q-input
+                              class="q-ma-sm"
+                              autogrow
+                              rounded
+                              label-slot
+                              outlined
+                              v-model="item.ManDraftwhy"
+                              :disable="!hasProblemStatement('MANPOWER', ManProbStatement)"
+                              :rules="hasProblemStatement('MANPOWER', ManProbStatement)
+                                ? []
+                                : [val => !!val || 'Required field']"
+                              style="width: 100%"
+                            >
+                              <template v-slot:label>
+                                WHY?
+                                <span
+                                  v-if="!hasProblemStatement('MANPOWER', ManProbStatement)"
+                                  class="text-red"
+                                >
+                                  *
+                                </span>
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              @click="removeDraftItem('mandraftparties', index)"
+                              color="negative"
+                              icon="remove_circle"
+                              class="q-ml-md"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-6 q-px-sx">
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(255, 193, 7, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Method/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to the methods and procedures an
+                          organization <br> uses to produce or deliver its product or
+                          service.
+                        </div>
+
+                        <div class="q-mx-xl">
+                          <!-- ✅ MAY DATA -->
+                          <template v-if="problemDraftLogs.some(m => m.problemCode === 'METHOD')">
+                            <q-input
+                              v-for="(item, index) in problemDraftLogs.filter(m => m.problemCode === 'METHOD')"
+                              :key="index"
+                              autogrow
+                              rounded
+                              outlined
+                              v-model="item.description"
+                              label-slot
+                            >
+                              <template v-slot:label>
+                                PROBLEM STATEMENT
+                                <span class="text-red">*</span>
+                              </template>
+                            </q-input>
+                          </template>
+
+                          <!-- ❌ WALANG DATA -->
+                          <template v-else>
+                            <q-input
+                              autogrow
+                              rounded
+                              outlined
+                              v-model="MethodStatement"
+                              label-slot
+                            >
+                              <template v-slot:label>
+                                PROBLEM STATEMENT
+                                <span class="text-red">*</span>
+                              </template>
+                            </q-input>
+                          </template>
+                        </div>
+
+                        <q-item-section
+                          class="q-mt-md rounded-borders bg-warning"
+                          style="
+                            background-color: rgba(22, 110, 204, 0.1);
+                            border: 2px solid #ccc;
+                          "
+                        >
+                          <div
+                            class="row justify-between items-center text-primary text-subtitle1 text-weight-bold q-mx-md"
+                          >
+                            Add Why?
+                            <q-btn
+                              class="q-ml-sm"
+                              flat
+                              round
+                              dense
+                              icon="add"
+                              @click="addDraftItem('methoddraftparties', 'MethodDraftwhy')"
+                            />
+                          </div>
+                        </q-item-section>
+
+                        <!-- ===================== METHOD IRQADRAFT ===================== -->
+
+                        <div class="q-mx-xl">
+                          <div
+                            class="text-center text-black q-ma-md"
+                            style="font-size: 15px"
+                          >
+                            How does the way the work is performed impact the
+                            problem?
+                          </div>
+
+                          <div
+                            v-for="(item, index) in methodwhyDrafts"
+                            :key="'draft-' + index"
+                            style="display: flex; align-items: center"
+                          >
+                            <q-input
+                              class="q-ma-sm"
+                              autogrow
+                              rounded
+                              label-slot
+                              outlined
+                              v-model="item.description"
+                              style="width: 100%"
+                            >
+                              <template v-slot:label>
+                                WHY?
+                                <span class="text-red">*</span>
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              @click="removeWhyDraft(item)"
+                              color="negative"
+                              icon="remove_circle"
+                              class="q-ml-md"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+
+                        <!-- ===================== METHOD PARTIES ===================== -->
+
+                        <div class="q-mx-xl">
+                          <div
+                            v-for="(item, index) in methoddraftparties"
+                            :key="index"
+                            style="display: flex; align-items: center"
+                          >
+                            <q-input
+                              class="q-ma-sm"
+                              autogrow
+                              rounded
+                              label-slot
+                              outlined
+                              v-model="item.MethodDraftwhy"
+                              :disable="!hasProblemStatement('METHOD', MethodStatement)"
+                              :rules="hasProblemStatement('METHOD', MethodStatement)
+                                ? []
+                                : [val => !!val || 'Required field']"
+                              style="width: 100%"
+                            >
+                              <template v-slot:label>
+                                WHY?
+                                <span
+                                  v-if="!hasProblemStatement('METHOD', MethodStatement)"
+                                  class="text-red"
+                                >*</span>
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              @click="removeDraftItem('methoddraftparties', index)"
+                              color="negative"
+                              icon="remove_circle"
+                              class="q-ml-md"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-6 q-px-sx">
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(233, 30, 99, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Machine/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to the assets such as machines and
+                          equipement <br> used to create or provide the product or
+                          services
+                        </div>
+
+                        <div class="q-mx-xl">
+                          <!-- ✅ MAY DATA -->
+                          <template v-if="problemDraftLogs.some(m => m.problemCode === 'MACHINE')">
+                            <q-input
+                              v-for="(item, index) in problemDraftLogs.filter(m => m.problemCode === 'MACHINE')"
+                              :key="index"
+                              autogrow
+                              rounded
+                              outlined
+                              v-model="item.description"
+                              label-slot
+                            >
+                              <template v-slot:label>
+                                PROBLEM STATEMENT
+                                <span class="text-red">*</span>
+                              </template>
+                            </q-input>
+                          </template>
+
+                          <!-- ❌ WALANG DATA -->
+                          <template v-else>
+                            <q-input
+                              autogrow
+                              rounded
+                              outlined
+                              v-model="MachineStatement"
+                              label-slot
+                            >
+                              <template v-slot:label>
+                                PROBLEM STATEMENT
+                                <span class="text-red">*</span>
+                              </template>
+                            </q-input>
+                          </template>
+                        </div>
+
+                        <q-item-section
+                          class="q-mt-md rounded-borders bg-warning"
+                          style="
+                            background-color: rgba(22, 110, 204, 0.1);
+                            border: 2px solid #ccc;
+                          "
+                        >
+                          <div
+                            class="row justify-between items-center text-primary text-subtitle1 text-weight-bold q-mx-md"
+                          >
+                            Add Why?
+                            <q-btn
+                              class="q-ml-sm"
+                              flat
+                              round
+                              dense
+                              icon="add"
+                              @click="addDraftItem('machinedraftparties', 'MachineDraftwhy')"
+                            />
+                          </div>
+                        </q-item-section>
+
+                        <!-- ===================== Machine IRQADRAFT ===================== -->
+
+                        <div class="q-mx-xl">
+                          <div
+                            class="text-center text-black q-ma-md"
+                            style="font-size: 15px"
+                          >
+                            How does equipment used in the process impact the
+                            problem?
+                          </div>
+
+                          <div
+                            v-for="(item, index) in machinewhyDrafts"
+                            :key="'draft-' + index"
+                            style="display: flex; align-items: center"
+                          >
+                            <q-input
+                              class="q-ma-sm"
+                              autogrow
+                              rounded
+                              label-slot
+                              outlined
+                              v-model="item.description"
+                              style="width: 100%"
+                            >
+                              <template v-slot:label>
+                                WHY?
+                                <span class="text-red">*</span>
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              @click="removeWhyDraft(item)"
+                              color="negative"
+                              icon="remove_circle"
+                              class="q-ml-md"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+
+                        <!-- ===================== Machine PARTIES ===================== -->
+
+                        <div class="q-mx-xl">
+                          <div
+                            v-for="(item, index) in machinedraftparties"
+                            :key="index"
+                            style="display: flex; align-items: center"
+                          >
+                            <q-input
+                              class="q-ma-sm"
+                              autogrow
+                              rounded
+                              label-slot
+                              outlined
+                              v-model="item.MachineDraftwhy"
+                              :disable="!hasProblemStatement('MACHINE', MachineStatement)"
+                              :rules="hasProblemStatement('MACHINE', MachineStatement)
+                                ? []
+                                : [val => !!val || 'Required field']"
+                              style="width: 100%"
+                            >
+                              <template v-slot:label>
+                                WHY?
+                                <span
+                                  v-if="!hasProblemStatement('MACHINE', MachineStatement)"
+                                  class="text-red"
+                                >
+                                  *
+                                </span>
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              @click="removeDraftItem('machinedraftparties', index)"
+                              color="negative"
+                              icon="remove_circle"
+                              class="q-ml-md"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+
+                    <div class="col-6 q-px-sx">
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(156, 39, 176, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Material/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to any physical or non-physical components
+                          <br> of the system, including people, resources, and tools.
+                        </div>
+
+                        <div class="q-mx-xl">
+                          <!-- ✅ MAY DATA -->
+                          <template v-if="problemDraftLogs.some(m => m.problemCode === 'MATERIAL')">
+                            <q-input
+                              v-for="(item, index) in problemDraftLogs.filter(m => m.problemCode === 'MATERIAL')"
+                              :key="index"
+                              autogrow
+                              rounded
+                              outlined
+                              v-model="item.description"
+                              label-slot
+                            >
+                              <template v-slot:label>
+                                PROBLEM STATEMENT
+                                <span class="text-red">*</span>
+                              </template>
+                            </q-input>
+                          </template>
+
+                          <!-- ❌ WALANG DATA -->
+                          <template v-else>
+                            <q-input
+                              autogrow
+                              rounded
+                              outlined
+                              v-model="MaterialStatement"
+                              label-slot
+                            >
+                              <template v-slot:label>
+                                PROBLEM STATEMENT
+                                <span class="text-red">*</span>
+                              </template>
+                            </q-input>
+                          </template>
+                        </div>
+
+                        <q-item-section
+                          class="q-mt-md rounded-borders bg-warning"
+                          style="
+                            background-color: rgba(22, 110, 204, 0.1);
+                            border: 2px solid #ccc;
+                          "
+                        >
+                          <div
+                            class="row justify-between items-center text-black text-subtitle1 text-weight-bold q-mx-md"
+                          >
+                            Add Why?
+                            <q-btn
+                              class="q-ml-sm"
+                              flat
+                              round
+                              dense
+                              icon="add"
+                              @click="addDraftItem('materialdraftparties', 'MaterialDraftwhy')"
+                            />
+                          </div>
+                        </q-item-section>
+
+                        <!-- ===================== Material IRQADRAFT ===================== -->
+
+                        <div class="q-mx-xl">
+                          <div
+                            class="text-center text-black q-ma-md"
+                            style="font-size: 15px"
+                          >
+                            How do quality and type of materials used impact the
+                            problem?
+                          </div>
+
+                          <div
+                            v-for="(item, index) in materialwhyDrafts"
+                            :key="'draft-' + index"
+                            style="display: flex; align-items: center"
+                          >
+                            <q-input
+                              class="q-ma-sm"
+                              autogrow
+                              rounded
+                              label-slot
+                              outlined
+                              v-model="item.description"
+                              style="width: 100%"
+                            >
+                              <template v-slot:label>
+                                WHY?
+                                <span class="text-red">*</span>
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              @click="removeWhyDraft(item)"
+                              color="negative"
+                              icon="remove_circle"
+                              class="q-ml-md"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+
+                        <!-- ===================== Material PARTIES ===================== -->
+
+                        <div class="q-mx-xl">
+                          <div
+                            v-for="(item, index) in materialdraftparties"
+                            :key="index"
+                            style="display: flex; align-items: center"
+                          >
+                            <q-input
+                              class="q-ma-sm"
+                              autogrow
+                              rounded
+                              label-slot
+                              outlined
+                              v-model="item.MaterialDraftwhy"
+                              :disable="!hasProblemStatement('MATERIAL', MaterialStatement)"
+                              :rules="hasProblemStatement('MATERIAL', MaterialStatement)
+                                ? []
+                                : [val => !!val || 'Required field']"
+                              style="width: 100%"
+                            >
+                              <template v-slot:label>
+                                WHY?
+                                <span
+                                  v-if="!hasProblemStatement('MATERIAL', MaterialStatement)"
+                                  class="text-red"
+                                >
+                                  *
+                                </span>
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              @click="removeDraftItem('materialdraftparties', index)"
+                              color="negative"
+                              icon="remove_circle"
+                              class="q-ml-md"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-6 q-px-sx">
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(3, 169, 244, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Measurement/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to the tools and methods that organizations
+                          <br> use to effectively measure progress, outcomes, and
+                          overall performance.
+                        </div>
+
+                        <div class="q-mx-xl">
+                          <!-- ✅ MAY DATA -->
+                          <template v-if="problemDraftLogs.some(m => m.problemCode === 'MEASUREMENT')">
+                            <q-input
+                              v-for="(item, index) in problemDraftLogs.filter(m => m.problemCode === 'MEASUREMENT')"
+                              :key="index"
+                              autogrow
+                              rounded
+                              outlined
+                              v-model="item.description"
+                              label-slot
+                            >
+                              <template v-slot:label>
+                                PROBLEM STATEMENT
+                                <span class="text-red">*</span>
+                              </template>
+                            </q-input>
+                          </template>
+
+                          <!-- ❌ WALANG DATA -->
+                          <template v-else>
+                            <q-input
+                              autogrow
+                              rounded
+                              outlined
+                              v-model="MeasurementStatement"
+                              label-slot
+                            >
+                              <template v-slot:label>
+                                PROBLEM STATEMENT
+                                <span class="text-red">*</span>
+                              </template>
+                            </q-input>
+                          </template>
+                        </div>
+
+                        <q-item-section
+                          class="q-mt-md rounded-borders bg-warning"
+                          style="
+                            background-color: rgba(22, 110, 204, 0.1);
+                            border: 2px solid #ccc;
+                          "
+                        >
+                          <div
+                            class="row justify-between items-center text-black text-subtitle1 text-weight-bold q-mx-md"
+                          >
+                            Add Why?
+                            <q-btn
+                              class="q-ml-sm"
+                              flat
+                              round
+                              dense
+                              icon="add"
+                              @click="addDraftItem('measurementdraftparties', 'MeasurementDraftwhy')"
+                            />
+                          </div>
+                        </q-item-section>
+
+                        <!-- ===================== Measurement IRQADRAFT ===================== -->
+
+                        <div class="q-mx-xl">
+                          <div
+                            class="text-center text-black q-ma-md"
+                            style="font-size: 15px"
+                          >
+                            How do the metrics measuring activity progress impact the problem?
+                          </div>
+
+                          <div
+                            v-for="(item, index) in measurementwhyDrafts"
+                            :key="'draft-' + index"
+                            style="display: flex; align-items: center"
+                          >
+                            <q-input
+                              class="q-ma-sm"
+                              autogrow
+                              rounded
+                              label-slot
+                              outlined
+                              v-model="item.description"
+                              style="width: 100%"
+                            >
+                              <template v-slot:label>
+                                WHY?
+                                <span class="text-red">*</span>
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              @click="removeWhyDraft(item)"
+                              color="negative"
+                              icon="remove_circle"
+                              class="q-ml-md"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+
+                        <!-- ===================== Measurement PARTIES ===================== -->
+
+                        <div class="q-mx-xl">
+                          <div
+                            v-for="(item, index) in measurementdraftparties"
+                            :key="index"
+                            style="display: flex; align-items: center;"
+                          >
+                            <q-input
+                              class="q-ma-sm"
+                              autogrow
+                              rounded
+                              label-slot
+                              outlined
+                              v-model="item.MeasurementDraftwhy"
+                              :disable="!hasProblemStatement('MEASUREMENT', MeasurementStatement)"
+                              :rules="hasProblemStatement('MEASUREMENT', MeasurementStatement)
+                                ? []
+                                : [val => !!val || 'Required field']"
+                              style="width: 100%"
+                            >
+                              <template v-slot:label>
+                                WHY?
+                                <span
+                                  v-if="!hasProblemStatement('MEASUREMENT', MeasurementStatement)"
+                                  class="text-red"
+                                >
+                                  *
+                                </span>
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              @click="removeDraftItem('measurementdraftparties', index)"
+                              color="negative"
+                              icon="remove_circle"
+                              class="q-ml-md"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+
+                    <div class="col-6 q-px-sx">
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(76, 175, 80, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Environment/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to the external factors that affect the
+                          <br> system including weather, geography, and regulation.
+                        </div>
+
+                        <div class="q-mx-xl">
+                          <!-- ✅ MAY DATA -->
+                          <template v-if="problemDraftLogs.some(m => m.problemCode === 'ENVIRONMENT')">
+                            <q-input
+                              v-for="(item, index) in problemDraftLogs.filter(m => m.problemCode === 'ENVIRONMENT')"
+                              :key="index"
+                              autogrow
+                              rounded
+                              outlined
+                              v-model="item.description"
+                              label-slot
+                            >
+                              <template v-slot:label>
+                                PROBLEM STATEMENT
+                                <span class="text-red">*</span>
+                              </template>
+                            </q-input>
+                          </template>
+
+                          <!-- ❌ WALANG DATA -->
+                          <template v-else>
+                            <q-input
+                              autogrow
+                              rounded
+                              outlined
+                              v-model="EnvironmentStatement"
+                              label-slot
+                            >
+                              <template v-slot:label>
+                                PROBLEM STATEMENT
+                                <span class="text-red">*</span>
+                              </template>
+                            </q-input>
+                          </template>
+                        </div>
+
+                        <q-item-section
+                          class="q-mt-md rounded-borders bg-warning"
+                          style="
+                            background-color: rgba(22, 110, 204, 0.1);
+                            border: 2px solid #ccc;
+                          "
+                        >
+                          <div
+                            class="row justify-between items-center text-black text-subtitle1 text-weight-bold q-mx-md"
+                          >
+                            Add Why?
+                            <q-btn
+                              class="q-ml-sm"
+                              flat
+                              round
+                              dense
+                              icon="add"
+                              @click="addDraftItem('environmentdraftparties', 'EnvironmentDraftwhy')"
+                            />
+                          </div>
+                        </q-item-section>
+
+                        <!-- ===================== Environment IRQADRAFT ===================== -->
+
+                        <div class="q-mx-xl">
+                          <div
+                            class="text-center text-black q-ma-md"
+                            style="font-size: 15px"
+                          >
+                            How does the activity’s environment affect or
+                            contribute to the identified problem?
+                          </div>
+
+                          <div
+                            v-for="(item, index) in environmentwhyDrafts"
+                            :key="'draft-' + index"
+                            style="display: flex; align-items: center"
+                          >
+                            <q-input
+                              class="q-ma-sm"
+                              autogrow
+                              rounded
+                              label-slot
+                              outlined
+                              v-model="item.description"
+                              style="width: 100%"
+                            >
+                              <template v-slot:label>
+                                WHY?
+                                <span class="text-red">*</span>
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              @click="removeWhyDraft(item)"
+                              color="negative"
+                              icon="remove_circle"
+                              class="q-ml-md"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+
+                        <!-- ===================== Environment PARTIES ===================== -->
+
+                        <div class="q-mx-xl">
+                          <div
+                            v-for="(item, index) in environmentdraftparties"
+                            :key="index"
+                            style="display: flex; align-items: center"
+                          >
+                            <q-input
+                              class="q-ma-sm"
+                              autogrow
+                              rounded
+                              label-slot
+                              outlined
+                              v-model="item.EnvironmentDraftwhy"
+                              :disable="!hasProblemStatement('ENVIRONMENT', EnvironmentStatement)"
+                              :rules="hasProblemStatement('ENVIRONMENT', EnvironmentStatement)
+                                ? []
+                                : [val => !!val || 'Required field']"
+                              style="width: 100%"
+                            >
+                              <template v-slot:label>
+                                WHY?
+                                <span
+                                  v-if="!hasProblemStatement('ENVIRONMENT', EnvironmentStatement)"
+                                  class="text-red"
+                                >
+                                  *
+                                </span>
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              @click="removeDraftItem('environmentdraftparties', index)"
+                              color="negative"
+                              icon="remove_circle"
+                              class="q-ml-md"
+                              size="sm"
+                            />
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+
+                  </div>
+                </q-card-section>
+
+                <q-card-section
+                  class="rounded-borders q-mt-md"
+                  style="border: 2px solid #ddd"
+                >
+                  <div class="QADes1 column items-center justify-center q-mb-md">
+                    <div
+                      class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                    >
+                      Actionable Root Cause
+                    </div>
+
+                    <div
+                      class="text-center"
+                      style="font-size: 15px; color: #737373"
+                    >
+                      <b>Instuction : From the results of your Fishbone Diagram and 5 Whys analysis,
+                        identify the most critical underlying cause that requires corrective action to ensure the issue does not reoccur. </b>
+                    </div>
+
+                    <!-- ===================== NOT EMPTY ===================== -->
+                    <div
+                      v-if="actionableDraftLogs.length"
+                      class="full-width"
+                    >
+                      <div
+                        v-for="(item, index) in actionableDraftLogs"
+                        :key="'draft-' + index"
+                        class="full-width q-mb-md"
+                        style="
+                          width: 100%;
+                          display: flex;
+                          flex-direction: column;
+                        "
+                      >
+                        <q-select
+                          rounded
+                          outlined
+                          class="q-mt-md full-width"
+                          :model-value="getDomainLabel(item.domain)"
+                          :options="domain"
+                          label-slot
+                        >
+                          <template v-slot:label>
+                            DOMAIN
+                            <span class="text-red">*</span>
+                          </template>
+                        </q-select>
+
+                        <q-input
+                          v-model="item.actionable"
+                          rounded
+                          outlined
+                          label-slot
+                          type="textarea"
+                          class="q-mt-md "
+                          autofocus
+                          autogrow
+                        >
+                          <template v-slot:label>
+                            SUMMARY ANALYSIS
+                            <span class="text-red">*</span>
+                          </template>
+                        </q-input>
+                      </div>
+                    </div>
+
+                    <!-- ===================== EMPTY ===================== -->
+                    <div v-else>
+                      <q-select
+                        rounded
+                        outlined
+                        class="q-mt-md"
+                        v-model="domainActionable"
+                        :options="domain"
+                        label-slot
+                        style="width: 100%"
+                      >
+                        <template v-slot:label>
+                          DOMAIN
+                          <span class="text-red">*</span>
+                        </template>
+                      </q-select>
+
+                      <q-input
+                        v-model="actionableRoot"
+                        rounded
+                        outlined
+                        label-slot
+                        type="textarea"
+                        class="q-mt-md"
+                        autofocus
+                        style="width: 100%"
+                      >
+                        <template v-slot:label>
+                          SUMMARY ANALYSIS
+                          <span class="text-red">*</span>
+                        </template>
+                      </q-input>
+                    </div>
+                  </div>
+                </q-card-section>
+
+                <q-card-section
+                  class="rounded-borders q-mt-md"
+                  style="border: 2px solid #ddd"
+                >
+                  <div class="QADes1 column items-center justify-center q-mb-md">
+                    <div
+                      class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                    >
+                      Solution Identification
+                    </div>
+                    <div
+                      class="text-center text-bold"
+                      style="font-size: 15px; color: #737373"
+                    >
+                      Identify effective solutions by proposing corrective actions
+                      to immediately address root causes and preventive measures
+                      to avoid recurrence, specifying responsibilities and
+                      timelines for each.
+                    </div>
+                  </div>
+
+                  <q-separator class="formseparatorWhite" />
+
+                  <div
+                    class="QADes1"
+                    style="
+                      border: 2px solid #6b7c93;
+                      border-radius: 40px;
+                      padding: 30px;
+                    "
+                  >
+                    <div
+                      class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                    >
+                      Corrective Action
+                    </div>
+
+                    <div class="q-mb-sm text-bold" style="font-size: 15px; color: #737373">
+                      Specify immediate actions to address identified root causes,
+                      including responsible individuals and deadlines for
+                      implementation. You may add more fields as needed.
+                    </div>
+
+                    <q-item-section
+                      class="q-mt-md rounded-borders bg-warning"
+                      style="
+                        background-color: rgba(22, 110, 204, 0.1);
+                        border: 2px solid #ccc;
+                      "
+                    >
+                      <div
+                        class="row justify-between items-center text-primary text-subtitle1 text-weight-bold q-mx-md"
+                      >
+                        Add Corrective Actions
+                        <q-btn
+                          class="q-ml-sm"
+                          flat
+                          round
+                          dense
+                          icon="add"
+                          @click="addCorrectiveItem"
+                        />
+                      </div>
+                    </q-item-section>
+
+                    <!-- ===================== Corrective IRQADRAFT ===================== -->
+                    <div class="q-mx-xl">
+                      <div
+                        v-for="(item, index) in correctiveDraftLogs"
+                        :key="'draft-' + index"
+                        class="row items-start q-col-gutter-sm q-mb-md q-mt-md"
+                      >
+
+                        <!-- ACTION -->
+                        <div class="col-12 col-md-4">
+                          <q-input
+                            v-model="item.correctiveAction"
+                            label-slot
+                            rounded
+                            outlined
+                            autogrow
+                          >
+                            <template v-slot:label>
+                              CORRECTIVE ACTION <span class="text-red">*</span>
+                            </template>
+                          </q-input>
+                        </div>
+
+                        <!-- FROM -->
+                        <div class="col-12 col-md-2">
+                          <q-input
+                            :model-value="FormatDate(item.corTimelineFromDate)"
+                            label-slot
+                            rounded
+                            outlined
+                            @click="item.showFrom = true"
+                          >
+                            <template v-slot:label>
+                              TIMELINE FROM
+                              <span class="text-red">*</span>
+                            </template>
+
+                            <template v-slot:append>
+                              <q-icon
+                                name="event"
+                                class="cursor-pointer"
+                                @click.stop="item.showFrom = true"
+                              />
+                            </template>
+
+                            <q-dialog v-model="item.showFrom">
+                              <q-card>
+                                <q-card-section>
+                                  <q-date
+                                    v-model="item.timelineFromDate"
+                                    @input="updateSubjectDateFrom"
+                                    :options="dateAfterOrSubjectDate"
+                                  />
+                                </q-card-section>
+                              </q-card>
+                            </q-dialog>
+                          </q-input>
+                        </div>
+
+                        <!-- TO -->
+                        <div class="col-12 col-md-2">
+                          <q-input
+                            :model-value="FormatDate(item.corTimelineToDate)"
+                            label-slot
+                            rounded
+                            outlined
+                            @click="item.showTo = true"
+                          >
+                            <template v-slot:label>
+                              TIMELINE TO
+                              <span class="text-red">*</span>
+                            </template>
+
+                            <template v-slot:append>
+                              <q-icon
+                                name="event"
+                                class="cursor-pointer"
+                                @click.stop="item.showTo = true"
+                              />
+                            </template>
+
+                            <q-dialog v-model="item.showTo">
+                              <q-card>
+                                <q-card-section>
+                                  <q-date
+                                    landscape
+                                    v-model="item.timelineToDate"
+                                    @input="updateSubjectDateTo"
+                                    :options="dateAfterOrSubjectDate"
+                                  />
+                                </q-card-section>
+                              </q-card>
+                            </q-dialog>
+                          </q-input>
+                        </div>
+
+                        <!-- ACCOUNTABLE -->
+                        <div class="col-12 col-md-3">
+                          <q-select
+                            use-input
+                            rounded
+                            outlined
+                            clearable
+                            v-model="item.accountablePer"
+                            :options="disEmployeeName"
+                            @filter="FilterFn"
+                            label-slot
+                            emit-value
+                            map-options
+                            :option-value="option => option.employeeCode"
+                            :option-label="option => option.fullName"
+                          >
+                            <template v-slot:label>
+                              ACCOUNTABLE PERSON/S
+                              <span class="text-red">*</span>
+                            </template>
+
+                            <template v-slot:no-option>
+                              <q-item>
+                                <q-item-section class="text-grey">
+                                  No results
+                                </q-item-section>
+                              </q-item>
+                            </template>
+                          </q-select>
+                        </div>
+
+                        <!-- REMOVE BUTTON -->
+                        <div class="col-auto flex flex-center" style="padding: 25px;">
+                          <q-btn
+                            @click="removeCorrectiveDraft(index)"
+                            color="negative"
+                            icon="remove_circle"
+                            class="q-ml-sm"
+                            size="sm"
+                          />
+                        </div>
+
+                      </div>
+                    </div>
+
+                    <!-- ===================== Corrective  PARTIES ===================== -->
+                    <div class="q-mx-xl">
+                      <div
+                        class="row q-col-gutter-md q-mt-xs q-mb-xs items-center"
+                        v-for="(partycorrective, index) in correctiveparties"
+                        :key="partycorrective.id || index"
+                      >
+                        <!-- Corrective Action -->
+                        <div class="col-4">
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            v-model="partycorrective.CorrectiveAction"
+                            :rules="[val => !!val || 'Required field']"
+                            label-slot
+                          >
+                            <template v-slot:label>
+                              CORRECTIVE ACTION
+                              <span class="text-red">*</span>
+                            </template>
+                          </q-input>
+                        </div>
+
+                        <!-- Timeline From -->
+                        <div class="col-2">
+                          <q-input
+                            v-model="partycorrective.CorTimelineFromDate"
+                            rounded
+                            outlined
+                            clearable
+                            label-slot
+                            :disable="!partycorrective.CorrectiveAction"
+                            :rules="[
+                              val => {
+                                if (partycorrective.CorrectiveAction) {
+                                  return !!val || 'Required field'
+                                }
+                                return true
+                              }
+                            ]"
+                            @click="partycorrective.showFrom = true"
+                          >
+                            <template v-slot:label>
+                              TIMELINE FROM
+                              <span
+                                v-if="partycorrective.CorrectiveAction"
+                                class="text-red"
+                              >*</span>
+                            </template>
+
+                            <template v-slot:append>
+                              <q-icon
+                                name="event"
+                                class="cursor-pointer"
+                                @click="partycorrective.showFrom = true"
+                              />
+                            </template>
+                          </q-input>
+
+                          <q-dialog v-model="partycorrective.showFrom">
+                            <q-card>
+                              <q-card-section>
+                                <q-date
+                                  v-model="partycorrective.CorTimelineFromDate"
+                                  @input="updateSubjectDate"
+                                  :options="dateAfterOrSubjectDate"
+                                />
+                              </q-card-section>
+                            </q-card>
+                          </q-dialog>
+                        </div>
+
+                        <!-- Timeline To -->
+                        <div class="col-2">
+                          <q-input
+                            v-model="partycorrective.CorTimelineToDate"
+                            rounded
+                            outlined
+                            clearable
+                            label-slot
+                            :disable="!partycorrective.CorrectiveAction"
+                            :rules="[
+                              val => {
+                                if (partycorrective.CorrectiveAction) {
+                                  return !!val || 'Required field'
+                                }
+                                return true
+                              }
+                            ]"
+                            @click="partycorrective.showTo = true"
+                          >
+                            <template v-slot:label>
+                              TIMELINE TO
+                              <span
+                                v-if="partycorrective.CorrectiveAction"
+                                class="text-red"
+                              >*</span>
+                            </template>
+
+                            <template v-slot:append>
+                              <q-icon
+                                name="event"
+                                class="cursor-pointer"
+                                @click="partycorrective.showTo = true"
+                              />
+                            </template>
+                          </q-input>
+
+                          <q-dialog v-model="partycorrective.showTo">
+                            <q-card>
+                              <q-card-section>
+                                <q-date
+                                  v-model="partycorrective.CorTimelineToDate"
+                                  @input="updateSubjectDate"
+                                  :options="dateAfterOrSubjectDate"
+                                />
+                              </q-card-section>
+                            </q-card>
+                          </q-dialog>
+                        </div>
+
+                        <!-- Accountable Person -->
+                        <div class="col-3">
+                          <q-select
+                            use-input
+                            rounded
+                            outlined
+                            clearable
+                            v-model="partycorrective.AccountablePer"
+                            :options="disEmployeeName"
+                            @filter="FilterFn"
+                            label-slot
+                            emit-value
+                            map-options
+                            :option-value="option => option.employeeCode"
+                            :option-label="option => option.fullName"
+                            :disable="!partycorrective.CorrectiveAction"
+                            :rules="[
+                              val => {
+                                if (partycorrective.CorrectiveAction) {
+                                  return !!val || 'Required field'
+                                }
+                                return true
+                              }
+                            ]"
+                          >
+                            <template v-slot:label>
+                              ACCOUNTABLE PERSON/S
+                              <span
+                                v-if="partycorrective.CorrectiveAction"
+                                class="text-red"
+                              >*</span>
+                            </template>
+
+                            <template v-slot:no-option>
+                              <q-item>
+                                <q-item-section class="text-grey">
+                                  No results
+                                </q-item-section>
+                              </q-item>
+                            </template>
+                          </q-select>
+                        </div>
+
+                        <!-- Remove Button -->
+                        <div class="col-auto" style="padding: 30px;">
+                          <q-btn
+                            @click="removeCorrectiveItem(index)"
+                            color="negative"
+                            icon="remove_circle"
+                            class="q-ml-xs"
+                            size="sm"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <q-separator class="formseparatorWhite" />
+
+                  <div
+                    class="QADes1"
+                    style="
+                      border: 2px solid #6b7c93;
+                      border-radius: 40px;
+                      padding: 30px;
+                    "
+                  >
+                    <div
+                      class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                    >
+                      Risk
+                    </div>
+
+                    <div class="q-mb-sm text-bold" style="font-size: 15px; color: #737373">
+                      Instruction: Identify the risks associated with or arising from this specific
+                      incident that should be recorded in the risk register to support effective risk management.
+                      <br/> Each risk should be stated using the format: <span class="text-red">Risk of [event/scenario] due to [cause] leading to [consequence].</span>
+                    </div>
+
+                    <q-item-section
+                      class="q-mt-md rounded-borders bg-warning"
+                      style="
+                        background-color: rgba(22, 110, 204, 0.1);
+                        border: 2px solid #ccc;
+                      "
+                    >
+                      <div
+                        class="row justify-between items-center text-primary text-subtitle1 text-weight-bold q-mx-md"
+                      >
+                        Add Risk Items
+                        <q-btn
+                          class="q-ml-sm"
+                          flat
+                          round
+                          dense
+                          icon="add"
+                          @click="addRiskItem"
+                        />
+                      </div>
+                    </q-item-section>
+
+                    <!-- ===================== Risk IRQADRAFT ===================== -->
+                    <div
+                        class="row q-col-gutter-md q-mt-xs q-mb-xs q-ml-md items-center"
+                        v-for="(item, index) in riskDraftLogs"
+                        :key="'draft-' + index"
+                    >
+                      <div class="col-11">
+                        <q-input
+                          autogrow
+                          rounded
+                          outlined
+                          v-model="item.riskItems"
+                          :rules="[val => !!val || 'Required field']"
+                          label-slot
+                        >
+                          <template v-slot:label>
+                            RISK ITEMS
+                            <span class="text-red">*</span>
+                          </template>
+                        </q-input>
+                      </div>
+
+                      <div class="col-auto" style="padding: 30px;">
+                        <q-btn
+                          @click="removeRiskDraft(index)"
+                          color="negative"
+                          icon="remove_circle"
+                          class="q-ml-xs"
+                          size="sm"
+                        />
+                      </div>
+                    </div>
+
+                    <!-- ===================== Risk PARTIES ===================== -->
+                    <div
+                        class="row q-col-gutter-md q-mt-xs q-mb-xs q-ml-md items-center"
+                        v-for="(partyrisk, index) in riskparties"
+                        :key="index"
+                    >
+                      <div class="col-11">
+                        <q-input
+                          autogrow
+                          rounded
+                          outlined
+                          v-model="partyrisk.RiskItems"
+                          :rules="[val => !!val || 'Required field']"
+                          label-slot
+                        >
+                          <template v-slot:label>
+                            RISK ITEMS
+                            <span class="text-red">*</span>
+                          </template>
+                        </q-input>
+                      </div>
+
+                      <div class="col-auto" style="padding: 30px;">
+                          <q-btn
+                            @click="removeRiskItem(index)"
+                            color="negative"
+                            icon="remove_circle"
+                            class="q-ml-xs"
+                            size="sm"
+                          />
+                      </div>
+                    </div>
+                  </div>
+                </q-card-section>
+
+                <q-card-actions align="center" class="q-mt-xs column items-center">
+                  <div class="row q-gutter-xl; justify-center">
+                    <q-btn
+                      flat
+                      rounded
+                      push
+                      label="Save"
+                      class="buttonSaveDesign bg-accent text-black"
+                      @click="submitRCADraft()"
+                      style="width: 255px"
+                    />
+                  </div>
+                </q-card-actions>
+              </q-card-section>
+            </q-card>
+          </div>
+        </q-dialog>
+
+        <!-- ////////////////////////////////////////////////////////////////////////// SAVE DRAFT CONFIRMATION PROCESS /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+        <q-dialog v-model="confirmdraftRCA" persistent>
+          <q-card class="IRCON">
+            <q-card-section class="q-mb-sm row items-center justify-center">
+              <div
+                class="text-secondary text-weight-bold"
+                style="font-size: 25px; color: #002b5c"
+              >
+                SAVE DRAFT
+              </div>
+            </q-card-section>
+
+            <q-separator class="sepDesign" />
+
+            <q-card-actions align="center" class="q-mt-md column items-center">
+              <div class="q-mb-sm" style="font-size: 17px; color: #000000">
+                Do you want to save this draft?
+              </div>
+
+              <div class="row q-gutter-xxl; justify-center">
+                <q-btn
+                  flat
+                  rounded
+                  push
+                  label="NO"
+                  class="buttonCancelDesign text-info"
+                  @click="onCancelRCAConfirm()"
+                />
+
+                <q-btn
+                  flat
+                  rounded
+                  push
+                  label="YES"
+                  class="buttonSaveDesign bg-accent text-black"
+                  @click="handleFormSubmitDraft()"
+                />
+              </div>
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+
       </q-td>
     </template>
 
@@ -1822,306 +3726,202 @@
         <q-dialog maximized v-model="setRCADetailsForm" persistent>
           <div class="QADialog">
             <q-card class="contentFormRCA">
-              <q-card-section class="q-mb-sm row items-center justify-between">
-                <div
-                  class="text-secondary text-weight-bold"
-                  style="font-size: 25px; color: #002b5c"
-                >
-                  ROOT CAUSE ANALYSIS (RCA) INFORMATION FORM
-                </div>
-
-                <q-btn
-                  flat
-                  icon="close"
-                  style="
-                    color: #003566;
-                    background-color: rgba(22, 110, 204, 0.1);
-                  "
-                  @click="onCancelRCADetailsItem"
-                  v-close-popup
-                >
-                  <q-tooltip class="bg-info text-white"> Close Form </q-tooltip>
-                </q-btn>
-              </q-card-section>
-
-              <q-separator class="formseparatorWhite" />
-
-              <q-card-section>
-                <div class="row q-col-gutter-lg q-mx-xs">
+                <q-card-section class="q-mb-xs row items-center justify-between">
                   <div
-                    class="col-9 q-pa-lg bg-white rounded-borders shadow-2"
-                    style="border: 3px solid #6b7c93; border-radius: 40px"
+                    class="text-secondary text-weight-bold"
+                    style="font-size: 25px; color: #002b5c"
                   >
-                    <q-card-section style="border: 2px solid #ddd">
-                      <div class="QADesContent q-mb-md">
-                        <div class="QAFixDesign">
-                          <div class="QADes1">
-                            <div
-                              class="text-info text-subtitle1 text-weight-bold q-mb-sm"
-                            >
-                              Problem Background
-                            </div>
-                            <div class="text-body2 text-grey-7 q-mb-sm">
-                              This section contains essential details regarding
-                              the incident, including the date, time, location,
-                              individuals involved, and the nature of the
-                              incident.
-                            </div>
-                            <q-separator class="formseparatorYellow" />
+                    ROOT CAUSE ANALYSIS (RCA) INFORMATION FORM
+                  </div>
 
-                            <div
-                              class="row q-col-gutter-xs"
-                              style="margin: 20px"
-                            >
-                              <div class="col-4">
-                                <div
-                                  class="text-weight-bold text-primary q-mb-xs"
-                                >
-                                  Date of the Incident
-                                </div>
-                                <q-input
-                                  rounded
-                                  outlined
-                                  :model-value="
-                                    FormatRCATime(props.row.subjectDate)
-                                  "
-                                  disable
-                                />
-                              </div>
+                  <q-btn
+                    flat
+                    icon="close"
+                    style="
+                      color: #003566;
+                      background-color: rgba(22, 110, 204, 0.1);
+                    "
+                    @click="onCancelRCADetailsItem"
+                    v-close-popup
+                  >
+                    <q-tooltip class="bg-info text-white"> Close Form </q-tooltip>
+                  </q-btn>
+                </q-card-section>
 
-                              <div class="col-4">
-                                <div
-                                  class="text-weight-bold text-primary q-mb-xs"
-                                >
-                                  Time of the Incident
-                                </div>
-                                <q-input
-                                  rounded
-                                  outlined
-                                  :model-value="
-                                    FormatRCADate(props.row.subjectDate)
-                                  "
-                                  disable
-                                />
-                              </div>
+                <q-card-section
+                  v-if="isLoadingIRDetails"
+                  class="column flex-center q-pa-xl"
+                  style="height: 400px"
+                >
+                  <q-spinner size="60px" color="primary" />
+                  <div class="q-mt-md text-primary text-weight-medium">
+                    Loading incident details...
+                  </div>
+                </q-card-section>
 
-                              <div class="col-4">
-                                <div
-                                  class="text-weight-bold text-primary q-mb-xs"
-                                >
-                                  Location of the Incident
-                                </div>
-                                <q-input
-                                  rounded
-                                  outlined
-                                  :model-value="props.row.subjectLoc"
-                                  disable
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="QADesContent q-mb-md">
-                        <div class="QAFixDesign">
-                          <div class="QADes1">
-                            <div
-                              class="text-info text-subtitle1 text-weight-bold q-mb-sm"
-                            >
-                              Immediate Response
-                            </div>
-                            <div class="text-body2 text-grey-7 q-mb-sm">
-                              Action taken by the concerned department or by the
-                              Informant to ease the incident.
-                            </div>
-                            <q-separator class="formseparatorYellow" />
-                            <div class="q-mt-md">
-                              <q-input
-                                autogrow
-                                rounded
-                                outlined
-                                :model-value="props.row.subjectResponse"
-                                disable
-                                input-class="q-pa-md"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </q-card-section>
-
-                    <q-card-section
-                      class="q-mt-md"
-                      style="border: 2px solid #ddd"
-                    >
+                <q-card-section v-else>
+                  <q-card-section>
+                    <div class="row q-col-gutter-sm q-mx-xs">
                       <div
-                        class="QADes1 column items-center justify-center q-mb-md"
+                        class="col-9 q-pa-sm bg-white rounded-borders"
                       >
-                        <div
-                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                        >
-                          Fishbone / Ishikawa Diagram and 5 Whys Analysis
-                        </div>
-                        <div
-                          class="text-center q-mb-md"
-                          style="font-size: 15px; color: #737373"
-                        >
-                          Identify potential root causes using a Fishbone
-                          Diagram, then apply the 5 Whys technique to each cause
-                          to determine the true root issue.
-                        </div>
-                      </div>
-
-                      <div class="row q-col-gutter-md q-ml-sx q-mr-sx">
-                        <div
-                          class="col-6 q-px-sx"
-                          v-if="
-                            IRRCADetailss.RCAProblemStatementLogs?.find(
-                              (m) => m.problemCode === 'MANPOWER'
-                            )?.description
-                          "
-                        >
-                          <div
-                            class="fishboneDesign q-pa-sm bg-white"
-                            style="
-                              border: 5px solid rgba(211, 47, 47, 0.6);
-                              border-radius: 40px;
-                            "
-                          >
-                            <div
-                              class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                            >
-                              Manpower/s
-                            </div>
-
-                            <div
-                              class="text-center text-black q-mb-md"
-                              style="font-size: 15px"
-                            >
-                              This refers to the manpowers involved in the process,
-                              including skills, <br/> training, experience, communication, and accountability.
-                            </div>
-
-                            <div class="q-mx-sm">
-                              <div
-                                class="text-primary text-weight-bold"
-                                style="font-size: 15px"
-                              >
-                                Problem statement
-                              </div>
-
-                              <q-input
-                                autogrow
-                                rounded
-                                outlined
-                                :model-value="
-                                  IRRCADetailss.RCAProblemStatementLogs?.find(
-                                    (m) => m.problemCode === 'MANPOWER'
-                                  )?.description
-                                "
-                                disable
-                              />
-                            </div>
-
-                            <q-separator class="formseparatorYellow" />
-
-                            <div class="q-mx-sm q-mb-sm">
-                              <div
-                                v-for="(
-                                  item, index
-                                ) in IRRCADetailss.RCAWhyLog?.filter(
-                                  (m) => m.problemName === 'MANPOWER'
-                                )"
-                                :key="index"
-                                class="q-mb-sm"
-                              >
+                        <q-card-section style="border: 2px solid #ddd">
+                          <div class="QADesContent q-mb-md">
+                            <div class="QAFixDesign">
+                              <div class="QADes1">
                                 <div
-                                  class="text-primary text-subtitle1 text-weight-bold"
+                                  class="text-info text-subtitle1 text-weight-bold q-mb-sm"
                                 >
-                                  Why?
+                                  Problem Background
                                 </div>
+                                <div class="text-body2 text-grey-7 q-mb-sm">
+                                  This section contains essential details regarding
+                                  the incident, including the date, time, location,
+                                  individuals involved, and the nature of the
+                                  incident.
+                                </div>
+                                <q-separator class="formseparatorYellow" />
 
-                                <q-input
-                                  autogrow
-                                  rounded
-                                  outlined
-                                  :model-value="
-                                    item.description || 'No Data Available'
-                                  "
-                                  disable
-                                />
+                                <div
+                                  class="row q-col-gutter-xs"
+                                  style="margin: 20px"
+                                >
+                                  <div class="col-4">
+                                    <div
+                                      class="text-weight-bold text-primary q-mb-xs"
+                                    >
+                                      Date of the Incident
+                                    </div>
+                                    <q-input
+                                      rounded
+                                      outlined
+                                      :model-value="
+                                        FormatRCATime(IRQADetailss.subjectDate)
+                                      "
+                                      disable
+                                    />
+                                  </div>
+
+                                  <div class="col-4">
+                                    <div
+                                      class="text-weight-bold text-primary q-mb-xs"
+                                    >
+                                      Time of the Incident
+                                    </div>
+                                    <q-input
+                                      rounded
+                                      outlined
+                                      :model-value="
+                                        FormatRCADate(IRQADetailss.subjectDate)
+                                      "
+                                      disable
+                                    />
+                                  </div>
+
+                                  <div class="col-4">
+                                    <div
+                                      class="text-weight-bold text-primary q-mb-xs"
+                                    >
+                                      Location of the Incident
+                                    </div>
+                                    <q-input
+                                      rounded
+                                      outlined
+                                      :model-value="IRQADetailss.subjectLoc"
+                                      disable
+                                    />
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
 
-                        <div
-                          class="col-6 q-px-sx"
-                          v-if="
-                            IRRCADetailss.RCAProblemStatementLogs?.find(
-                              (m) => m.problemCode === 'METHOD'
-                            )?.description
-                          "
+                          <div class="QADesContent q-mb-md">
+                            <div class="QAFixDesign">
+                              <div class="QADes1">
+                                <div
+                                  class="text-info text-subtitle1 text-weight-bold q-mb-sm"
+                                >
+                                  Immediate Response
+                                </div>
+                                <div class="text-body2 text-grey-7 q-mb-sm">
+                                  Action taken by the concerned department or by the
+                                  Informant to ease the incident.
+                                </div>
+                                <q-separator class="formseparatorYellow" />
+                                <div class="q-mt-md">
+                                  <q-input
+                                    autogrow
+                                    rounded
+                                    outlined
+                                    :model-value="IRQADetailss.subjectResponse"
+                                    disable
+                                    input-class="q-pa-md"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </q-card-section>
+
+                        <q-card-section
+                          class="q-mt-md"
+                          style="border: 2px solid #ddd"
                         >
                           <div
-                            class="fishboneDesign q-pa-sm bg-white"
-                            style="
-                              border: 5px solid rgba(255, 193, 7, 0.6);
-                              border-radius: 40px;
-                            "
+                            class="QADes1 column items-center justify-center q-mb-md"
                           >
                             <div
                               class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
                             >
-                              Method/s
+                              Fishbone / Ishikawa Diagram and 5 Whys Analysis
                             </div>
-
                             <div
-                              class="text-center text-black q-mb-md"
-                              style="font-size: 15px"
+                              class="text-center q-mb-md"
+                              style="font-size: 15px; color: #737373"
                             >
-                              This refers to the methods and procedures an
-                              organization uses to produce or deliver its
-                              product or service.
+                              Identify potential root causes using a Fishbone
+                              Diagram, then apply the 5 Whys technique to each cause
+                              to determine the true root issue.
                             </div>
+                          </div>
 
-                            <div class="q-mx-sm">
+                          <div class="row q-col-gutter-md q-ml-sx q-mr-sx">
+                            <div
+                              class="col-6 q-px-sx"
+                              v-if="
+                                IRRCADetailss.RCAProblemStatementLogs?.find(
+                                  (m) => m.problemCode === 'MANPOWER'
+                                )?.description
+                              "
+                            >
                               <div
-                                class="text-primary text-weight-bold"
-                                style="font-size: 15px"
-                              >
-                                Problem statement
-                              </div>
-
-                              <q-input
-                                autogrow
-                                rounded
-                                outlined
-                                :model-value="
-                                  IRRCADetailss.RCAProblemStatementLogs?.find(
-                                    (m) => m.problemCode === 'METHOD'
-                                  )?.description
+                                class="fishboneDesign q-pa-sm bg-white"
+                                style="
+                                  border: 5px solid rgba(211, 47, 47, 0.6);
+                                  border-radius: 40px;
                                 "
-                                disable
-                              />
-
-                              <q-separator class="formseparatorYellow" />
-
-                              <div class="q-mx-sm q-mb-sm">
+                              >
                                 <div
-                                  v-for="(
-                                    item, index
-                                  ) in IRRCADetailss.RCAWhyLog?.filter(
-                                    (m) => m.problemName === 'METHOD'
-                                  )"
-                                  :key="index"
-                                  class="q-mb-sm"
+                                  class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
                                 >
+                                  Manpower/s
+                                </div>
+
+                                <div
+                                  class="text-center text-black q-mb-md"
+                                  style="font-size: 15px"
+                                >
+                                  This refers to the manpowers involved in the process,
+                                  including skills, <br/> training, experience, communication, and accountability.
+                                </div>
+
+                                <div class="q-mx-sm">
                                   <div
-                                    class="text-primary text-subtitle1 text-weight-bold"
+                                    class="text-primary text-weight-bold"
+                                    style="font-size: 15px"
                                   >
-                                    Why?
+                                    Problem statement
                                   </div>
 
                                   <q-input
@@ -2129,1893 +3929,2025 @@
                                     rounded
                                     outlined
                                     :model-value="
-                                      item.description || 'No Data Available'
+                                      IRRCADetailss.RCAProblemStatementLogs?.find(
+                                        (m) => m.problemCode === 'MANPOWER'
+                                      )?.description
                                     "
                                     disable
                                   />
                                 </div>
+
+                                <q-separator class="formseparatorYellow" />
+
+                                <div class="q-mx-sm q-mb-sm">
+                                  <div
+                                    v-for="(
+                                      item, index
+                                    ) in IRRCADetailss.RCAWhyLog?.filter(
+                                      (m) => m.problemName === 'MANPOWER'
+                                    )"
+                                    :key="index"
+                                    class="q-mb-sm"
+                                  >
+                                    <div
+                                      class="text-primary text-subtitle1 text-weight-bold"
+                                    >
+                                      Why?
+                                    </div>
+
+                                    <q-input
+                                      autogrow
+                                      rounded
+                                      outlined
+                                      :model-value="
+                                        item.description || 'No Data Available'
+                                      "
+                                      disable
+                                    />
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </div>
-
-                        <div
-                          class="col-6 q-px-sx"
-                          v-if="
-                            IRRCADetailss.RCAProblemStatementLogs?.find(
-                              (m) => m.problemCode === 'MACHINE'
-                            )?.description
-                          "
-                        >
-                          <div
-                            class="fishboneDesign q-pa-sm bg-white"
-                            style="
-                              border: 5px solid rgba(233, 30, 99, 0.6);
-                              border-radius: 40px;
-                            "
-                          >
-                            <div
-                              class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                            >
-                              Machine/s
-                            </div>
 
                             <div
-                              class="text-center text-black q-mb-md"
-                              style="font-size: 15px"
+                              class="col-6 q-px-sx"
+                              v-if="
+                                IRRCADetailss.RCAProblemStatementLogs?.find(
+                                  (m) => m.problemCode === 'METHOD'
+                                )?.description
+                              "
                             >
-                              This refers to the assets such as machines and
-                              equipement used to create or provide the product
-                              or services.
-                            </div>
-
-                            <div class="q-mx-sm">
                               <div
-                                class="text-primary text-weight-bold"
-                                style="font-size: 15px"
-                              >
-                                Problem statement
-                              </div>
-
-                              <q-input
-                                autogrow
-                                rounded
-                                outlined
-                                :model-value="
-                                  IRRCADetailss.RCAProblemStatementLogs?.find(
-                                    (m) => m.problemCode === 'MACHINE'
-                                  )?.description
+                                class="fishboneDesign q-pa-sm bg-white"
+                                style="
+                                  border: 5px solid rgba(255, 193, 7, 0.6);
+                                  border-radius: 40px;
                                 "
-                                disable
-                              />
-                            </div>
-
-                            <q-separator class="formseparatorYellow" />
-
-                            <div class="q-mx-sm q-mb-sm">
-                              <div
-                                v-for="(
-                                  item, index
-                                ) in IRRCADetailss.RCAWhyLog?.filter(
-                                  (m) => m.problemName === 'MACHINE'
-                                )"
-                                :key="index"
-                                class="q-mb-sm"
                               >
                                 <div
-                                  class="text-primary text-subtitle1 text-weight-bold"
+                                  class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
                                 >
-                                  Why?
+                                  Method/s
                                 </div>
 
-                                <q-input
-                                  autogrow
-                                  rounded
-                                  outlined
-                                  :model-value="
-                                    item.description || 'No Data Available'
-                                  "
-                                  disable
-                                />
+                                <div
+                                  class="text-center text-black q-mb-md"
+                                  style="font-size: 15px"
+                                >
+                                  This refers to the methods and procedures an
+                                  organization uses to produce or deliver its
+                                  product or service.
+                                </div>
+
+                                <div class="q-mx-sm">
+                                  <div
+                                    class="text-primary text-weight-bold"
+                                    style="font-size: 15px"
+                                  >
+                                    Problem statement
+                                  </div>
+
+                                  <q-input
+                                    autogrow
+                                    rounded
+                                    outlined
+                                    :model-value="
+                                      IRRCADetailss.RCAProblemStatementLogs?.find(
+                                        (m) => m.problemCode === 'METHOD'
+                                      )?.description
+                                    "
+                                    disable
+                                  />
+
+                                  <q-separator class="formseparatorYellow" />
+
+                                  <div class="q-mx-sm q-mb-sm">
+                                    <div
+                                      v-for="(
+                                        item, index
+                                      ) in IRRCADetailss.RCAWhyLog?.filter(
+                                        (m) => m.problemName === 'METHOD'
+                                      )"
+                                      :key="index"
+                                      class="q-mb-sm"
+                                    >
+                                      <div
+                                        class="text-primary text-subtitle1 text-weight-bold"
+                                      >
+                                        Why?
+                                      </div>
+
+                                      <q-input
+                                        autogrow
+                                        rounded
+                                        outlined
+                                        :model-value="
+                                          item.description || 'No Data Available'
+                                        "
+                                        disable
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </div>
-
-                        <div
-                          class="col-6 q-px-sx"
-                          v-if="
-                            IRRCADetailss.RCAProblemStatementLogs?.find(
-                              (m) => m.problemCode === 'MATERIAL'
-                            )?.description
-                          "
-                        >
-                          <div
-                            class="fishboneDesign q-pa-sm bg-white"
-                            style="
-                              border: 5px solid rgba(156, 39, 176, 0.6);
-                              border-radius: 40px;
-                            "
-                          >
-                            <div
-                              class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                            >
-                              Material/s
-                            </div>
 
                             <div
-                              class="text-center text-black q-mb-md"
-                              style="font-size: 15px"
+                              class="col-6 q-px-sx"
+                              v-if="
+                                IRRCADetailss.RCAProblemStatementLogs?.find(
+                                  (m) => m.problemCode === 'MACHINE'
+                                )?.description
+                              "
                             >
-                              This refers to any physical or non-physical
-                              components of the system, including people,
-                              resources, and tools.
-                            </div>
-
-                            <div class="q-mx-sm">
                               <div
-                                class="text-primary text-weight-bold"
-                                style="font-size: 15px"
-                              >
-                                Problem statement
-                              </div>
-
-                              <q-input
-                                autogrow
-                                rounded
-                                outlined
-                                :model-value="
-                                  IRRCADetailss.RCAProblemStatementLogs?.find(
-                                    (m) => m.problemCode === 'MATERIAL'
-                                  )?.description
+                                class="fishboneDesign q-pa-sm bg-white"
+                                style="
+                                  border: 5px solid rgba(233, 30, 99, 0.6);
+                                  border-radius: 40px;
                                 "
-                                disable
-                              />
-                            </div>
-
-                            <q-separator class="formseparatorYellow" />
-
-                            <div class="q-mx-sm q-mb-sm">
-                              <div
-                                v-for="(
-                                  item, index
-                                ) in IRRCADetailss.RCAWhyLog?.filter(
-                                  (m) => m.problemName === 'MATERIAL'
-                                )"
-                                :key="index"
-                                class="q-mb-sm"
                               >
                                 <div
-                                  class="text-primary text-subtitle1 text-weight-bold"
+                                  class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
                                 >
-                                  Why?
+                                  Machine/s
                                 </div>
 
-                                <q-input
-                                  autogrow
-                                  rounded
-                                  outlined
-                                  :model-value="
-                                    item.description || 'No Data Available'
-                                  "
-                                  disable
-                                />
+                                <div
+                                  class="text-center text-black q-mb-md"
+                                  style="font-size: 15px"
+                                >
+                                  This refers to the assets such as machines and
+                                  equipement used to create or provide the product
+                                  or services.
+                                </div>
+
+                                <div class="q-mx-sm">
+                                  <div
+                                    class="text-primary text-weight-bold"
+                                    style="font-size: 15px"
+                                  >
+                                    Problem statement
+                                  </div>
+
+                                  <q-input
+                                    autogrow
+                                    rounded
+                                    outlined
+                                    :model-value="
+                                      IRRCADetailss.RCAProblemStatementLogs?.find(
+                                        (m) => m.problemCode === 'MACHINE'
+                                      )?.description
+                                    "
+                                    disable
+                                  />
+                                </div>
+
+                                <q-separator class="formseparatorYellow" />
+
+                                <div class="q-mx-sm q-mb-sm">
+                                  <div
+                                    v-for="(
+                                      item, index
+                                    ) in IRRCADetailss.RCAWhyLog?.filter(
+                                      (m) => m.problemName === 'MACHINE'
+                                    )"
+                                    :key="index"
+                                    class="q-mb-sm"
+                                  >
+                                    <div
+                                      class="text-primary text-subtitle1 text-weight-bold"
+                                    >
+                                      Why?
+                                    </div>
+
+                                    <q-input
+                                      autogrow
+                                      rounded
+                                      outlined
+                                      :model-value="
+                                        item.description || 'No Data Available'
+                                      "
+                                      disable
+                                    />
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </div>
-
-                        <div
-                          class="col-6 q-px-sx"
-                          v-if="
-                            IRRCADetailss.RCAProblemStatementLogs?.find(
-                              (m) => m.problemCode === 'MEASUREMENT'
-                            )?.description
-                          "
-                        >
-                          <div
-                            class="fishboneDesign q-pa-sm bg-white"
-                            style="
-                              border: 5px solid rgba(3, 169, 244, 0.6);
-                              border-radius: 40px;
-                            "
-                          >
-                            <div
-                              class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                            >
-                              Measurement/s
-                            </div>
 
                             <div
-                              class="text-center text-black q-mb-md"
-                              style="font-size: 15px"
+                              class="col-6 q-px-sx"
+                              v-if="
+                                IRRCADetailss.RCAProblemStatementLogs?.find(
+                                  (m) => m.problemCode === 'MATERIAL'
+                                )?.description
+                              "
                             >
-                              This refers to the tools and methods that
-                              organizations use to effectively measure progress,
-                              outcomes, and overall performance.
-                            </div>
-
-                            <div class="q-mx-sm">
                               <div
-                                class="text-primary text-weight-bold"
-                                style="font-size: 15px"
-                              >
-                                Problem statement
-                              </div>
-
-                              <q-input
-                                autogrow
-                                rounded
-                                outlined
-                                :model-value="
-                                  IRRCADetailss.RCAProblemStatementLogs?.find(
-                                    (m) => m.problemCode === 'MEASUREMENT'
-                                  )?.description
+                                class="fishboneDesign q-pa-sm bg-white"
+                                style="
+                                  border: 5px solid rgba(156, 39, 176, 0.6);
+                                  border-radius: 40px;
                                 "
-                                disable
-                              />
-                            </div>
-
-                            <q-separator class="formseparatorYellow" />
-
-                            <div class="q-mx-sm q-mb-sm">
-                              <div
-                                v-for="(
-                                  item, index
-                                ) in IRRCADetailss.RCAWhyLog?.filter(
-                                  (m) => m.problemName === 'MEASUREMENT'
-                                )"
-                                :key="index"
-                                class="q-mb-sm"
                               >
                                 <div
-                                  class="text-primary text-subtitle1 text-weight-bold"
+                                  class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
                                 >
-                                  Why?
+                                  Material/s
                                 </div>
 
-                                <q-input
-                                  autogrow
-                                  rounded
-                                  outlined
-                                  :model-value="
-                                    item.description || 'No Data Available'
-                                  "
-                                  disable
-                                />
+                                <div
+                                  class="text-center text-black q-mb-md"
+                                  style="font-size: 15px"
+                                >
+                                  This refers to any physical or non-physical
+                                  components of the system, including people,
+                                  resources, and tools.
+                                </div>
+
+                                <div class="q-mx-sm">
+                                  <div
+                                    class="text-primary text-weight-bold"
+                                    style="font-size: 15px"
+                                  >
+                                    Problem statement
+                                  </div>
+
+                                  <q-input
+                                    autogrow
+                                    rounded
+                                    outlined
+                                    :model-value="
+                                      IRRCADetailss.RCAProblemStatementLogs?.find(
+                                        (m) => m.problemCode === 'MATERIAL'
+                                      )?.description
+                                    "
+                                    disable
+                                  />
+                                </div>
+
+                                <q-separator class="formseparatorYellow" />
+
+                                <div class="q-mx-sm q-mb-sm">
+                                  <div
+                                    v-for="(
+                                      item, index
+                                    ) in IRRCADetailss.RCAWhyLog?.filter(
+                                      (m) => m.problemName === 'MATERIAL'
+                                    )"
+                                    :key="index"
+                                    class="q-mb-sm"
+                                  >
+                                    <div
+                                      class="text-primary text-subtitle1 text-weight-bold"
+                                    >
+                                      Why?
+                                    </div>
+
+                                    <q-input
+                                      autogrow
+                                      rounded
+                                      outlined
+                                      :model-value="
+                                        item.description || 'No Data Available'
+                                      "
+                                      disable
+                                    />
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </div>
-
-                        <div
-                          class="col-6 q-px-sx"
-                          v-if="
-                            IRRCADetailss.RCAProblemStatementLogs?.find(
-                              (m) => m.problemCode === 'ENVIRONMENT'
-                            )?.description
-                          "
-                        >
-                          <div
-                            class="fishboneDesign q-pa-sm bg-white"
-                            style="
-                              border: 5px solid rgba(76, 175, 80, 0.6);
-                              border-radius: 40px;
-                            "
-                          >
-                            <div
-                              class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                            >
-                              Environment/s
-                            </div>
 
                             <div
-                              class="text-center text-black q-mb-md"
-                              style="font-size: 15px"
+                              class="col-6 q-px-sx"
+                              v-if="
+                                IRRCADetailss.RCAProblemStatementLogs?.find(
+                                  (m) => m.problemCode === 'MEASUREMENT'
+                                )?.description
+                              "
                             >
-                              This refers to the external factors that affect
-                              the system including weather, geography, and
-                              regulation.
-                            </div>
-
-                            <div class="q-mx-sm">
                               <div
-                                class="text-primary text-weight-bold"
-                                style="font-size: 15px"
-                              >
-                                Problem statement
-                              </div>
-
-                              <q-input
-                                autogrow
-                                rounded
-                                outlined
-                                :model-value="
-                                  IRRCADetailss.RCAProblemStatementLogs?.find(
-                                    (m) => m.problemCode === 'ENVIRONMENT'
-                                  )?.description
+                                class="fishboneDesign q-pa-sm bg-white"
+                                style="
+                                  border: 5px solid rgba(3, 169, 244, 0.6);
+                                  border-radius: 40px;
                                 "
-                                disable
-                              />
-                            </div>
-
-                            <q-separator class="formseparatorYellow" />
-
-                            <div class="q-mx-sm q-mb-sm">
-                              <div
-                                v-for="(
-                                  item, index
-                                ) in IRRCADetailss.RCAWhyLog?.filter(
-                                  (m) => m.problemName === 'ENVIRONMENT'
-                                )"
-                                :key="index"
-                                class="q-mb-sm"
                               >
                                 <div
-                                  class="text-primary text-subtitle1 text-weight-bold"
+                                  class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
                                 >
-                                  Why?
+                                  Measurement/s
                                 </div>
 
-                                <q-input
-                                  autogrow
-                                  rounded
-                                  outlined
-                                  :model-value="
-                                    item.description || 'No Data Available'
-                                  "
-                                  disable
-                                />
+                                <div
+                                  class="text-center text-black q-mb-md"
+                                  style="font-size: 15px"
+                                >
+                                  This refers to the tools and methods that
+                                  organizations use to effectively measure progress,
+                                  outcomes, and overall performance.
+                                </div>
+
+                                <div class="q-mx-sm">
+                                  <div
+                                    class="text-primary text-weight-bold"
+                                    style="font-size: 15px"
+                                  >
+                                    Problem statement
+                                  </div>
+
+                                  <q-input
+                                    autogrow
+                                    rounded
+                                    outlined
+                                    :model-value="
+                                      IRRCADetailss.RCAProblemStatementLogs?.find(
+                                        (m) => m.problemCode === 'MEASUREMENT'
+                                      )?.description
+                                    "
+                                    disable
+                                  />
+                                </div>
+
+                                <q-separator class="formseparatorYellow" />
+
+                                <div class="q-mx-sm q-mb-sm">
+                                  <div
+                                    v-for="(
+                                      item, index
+                                    ) in IRRCADetailss.RCAWhyLog?.filter(
+                                      (m) => m.problemName === 'MEASUREMENT'
+                                    )"
+                                    :key="index"
+                                    class="q-mb-sm"
+                                  >
+                                    <div
+                                      class="text-primary text-subtitle1 text-weight-bold"
+                                    >
+                                      Why?
+                                    </div>
+
+                                    <q-input
+                                      autogrow
+                                      rounded
+                                      outlined
+                                      :model-value="
+                                        item.description || 'No Data Available'
+                                      "
+                                      disable
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div
+                              class="col-6 q-px-sx"
+                              v-if="
+                                IRRCADetailss.RCAProblemStatementLogs?.find(
+                                  (m) => m.problemCode === 'ENVIRONMENT'
+                                )?.description
+                              "
+                            >
+                              <div
+                                class="fishboneDesign q-pa-sm bg-white"
+                                style="
+                                  border: 5px solid rgba(76, 175, 80, 0.6);
+                                  border-radius: 40px;
+                                "
+                              >
+                                <div
+                                  class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                                >
+                                  Environment/s
+                                </div>
+
+                                <div
+                                  class="text-center text-black q-mb-md"
+                                  style="font-size: 15px"
+                                >
+                                  This refers to the external factors that affect
+                                  the system including weather, geography, and
+                                  regulation.
+                                </div>
+
+                                <div class="q-mx-sm">
+                                  <div
+                                    class="text-primary text-weight-bold"
+                                    style="font-size: 15px"
+                                  >
+                                    Problem statement
+                                  </div>
+
+                                  <q-input
+                                    autogrow
+                                    rounded
+                                    outlined
+                                    :model-value="
+                                      IRRCADetailss.RCAProblemStatementLogs?.find(
+                                        (m) => m.problemCode === 'ENVIRONMENT'
+                                      )?.description
+                                    "
+                                    disable
+                                  />
+                                </div>
+
+                                <q-separator class="formseparatorYellow" />
+
+                                <div class="q-mx-sm q-mb-sm">
+                                  <div
+                                    v-for="(
+                                      item, index
+                                    ) in IRRCADetailss.RCAWhyLog?.filter(
+                                      (m) => m.problemName === 'ENVIRONMENT'
+                                    )"
+                                    :key="index"
+                                    class="q-mb-sm"
+                                  >
+                                    <div
+                                      class="text-primary text-subtitle1 text-weight-bold"
+                                    >
+                                      Why?
+                                    </div>
+
+                                    <q-input
+                                      autogrow
+                                      rounded
+                                      outlined
+                                      :model-value="
+                                        item.description || 'No Data Available'
+                                      "
+                                      disable
+                                    />
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                    </q-card-section>
+                        </q-card-section>
 
-                    <q-card-section
-                      class="q-mt-md"
-                      style="border: 2px solid #ddd"
-                    >
-                      <div
-                        class="QADes1 column items-center justify-center q-mb-md"
-                        v-for="(
-                              item, index
-                            ) in IRRCADetailss.RCAActionableLog"
-                            :key="index"
-                      >
-                        <div
-                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        <q-card-section
+                          class="q-mt-md"
+                          style="border: 2px solid #ddd"
                         >
-                          Actionable Root Cause
-                        </div>
-                        <div
-                          class="text-center q-mb-md"
-                          style="font-size: 15px; color: #737373"
-                        >
-                          From the results of your Fishbone Diagram and 5 Whys analysis,<br/>
-                          this represents the most critical underlying cause that requires corrective action to prevent the issue from recurring.
-                        </div>
-
-                          <q-input
-                            rounded
-                            outlined
-                            disable
-                            :model-value="getDomainLabel(item.domain)"
-                            class="q-mt-md"
-                            style="width: 100%"
-                          />
-
-                          <q-input
-                            rounded
-                            outlined
-                            label="Note"
-                            type="textarea"
-                            class="q-mt-md"
-                            :model-value="item.actionable"
-                            autofocus
-                            disable
-                            style="width: 100%"
-                          />
-                      </div>
-                    </q-card-section>
-
-                    <q-card-section
-                      class="q-mt-md"
-                      style="border: 2px solid #ddd"
-                    >
-                      <div
-                        class="QADes1 column items-center justify-center q-mb-md"
-                      >
-                        <div
-                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                        >
-                          Solution Identification
-                        </div>
-                        <div
-                          class="text-center"
-                          style="font-size: 15px; color: #737373"
-                        >
-                          Identify effective solutions by proposing corrective
-                          actions to immediately address root causes and
-                          preventive measures to avoid recurrence, specifying
-                          responsibilities and timelines for each.
-                        </div>
-                      </div>
-
-                      <q-separator class="formseparatorWhite" />
-
-                      <div
-                        class="QADes1 shadow-2"
-                        style="
-                          border: 3px solid #6b7c93;
-                          border-radius: 40px;
-                          padding: 30px;
-                        "
-                      >
-                        <div
-                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                        >
-                          Corrective Action
-                        </div>
-
-                        <div
-                          class="q-mb-sm"
-                          style="font-size: 15px; color: #737373"
-                        >
-                          Specify immediate actions to address identified root
-                          causes, including responsible individuals and
-                          deadlines for implementation. You may add more fields
-                          as needed.
-                        </div>
-
-                        <q-separator class="formseparatorYellow" />
-
-                        <div>
                           <div
-                            class="row q-col-gutter-md q-mt-xs q-mb-xs items-center"
+                            class="QADes1 column items-center justify-center q-mb-md"
                             v-for="(
-                              item, index
-                            ) in IRRCADetailss.RCACorrectiveLog"
-                            :key="index"
+                                  item, index
+                                ) in IRRCADetailss.RCAActionableLog"
+                                :key="index"
                           >
-                            <div class="col-6">
-                              <div
-                                class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                              >
-                                Corrective Action Note
-                              </div>
-                              <q-input
-                                autogrow
-                                rounded
-                                outlined
-                                :model-value="
-                                  item.correctiveAction || 'No Data Available'
-                                "
-                                disable
-                              />
-                            </div>
-
-                            <div class="col-">
-                              <div
-                                class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                              >
-                                Timeline From
-                              </div>
-                              <q-input
-                                autogrow
-                                rounded
-                                outlined
-                                :model-value="
-                                  FormatDate(item.corTimelineFromDate) ||
-                                  'No Data Available'
-                                "
-                                disable
-                              />
-                            </div>
-
-                            <div class="col-2">
-                              <div
-                                class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                              >
-                                Timeline To
-                              </div>
-                              <q-input
-                                autogrow
-                                rounded
-                                outlined
-                                :model-value="
-                                  FormatDate(item.corTimelineFromDate) ||
-                                  'No Data Available'
-                                "
-                                disable
-                              />
-                            </div>
-
-                            <div class="col-2">
-                              <div
-                                class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                              >
-                                Accountable Person/s
-                              </div>
-                              <q-input
-                                autogrow
-                                rounded
-                                outlined
-                                :model-value="
-                                  EmploFullName(item.accountablePer) || 'No Data Available'
-                                "
-                                disable
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <!-- <q-separator class="formseparatorWhite" />
-
-                      <div
-                        class="QADes1 shadow-2"
-                        style="
-                          border: 3px solid #6b7c93;
-                          border-radius: 40px;
-                          padding: 30px;
-                        "
-                      >
-                        <div
-                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                        >
-                          Preventive Measures
-                        </div>
-
-                        <div
-                          class="q-mb-sm"
-                          style="font-size: 15px; color: #737373"
-                        >
-                          Outline long-term preventive measures, considering
-                          changes to policies, procedures, training, and
-                          organizational culture. You may add more fields as
-                          needed.
-                        </div>
-
-                        <q-separator class="formseparatorYellow" />
-
-                        <div>
-                          <div
-                            class="row q-col-gutter-md q-mt-xs q-mb-xs items-center"
-                            v-for="(
-                              item, index
-                            ) in IRRCADetailss.RCAPreventiveLog"
-                            :key="index"
-                          >
-                            <div class="col-6">
-                              <div
-                                class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                              >
-                                Preventive Measure Note
-                              </div>
-                              <q-input
-                                autogrow
-                                rounded
-                                outlined
-                                :model-value="
-                                  item.preventiveMeasure || 'No Data Available'
-                                "
-                              />
-                            </div>
-
-                            <div class="col-2">
-                              <div
-                                class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                              >
-                                Timeline From
-                              </div>
-                              <q-input
-                                autogrow
-                                rounded
-                                outlined
-                                :model-value="
-                                  FormatDate(item.preTimelineFromDate) ||
-                                  'No Data Available'
-                                "
-                              />
-                            </div>
-
-                            <div class="col-2">
-                              <div
-                                class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                              >
-                                Timeline To
-                              </div>
-                              <q-input
-                                autogrow
-                                rounded
-                                outlined
-                                :model-value="
-                                  FormatDate(item.preTimelineToDate) ||
-                                  'No Data Available'
-                                "
-                              />
-                            </div>
-
-                            <div class="col-2">
-                              <div
-                                class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                              >
-                                Responsible Person/s
-                              </div>
-                              <q-input
-                                autogrow
-                                rounded
-                                outlined
-                                :model-value="
-                                  EmploFullName(item.responsiblePer) || 'No Data Available'
-                                "
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div> -->
-
-                      <q-separator class="formseparatorWhite" />
-
-                      <div
-                        class="QADes1 shadow-2"
-                        style="
-                          border: 3px solid #6b7c93;
-                          border-radius: 40px;
-                          padding: 30px;
-                        "
-                      >
-                        <div
-                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                        >
-                          Risk
-                        </div>
-
-                        <div
-                          class="q-mb-sm"
-                          style="font-size: 15px; color: #737373"
-                        >
-                          These are the risks associated with or arising from this specific incident that
-                          should be recorded in the risk register to support effective risk management.
-                        </div>
-
-                        <q-separator class="formseparatorYellow" />
-
-                        <div>
-                          <div
-                            class="row q-col-gutter-md q-mt-xs q-mb-xs items-center"
-                            v-for="(
-                              item, index
-                            ) in IRRCADetailss.RCARisk"
-                            :key="index"
-                          >
-
-                          <q-input
-                            rounded
-                            outlined
-                            disable
-                            :model-value="item.riskItem"
-                            style="width: 100%"
-                          />
-                          </div>
-                        </div>
-                      </div>
-                    </q-card-section>
-                  </div>
-
-                  <div class="col-3">
-                    <q-item-section
-                      class="q-pa-xs"
-                      style="border: 3px solid #6b7c93"
-                    >
-                      <div class="QADes1">
-                        <div
-                          class="text-info text-subtitle1 text-weight-bold q-mb-sm"
-                        >
-                          Content Root Cause Analysis (RCA) Status
-                        </div>
-
-                        <div class="text-body2 text-grey-7 q-mb-sm">
-                          Update the status of each action to ensure timely
-                          completion and accountability.
-                        </div>
-
-                        <q-separator class="formseparatorYellow" />
-
-                        <div
-                          v-for="(item, index) in filteredForRevisionItems"
-                          :key="index"
-                          :style="{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '10px',
-                            backgroundColor: ' #e3f2fd',
-                            border: '2px solid #003566',
-                            padding: '10px',
-                            margin: '10px',
-                            borderRadius: '10px',
-                            opacity: item.disabled ? '0.5' : '1',
-                            pointerEvents: item.disabled ? 'none' : 'auto',
-                          }"
-                          @click="!item.disabled && handleClick(item)"
-                        >
-                          <q-icon
-                            name="assignment_add"
-                            size="3.5em"
-                            class="q-mr-md text-primary"
-                          />
-                          <div class="column">
                             <div
-                              class="text-subtitle1 text-weight-medium text-primary"
+                              class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
                             >
-                              {{ item.status }}
+                              Actionable Root Cause
                             </div>
-                            <div class="text-caption text-dark">
-                              {{ item.revisionCode }}
+                            <div
+                              class="text-center q-mb-md"
+                              style="font-size: 15px; color: #737373"
+                            >
+                              From the results of your Fishbone Diagram and 5 Whys analysis,<br/>
+                              this represents the most critical underlying cause that requires corrective action to prevent the issue from recurring.
                             </div>
-                            <div class="text-caption text-dark">
-                              {{ FormatDate(item.dateTimeCreated) }}
+
+                              <q-input
+                                rounded
+                                outlined
+                                disable
+                                :model-value="getDomainLabel(item.domain)"
+                                class="q-mt-md"
+                                style="width: 100%"
+                              />
+
+                              <q-input
+                                autogrow
+                                rounded
+                                outlined
+                                label="Note"
+                                type="textarea"
+                                class="q-mt-md"
+                                :model-value="item.actionable"
+                                autofocus
+                                disable
+                                style="width: 100%"
+                              />
+                          </div>
+                        </q-card-section>
+
+                        <q-card-section
+                          class="q-mt-md"
+                          style="border: 2px solid #ddd"
+                        >
+                          <div
+                            class="QADes1 column items-center justify-center q-mb-md"
+                          >
+                            <div
+                              class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                            >
+                              Solution Identification
+                            </div>
+                            <div
+                              class="text-center"
+                              style="font-size: 15px; color: #737373"
+                            >
+                              Identify effective solutions by proposing corrective
+                              actions to immediately address root causes and
+                              preventive measures to avoid recurrence, specifying
+                              responsibilities and timelines for each.
                             </div>
                           </div>
-                        </div>
 
-                        <q-dialog maximized v-model="setReviseForm" persistent>
-                          <div class="QADialogAction">
-                            <q-card class="contentFormAction">
-                              <q-card-section
-                                class="q-mb-sm row items-center justify-between"
-                              >
-                                <div>
+                          <q-separator class="formseparatorWhite" />
+
+                          <div
+                            class="QADes1"
+                            style="
+                              border: 2px solid #ddd;
+                              border-radius: 10px;
+                              padding: 30px;
+                            "
+                          >
+                            <div
+                              class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                            >
+                              Corrective Action
+                            </div>
+
+                            <div
+                              class="q-mb-sm"
+                              style="font-size: 15px; color: #737373"
+                            >
+                              Specify immediate actions to address identified root
+                              causes, including responsible individuals and
+                              deadlines for implementation. You may add more fields
+                              as needed.
+                            </div>
+
+                            <q-separator class="formseparatorYellow" />
+
+
+                            <div
+                              class="q-mb-md"
+                              v-for="(item, index) in IRRCADetailss.RCACorrectiveLog"
+                              :key="index"
+                            >
+                              <!-- FIRST ROW -->
+                              <div class="row q-col-gutter-md q-mb-sm">
+
+                                <!-- Corrective Action Note -->
+                                <div class="col-12 col-md-8">
                                   <div
-                                    class="text-secondary text-weight-bold"
-                                    style="font-size: 25px; color: #002b5c"
+                                    class="text-primary text-subtitle1 text-weight-bold q-mb-xs"
                                   >
-                                    Revise Root Cause Analysis (RCA) Details
+                                    Corrective Action Note
                                   </div>
 
-                                  <div style="font-size: 18px; color: #333333">
-                                    <b>Instruction:</b> This section describes
-                                    the items identified through the Root Cause
-                                    Analysis and implemented by the department
-                                    to address and mitigate the incident.
-                                  </div>
+                                  <q-input
+                                    autogrow
+                                    rounded
+                                    outlined
+                                    disable
+                                    :model-value="
+                                      item.correctiveAction || 'No Data Available'
+                                    "
+                                  />
                                 </div>
 
-                                <q-btn
-                                  flat
-                                  icon="close"
-                                  style="
-                                    color: #003566;
-                                    background-color: rgba(22, 110, 204, 0.1);
-                                  "
-                                  @click="this.setReviseForm = false"
-                                  v-close-popup
-                                >
-                                  <q-tooltip class="bg-info text-white">
-                                    Close Form
-                                  </q-tooltip>
-                                </q-btn>
-                              </q-card-section>
-
-                              <q-card-section
-                                class="rounded-borders shadow-2 q-mt-md q-mb-md"
-                                style="border: 2px solid #ddd"
-                              >
-                                <div
-                                  class="QADes1 column items-center justify-center q-mb-md"
-                                >
+                                <!-- Accountable Person/s -->
+                                <div class="col-12 col-md-4">
                                   <div
-                                    class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                                    class="text-primary text-subtitle1 text-weight-bold q-mb-xs"
                                   >
-                                    Fishbone / Ishikawa Diagram and 5 Whys
-                                    Analysis
+                                    Accountable Person/s
                                   </div>
-                                  <div
-                                    class="text-center q-mb-md"
-                                    style="font-size: 15px; color: #737373"
-                                  >
-                                    Identify potential root causes using a
-                                    Fishbone Diagram, then apply the 5 Whys
-                                    technique to each cause to determine the
-                                    true root issue.
-                                  </div>
-                                </div>
-
-                                <q-card-section class="row q-col-gutter-xl q-ml-sm q-mr-sm q-mb-md" v-if="whyLogs.length > 0">
-                                  <div
-                                    class="col-6 q-px-sx"
-                                    v-if="whyLogs.filter(m => m.problemName === 'MANPOWER').length"
-                                  >
-                                    <div
-                                      class="fishboneDesign q-pa-md bg-white"
-                                      style="
-                                        border: 5px solid rgba(211, 47, 47, 0.6);
-                                        border-radius: 40px;
-                                      "
-                                    >
-                                      <div
-                                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                                      >
-                                        Manpower/s
-                                      </div>
-
-                                      <div
-                                        class="text-center text-black q-mb-md"
-                                        style="font-size: 15px"
-                                      >
-                                        This refers to the manpowers involved in the process,
-                                        including skills, <br/> training, experience, communication, and accountability.
-                                      </div>
-
-                                      <div
-                                        class="q-mx-sm q-pa-sm q-mb-md"
-                                        style="border: 2px solid #8d92a8; border-radius: 20px;"
-                                        v-for="(item, index) in whyLogs.filter(
-                                          (m) => m.problemName === 'MANPOWER'
-                                        ) || []"
-                                        :key="index"
-                                      >
-                                        <!-- QA Section -->
-                                        <div
-                                          class="q-pa-sm q-mb-xs"
-                                          style="
-                                            background-color: #f0f9ff;
-                                            border-radius: 8px;
-                                            border: 1px solid #2196f3;
-                                          "
-                                        >
-                                          <div class="row items-center q-mb-sm">
-                                            <div
-                                              class="q-badge bg-blue text-white q-mr-sm"
-                                            >
-                                              Quality Assurance Comment &
-                                              Suggestion
-                                            </div>
-                                          </div>
-
-                                          <div class="row q-col-gutter-xs">
-                                            <div class="col">
-                                              <div
-                                                class="text-body2 text-grey-7 q-mb-xs"
-                                              >
-                                                <b>Note :</b>
-                                                {{ item.whyNote }}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-
-                                        <!-- Input Section -->
-                                        <q-card-section
-                                          class="row q-col-gutter-sm"
-                                        >
-                                          <div class="col">
-                                            <q-input
-                                              autogrow
-                                              rounded
-                                              outlined
-                                              label="Input Revised Content"
-                                              v-model="ReturnWhy[item.code]"
-                                            />
-                                          </div>
-                                        </q-card-section>
-
-                                        <!-- Rejected Content Section -->
-                                        <div
-                                          class="q-pa-sm"
-                                          style="
-                                            background-color: #fff3f3;
-                                            border-radius: 8px;
-                                            border: 1px solid #e53935;
-                                          "
-                                        >
-                                          <div class="row items-center q-mb-sm">
-                                            <div
-                                              class="q-badge bg-red text-white q-mr-sm"
-                                            >
-                                              Rejected Created Content
-                                            </div>
-                                          </div>
-
-                                          <div class="row q-col-gutter-xs">
-                                            <div class="col-8">
-                                              <div
-                                                class="text-body2 text-grey-7 q-mb-xs"
-                                              >
-                                                <b>Why Note :</b>
-                                                {{ item.description }}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <div
-                                    class="col-6 q-px-sx"
-                                    v-if="whyLogs.filter(m => m.problemName === 'METHOD').length"
-                                  >
-                                    <div
-                                      class="fishboneDesign q-pa-md bg-white"
-                                      style="
-                                        border: 5px solid rgba(255, 193, 7, 0.6);
-                                        border-radius: 40px;
-                                      "
-                                    >
-                                      <div
-                                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                                      >
-                                        Method/s
-                                      </div>
-
-                                      <div
-                                        class="text-center text-black q-mb-md"
-                                        style="font-size: 15px"
-                                      >
-                                        This refers to the methods and
-                                        procedures an organization uses <br/> to
-                                        produce or deliver its product or
-                                        service.
-                                      </div>
-
-                                      <div
-                                        class="q-mx-md q-pa-sm q-mb-md"
-                                        style="border: 2px solid #8d92a8; border-radius: 20px;"
-                                        v-for="(item, index) in whyLogs.filter(
-                                          (m) => m.problemName === 'METHOD'
-                                        ) || []"
-                                        :key="index"
-                                      >
-                                        <!-- QA Section -->
-                                        <div
-                                          class="q-pa-sm q-mb-xs"
-                                          style="
-                                            background-color: #f0f9ff;
-                                            border-radius: 8px;
-                                            border: 1px solid #2196f3;
-                                          "
-                                        >
-                                          <div class="row items-center q-mb-sm">
-                                            <div
-                                              class="q-badge bg-blue text-white q-mr-sm"
-                                            >
-                                              Quality Assurance Comment &
-                                              Suggestion
-                                            </div>
-                                          </div>
-
-                                          <div class="row q-col-gutter-xs">
-                                            <div class="col">
-                                              <div
-                                                class="text-body2 text-grey-7 q-mb-xs"
-                                              >
-                                                <b>Note :</b>
-                                                {{ item.whyNote }}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-
-                                        <!-- Input Section -->
-                                        <q-card-section
-                                          class="row q-col-gutter-sm"
-                                        >
-                                          <div class="col">
-                                            <q-input
-                                              autogrow
-                                              rounded
-                                              outlined
-                                              label="Input Revised Content"
-                                              v-model="ReturnWhy[item.code]"
-                                            />
-                                          </div>
-                                        </q-card-section>
-
-                                        <!-- Rejected Content Section -->
-                                        <div
-                                          class="q-pa-sm"
-                                          style="
-                                            background-color: #fff3f3;
-                                            border-radius: 8px;
-                                            border: 1px solid #e53935;
-                                          "
-                                        >
-                                          <div class="row items-center q-mb-sm">
-                                            <div
-                                              class="q-badge bg-red text-white q-mr-sm"
-                                            >
-                                              Rejected Created Content
-                                            </div>
-                                          </div>
-
-                                          <div class="row q-col-gutter-xs">
-                                            <div class="col-8">
-                                              <div
-                                                class="text-body2 text-grey-7 q-mb-xs"
-                                              >
-                                                <b>Why Note :</b>
-                                                {{ item.description }}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <div
-                                    class="col-6 q-px-sx"
-                                    v-if="whyLogs.filter(m => m.problemName === 'MACHINE').length"
-                                  >
-                                    <div
-                                      class="fishboneDesign q-pa-md bg-white"
-                                      style="
-                                        border: 5px solid rgba(233, 30, 99, 0.6);
-                                        border-radius: 40px;
-                                      "
-                                    >
-                                      <div
-                                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                                      >
-                                        Machine/s
-                                      </div>
-
-                                      <div
-                                        class="text-center text-black q-mb-md"
-                                        style="font-size: 15px"
-                                      >
-                                        This refers to the assets such as
-                                        machines and equipement <br/> used to create
-                                        or provide the product or services.
-                                      </div>
-
-                                      <div
-                                        class="q-mx-md q-pa-sm q-mb-md"
-                                        style="border: 2px solid #8d92a8; border-radius: 20px;"
-                                        v-for="(item, index) in whyLogs.filter(
-                                          (m) => m.problemName === 'MACHINE'
-                                        ) || []"
-                                        :key="index"
-                                      >
-                                        <!-- QA Section -->
-                                        <div
-                                          class="q-pa-sm q-mb-xs"
-                                          style="
-                                            background-color: #f0f9ff;
-                                            border-radius: 8px;
-                                            border: 1px solid #2196f3;
-                                          "
-                                        >
-                                          <div class="row items-center q-mb-sm">
-                                            <div
-                                              class="q-badge bg-blue text-white q-mr-sm"
-                                            >
-                                              Quality Assurance Comment &
-                                              Suggestion
-                                            </div>
-                                          </div>
-
-                                          <div class="row q-col-gutter-xs">
-                                            <div class="col">
-                                              <div
-                                                class="text-body2 text-grey-7 q-mb-xs"
-                                              >
-                                                <b>Note :</b>
-                                                {{ item.whyNote }}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-
-                                        <!-- Input Section -->
-                                        <q-card-section
-                                          class="row q-col-gutter-sm"
-                                        >
-                                          <div class="col">
-                                            <q-input
-                                              autogrow
-                                              rounded
-                                              outlined
-                                              label="Input Revised Content"
-                                              v-model="ReturnWhy[item.code]"
-                                            />
-                                          </div>
-                                        </q-card-section>
-
-                                        <!-- Rejected Content Section -->
-                                        <div
-                                          class="q-pa-sm"
-                                          style="
-                                            background-color: #fff3f3;
-                                            border-radius: 8px;
-                                            border: 1px solid #e53935;
-                                          "
-                                        >
-                                          <div class="row items-center q-mb-sm">
-                                            <div
-                                              class="q-badge bg-red text-white q-mr-sm"
-                                            >
-                                              Rejected Created Content
-                                            </div>
-                                          </div>
-
-                                          <div class="row q-col-gutter-xs">
-                                            <div class="col-8">
-                                              <div
-                                                class="text-body2 text-grey-7 q-mb-xs"
-                                              >
-                                                <b>Why Note :</b>
-                                                {{ item.description }}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <div
-                                    class="col-6 q-px-sx"
-                                    v-if="whyLogs.filter(m => m.problemName === 'MATERIAL').length"
-                                  >
-                                    <div
-                                      class="fishboneDesign q-pa-md bg-white"
-                                      style="
-                                        border: 5px solid
-                                          rgba(156, 39, 176, 0.6);
-                                        border-radius: 40px;
-                                      "
-                                    >
-                                      <div
-                                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                                      >
-                                        Material/s
-                                      </div>
-
-                                      <div
-                                        class="text-center text-black q-mb-md"
-                                        style="font-size: 15px"
-                                      >
-                                        This refers to any physical or
-                                        non-physical components <br/> of the system,
-                                        including people, resources, and tools.
-                                      </div>
-
-                                      <div
-                                        class="q-mx-md q-pa-sm q-mb-md"
-                                        style="border: 2px solid #8d92a8; border-radius: 20px;"
-                                        v-for="(item, index) in whyLogs.filter(
-                                          (m) => m.problemName === 'MATERIAL'
-                                        ) || []"
-                                        :key="index"
-                                      >
-                                        <!-- QA Section -->
-                                        <div
-                                          class="q-pa-sm q-mb-xs"
-                                          style="
-                                            background-color: #f0f9ff;
-                                            border-radius: 8px;
-                                            border: 1px solid #2196f3;
-                                          "
-                                        >
-                                          <div class="row items-center q-mb-sm">
-                                            <div
-                                              class="q-badge bg-blue text-white q-mr-sm"
-                                            >
-                                              Quality Assurance Comment &
-                                              Suggestion
-                                            </div>
-                                          </div>
-
-                                          <div class="row q-col-gutter-xs">
-                                            <div class="col">
-                                              <div
-                                                class="text-body2 text-grey-7 q-mb-xs"
-                                              >
-                                                <b>Note :</b>
-                                                {{ item.whyNote }}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-
-                                        <!-- Input Section -->
-                                        <q-card-section
-                                          class="row q-col-gutter-sm"
-                                        >
-                                          <div class="col">
-                                            <q-input
-                                              autogrow
-                                              rounded
-                                              outlined
-                                              label="Input Revised Content"
-                                              v-model="ReturnWhy[item.code]"
-                                            />
-                                          </div>
-                                        </q-card-section>
-
-                                        <!-- Rejected Content Section -->
-                                        <div
-                                          class="q-pa-sm"
-                                          style="
-                                            background-color: #fff3f3;
-                                            border-radius: 8px;
-                                            border: 1px solid #e53935;
-                                          "
-                                        >
-                                          <div class="row items-center q-mb-sm">
-                                            <div
-                                              class="q-badge bg-red text-white q-mr-sm"
-                                            >
-                                              Rejected Created Content
-                                            </div>
-                                          </div>
-
-                                          <div class="row q-col-gutter-xs">
-                                            <div class="col-8">
-                                              <div
-                                                class="text-body2 text-grey-7 q-mb-xs"
-                                              >
-                                                <b>Why Note :</b>
-                                                {{ item.description }}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <div
-                                    class="col-6 q-px-sx"
-                                    v-if="whyLogs.filter(m => m.problemName === 'MEASUREMENT').length"
-                                  >
-                                    <div
-                                      class="fishboneDesign q-pa-md bg-white"
-                                      style="
-                                        border: 5px solid rgba(3, 169, 244, 0.6);
-                                        border-radius: 40px;
-                                      "
-                                    >
-                                      <div
-                                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                                      >
-                                        Measurement/s
-                                      </div>
-
-                                      <div
-                                        class="text-center text-black q-mb-md"
-                                        style="font-size: 15px"
-                                      >
-                                        This refers to the tools and methods
-                                        that organizations <br/> use to effectively
-                                        measure progress, outcomes, and overall
-                                        performance.
-                                      </div>
-
-                                      <div
-                                        class="q-mx-md q-pa-sm q-mb-md"
-                                        style="border: 2px solid #8d92a8; border-radius: 20px;"
-                                        v-for="(item, index) in whyLogs.filter(
-                                          (m) => m.problemName === 'MEASUREMENT'
-                                        ) || []"
-                                        :key="index"
-                                      >
-                                        <!-- QA Section -->
-                                        <div
-                                          class="q-pa-sm q-mb-xs"
-                                          style="
-                                            background-color: #f0f9ff;
-                                            border-radius: 8px;
-                                            border: 1px solid #2196f3;
-                                          "
-                                        >
-                                          <div class="row items-center q-mb-sm">
-                                            <div
-                                              class="q-badge bg-blue text-white q-mr-sm"
-                                            >
-                                              Quality Assurance Comment &
-                                              Suggestion
-                                            </div>
-                                          </div>
-
-                                          <div class="row q-col-gutter-xs">
-                                            <div class="col">
-                                              <div
-                                                class="text-body2 text-grey-7 q-mb-xs"
-                                              >
-                                                <b>Note :</b>
-                                                {{ item.whyNote }}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-
-                                        <!-- Input Section -->
-                                        <q-card-section
-                                          class="row q-col-gutter-sm"
-                                        >
-                                          <div class="col">
-                                            <q-input
-                                              autogrow
-                                              rounded
-                                              outlined
-                                              label="Input Revised Content"
-                                              v-model="ReturnWhy[item.code]"
-                                            />
-                                          </div>
-                                        </q-card-section>
-
-                                        <!-- Rejected Content Section -->
-                                        <div
-                                          class="q-pa-sm"
-                                          style="
-                                            background-color: #fff3f3;
-                                            border-radius: 8px;
-                                            border: 1px solid #e53935;
-                                          "
-                                        >
-                                          <div class="row items-center q-mb-sm">
-                                            <div
-                                              class="q-badge bg-red text-white q-mr-sm"
-                                            >
-                                              Rejected Created Content
-                                            </div>
-                                          </div>
-
-                                          <div class="row q-col-gutter-xs">
-                                            <div class="col-8">
-                                              <div
-                                                class="text-body2 text-grey-7 q-mb-xs"
-                                              >
-                                                <b>Why Note :</b>
-                                                {{ item.description }}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <div
-                                    class="col-6 q-px-sx"
-                                    v-if="whyLogs.filter(m => m.problemName === 'ENVIRONMENT').length"
-                                  >
-                                    <div
-                                      class="fishboneDesign q-pa-md bg-white"
-                                      style="
-                                        border: 5px solid rgba(76, 175, 80, 0.6);
-                                        border-radius: 40px;
-                                      "
-                                    >
-                                      <div
-                                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                                      >
-                                        Environment/s
-                                      </div>
-
-                                      <div
-                                        class="text-center text-black q-mb-md"
-                                        style="font-size: 15px"
-                                      >
-                                        This refers to the external factors that
-                                        <br/> affect the system including weather,
-                                        geography, and regulation.
-                                      </div>
-
-                                      <div
-                                        class="q-mx-md q-pa-sm q-mb-md"
-                                        style="border: 2px solid #8d92a8; border-radius: 20px;"
-                                        v-for="(item, index) in whyLogs.filter(
-                                          (m) => m.problemName === 'ENVIRONMENT'
-                                        ) || []"
-                                        :key="index"
-                                      >
-                                        <!-- QA Section -->
-                                        <div
-                                          class="q-pa-sm q-mb-xs"
-                                          style="
-                                            background-color: #f0f9ff;
-                                            border-radius: 8px;
-                                            border: 1px solid #2196f3;
-                                          "
-                                        >
-                                          <div class="row items-center q-mb-sm">
-                                            <div
-                                              class="q-badge bg-blue text-white q-mr-sm"
-                                            >
-                                              Quality Assurance Comment &
-                                              Suggestion
-                                            </div>
-                                          </div>
-
-                                          <div class="row q-col-gutter-xs">
-                                            <div class="col">
-                                              <div
-                                                class="text-body2 text-grey-7 q-mb-xs"
-                                              >
-                                                <b>Note :</b>
-                                                {{ item.whyNote }}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-
-                                        <!-- Input Section -->
-                                        <q-card-section
-                                          class="row q-col-gutter-sm"
-                                        >
-                                          <div class="col">
-                                            <q-input
-                                              autogrow
-                                              rounded
-                                              outlined
-                                              label="Input Revised Content"
-                                              v-model="ReturnWhy[item.code]"
-                                            />
-                                          </div>
-                                        </q-card-section>
-
-                                        <!-- Rejected Content Section -->
-                                        <div
-                                          class="q-pa-sm"
-                                          style="
-                                            background-color: #fff3f3;
-                                            border-radius: 8px;
-                                            border: 1px solid #e53935;
-                                          "
-                                        >
-                                          <div class="row items-center q-mb-sm">
-                                            <div
-                                              class="q-badge bg-red text-white q-mr-sm"
-                                            >
-                                              Rejected Created Content
-                                            </div>
-                                          </div>
-
-                                          <div class="row q-col-gutter-xs">
-                                            <div class="col-8">
-                                              <div
-                                                class="text-body2 text-grey-7 q-mb-xs"
-                                              >
-                                                <b>Why Note :</b>
-                                                {{ item.description }}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </q-card-section>
-
-                                <q-card-section class="QAFileDes column flex-center"  v-else>
-                                  <div
-                                    class="text-subtitle1 items-center text-weight-bold text-dark"
-                                  >
-                                    <i>~ No Content Available ~</i>
-                                  </div>
-                                </q-card-section>
-                              </q-card-section>
-
-                              <q-card-section
-                                class="rounded-borders shadow-2 q-mt-md q-mb-md"
-                                style="border: 2px solid #ddd"
-                                v-if="actionableLogs.length > 0"
-                              >
-                                <div v-if="actionableLogs && actionableLogs.length">
-
-                                <div class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center">
-                                  Actionable Root Cause
-                                </div>
-
-                                <div class="text-center q-mb-md" style="font-size: 15px; color: #737373">
-                                  From the results of your Fishbone Diagram and 5 Whys analysis, <br />
-                                  this represents the most critical underlying cause that requires corrective action
-                                  to prevent the issue from recurring.
-                                </div>
 
                                   <q-input
                                     rounded
                                     outlined
                                     disable
-                                    :model-value="getDomainLabel(actionableLogs[0].domain)"
-                                    label="Domain"
-                                    class="q-mt-md"
-                                    style="width: 100%"
+                                    :model-value="
+                                      EmploFullName(item.accountablePer) ||
+                                      'No Data Available'
+                                    "
                                   />
-
-                                  <div class="q-mx-sm">
-                                    <div
-                                      class="col q-ma-sm q-pa-sm"
-                                      v-for="(item, index) in actionableLogs ||
-                                      []"
-                                      :key="index"
-                                      style="border: 2px solid white"
-                                    >
-                                      <!-- QA Section -->
-                                      <div
-                                        class="q-pa-sm q-mb-xs"
-                                        style="
-                                          background-color: #f0f9ff;
-                                          border-radius: 8px;
-                                          border: 1px solid #2196f3;
-                                        "
-                                      >
-                                        <div class="row items-center q-mb-sm">
-                                          <div
-                                            class="q-badge bg-blue text-white q-mr-sm"
-                                          >
-                                            Quality Assurance Comment &
-                                            Suggestion
-                                          </div>
-                                        </div>
-
-                                        <div class="row q-col-gutter-xs">
-                                          <div class="col">
-                                            <div
-                                              class="text-body2 text-grey-7 q-mb-xs"
-                                            >
-                                              <b>Note :</b>
-                                              {{ item.actionableQANote }}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      <!-- Input Section -->
-                                      <q-card-section
-                                        class="row q-col-gutter-sm"
-                                      >
-                                        <div class="col">
-                                          <q-input
-                                            type="textarea"
-                                            rounded
-                                            outlined
-                                            label="Input Revised Content"
-                                            v-model="
-                                              ReturnActionable[item.code]
-                                            "
-                                          />
-                                        </div>
-                                      </q-card-section>
-
-                                      <!-- Rejected Content Section -->
-                                      <div
-                                        class="q-pa-sm"
-                                        style="
-                                          background-color: #fff3f3;
-                                          border-radius: 8px;
-                                          border: 1px solid #e53935;
-                                        "
-                                      >
-                                        <div class="row items-center q-mb-sm">
-                                          <div
-                                            class="q-badge bg-red text-white q-mr-sm"
-                                          >
-                                            Rejected Created Content
-                                          </div>
-                                        </div>
-
-                                        <div class="row q-col-gutter-xs">
-                                          <div class="col-8">
-                                            <div
-                                              class="text-body2 text-grey-7 q-mb-xs"
-                                            >
-                                              <b>Actionable Note :</b>
-                                              {{ item.actionable }}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-
                                 </div>
-                              </q-card-section>
+                              </div>
 
-                              <q-card-section
-                                class="rounded-borders shadow-2 q-mt-md"
-                                style="border: 2px solid #ddd"
-                              >
-                                <div
-                                  class="QADes1 column items-center justify-center q-mb-md"
-                                >
+                              <!-- SECOND ROW -->
+                              <div class="row q-col-gutter-md">
+
+                                <!-- Timeline From -->
+                                <div class="col-12 col-md-6">
                                   <div
-                                    class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                                    class="text-primary text-subtitle1 text-weight-bold q-mb-xs"
                                   >
-                                    Solution Identification
-                                  </div>
-                                  <div
-                                    class="text-center"
-                                    style="font-size: 15px; color: #737373"
-                                  >
-                                    Identify effective solutions by proposing
-                                    corrective actions to immediately address
-                                    root causes and preventive measures to avoid
-                                    recurrence, specifying responsibilities and
-                                    timelines for each.
-                                  </div>
-                                </div>
-
-                                <q-card-section v-if="corpreReviewLogs.length > 0">
-                                <div
-                                  class="QADes1"
-                                  style="
-                                    border: 2px solid #6b7c93;
-                                    border-radius: 40px;
-                                    padding: 20px;
-                                  "
-                                  v-if="correctiveLogs && correctiveLogs.length">
-
-                                  <div
-                                    class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                                  >
-                                    Corrective Action
+                                    Timeline From
                                   </div>
 
-                                  <div
-                                    class="q-mb-sm"
-                                    style="font-size: 15px; color: #737373"
-                                  >
-                                    Specify immediate actions to address
-                                    identified root causes, including
-                                    responsible individuals and deadlines for
-                                    implementation. You may add more fields as
-                                    needed.
-                                  </div>
-
-                                  <q-separator class="formseparatorYellow" />
-
-                                  <div class="q-mx-md q-pa-sm">
-                                    <div
-                                      class="col q-ma-sm q-pa-sm q-pa-md q-mb-md"
-                                      v-for="(item, index) in correctiveLogs ||
-                                      []"
-                                      :key="index"
-                                      style="border: 2px solid #8d92a8; border-radius: 20px;"
-                                    >
-                                      <!-- QA Section -->
-                                      <div
-                                        class="q-pa-sm q-mb-xs"
-                                        style="
-                                          background-color: #f0f9ff;
-                                          border-radius: 8px;
-                                          border: 1px solid #2196f3;
-                                        "
-                                      >
-                                        <div class="row items-center q-mb-sm">
-                                          <div
-                                            class="q-badge bg-blue text-white q-mr-sm"
-                                          >
-                                            Quality Assurance Comment &
-                                            Suggestion
-                                          </div>
-                                        </div>
-
-                                        <div class="row q-col-gutter-xs">
-                                          <div class="col">
-                                            <div
-                                              class="text-body2 text-grey-7 q-mb-xs"
-                                            >
-                                              <b>Note :</b>
-                                              {{ item.correctiveNote }}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      <!-- Input Section -->
-                                      <q-card-section
-                                        class="row q-col-gutter-sm"
-                                      >
-                                        <div class="col">
-                                          <q-input
-                                            autogrow
-                                            rounded
-                                            outlined
-                                            label="Input Revised Content"
-                                            v-model="
-                                              ReturnCorrective[item.code]
-                                            "
-                                          />
-                                        </div>
-                                      </q-card-section>
-
-                                      <!-- Rejected Content Section -->
-                                      <div
-                                        class="q-pa-sm"
-                                        style="
-                                          background-color: #fff3f3;
-                                          border-radius: 8px;
-                                          border: 1px solid #e53935;
-                                        "
-                                      >
-                                        <div class="row items-center q-mb-sm">
-                                          <div
-                                            class="q-badge bg-red text-white q-mr-sm"
-                                          >
-                                            Rejected Created Content
-                                          </div>
-                                        </div>
-
-                                        <div class="row q-col-gutter-xs">
-                                          <div class="col-8">
-                                            <div
-                                              class="text-body2 text-grey-7 q-mb-xs"
-                                            >
-                                              <b>Why Note :</b>
-                                              {{ item.correctiveAction }}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <q-separator class="formseparatorWhite" />
-
-                                <!-- <div
-                                  class="QADes1"
-                                  style="
-                                    border: 2px solid #6b7c93;
-                                    border-radius: 40px;
-                                    padding: 20px;
-                                  "
-                                  v-if="preventiveLogs && preventiveLogs.length">
-
-                                  <div
-                                    class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                                  >
-                                    Preventive Measures
-                                  </div>
-
-                                  <div
-                                    class="q-mb-sm"
-                                    style="font-size: 15px; color: #737373"
-                                  >
-                                    Outline long-term preventive measures,
-                                    considering changes to policies, procedures,
-                                    training, and organizational culture. You
-                                    may add more fields as needed.
-                                  </div>
-
-                                  <q-separator class="formseparatorYellow" />
-
-                                  <div class="q-mx-md">
-                                    <div
-                                      class="col q-ma-md q-pa-sm"
-                                      v-for="(item, index) in preventiveLogs ||
-                                      []"
-                                      :key="index"
-                                      style="border: 2px solid white"
-                                    >
-
-                                      <div
-                                        class="q-pa-sm q-mb-xs"
-                                        style="
-                                          background-color: #f0f9ff;
-                                          border-radius: 8px;
-                                          border: 1px solid #2196f3;
-                                        "
-                                      >
-                                        <div class="row items-center q-mb-sm">
-                                          <div
-                                            class="q-badge bg-blue text-white q-mr-sm"
-                                          >
-                                            Quality Assurance Comment &
-                                            Suggestion
-                                          </div>
-                                        </div>
-
-                                        <div class="row q-col-gutter-xs">
-                                          <div class="col">
-                                            <div
-                                              class="text-body2 text-grey-7 q-mb-xs"
-                                            >
-                                              <b>Note :</b>
-                                              {{ item.preventiveNote }}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      <q-card-section
-                                        class="row q-col-gutter-sm"
-                                      >
-                                        <div class="col">
-                                          <q-input
-                                            autogrow
-                                            rounded
-                                            outlined
-                                            label="Input Revised Content"
-                                            v-model="
-                                              ReturnPreventive[item.code]
-                                            "
-                                          />
-                                        </div>
-                                      </q-card-section>
-
-                                      <div
-                                        class="q-pa-sm"
-                                        style="
-                                          background-color: #fff3f3;
-                                          border-radius: 8px;
-                                          border: 1px solid #e53935;
-                                        "
-                                      >
-                                        <div class="row items-center q-mb-sm">
-                                          <div
-                                            class="q-badge bg-red text-white q-mr-sm"
-                                          >
-                                            Rejected Created Content
-                                          </div>
-                                        </div>
-
-                                        <div class="row q-col-gutter-xs">
-                                          <div class="col-8">
-                                            <div
-                                              class="text-body2 text-grey-7 q-mb-xs"
-                                            >
-                                              <b>Why Note :</b>
-                                              {{ item.preventiveMeasure }}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div> -->
-                                </q-card-section>
-
-                                <q-card-section class="QAFileDes column flex-center"  v-else>
-                                  <div
-                                    class="text-subtitle1 items-center text-weight-bold text-dark"
-                                  >
-                                    <i>~ No Content Available ~</i>
-                                  </div>
-                                </q-card-section>
-                              </q-card-section>
-
-                              <q-card-actions
-                                align="center"
-                                class="q-mt-md column items-center footer-actions"
-                              >
-                                <div class="row q-gutter-xxl; justify-center">
-                                  <q-btn
-                                    flat
+                                  <q-input
                                     rounded
-                                    push
-                                    label="Cancel"
-                                    class="buttonCancelDesign text-info"
-                                    @click="this.setReviseForm = false"
-                                    style="width: 195px"
-                                  />
-
-                                  <q-btn
-                                    flat
-                                    rounded
-                                    push
-                                    label="Save"
-                                    class="buttonSaveDesign bg-accent text-black"
-                                    @click="submiteditReturnRCA(selectedIrNo)"
-                                    style="width: 195px"
+                                    outlined
+                                    disable
+                                    :model-value="
+                                      item.corTimelineFromDate
+                                        ? FormatDate(item.corTimelineFromDate)
+                                        : 'No Data Available'
+                                    "
                                   />
                                 </div>
-                              </q-card-actions>
-                            </q-card>
+
+                                <!-- Timeline To -->
+                                <div class="col-12 col-md-6">
+                                  <div
+                                    class="text-primary text-subtitle1 text-weight-bold q-mb-xs"
+                                  >
+                                    Timeline To
+                                  </div>
+
+                                  <q-input
+                                    rounded
+                                    outlined
+                                    disable
+                                    :model-value="
+                                      item.corTimelineToDate
+                                        ? FormatDate(item.corTimelineToDate)
+                                        : 'No Data Available'
+                                    "
+                                  />
+                                </div>
+                              </div>
+
+                              <!-- Divider -->
+                              <q-separator class="q-mt-md" />
+                            </div>
                           </div>
-                        </q-dialog>
+
+                          <!-- <q-separator class="formseparatorWhite" />
+
+                          <div
+                            class="QADes1 shadow-2"
+                            style="
+                              border: 3px solid #6b7c93;
+                              border-radius: 40px;
+                              padding: 30px;
+                            "
+                          >
+                            <div
+                              class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                            >
+                              Preventive Measures
+                            </div>
+
+                            <div
+                              class="q-mb-sm"
+                              style="font-size: 15px; color: #737373"
+                            >
+                              Outline long-term preventive measures, considering
+                              changes to policies, procedures, training, and
+                              organizational culture. You may add more fields as
+                              needed.
+                            </div>
+
+                            <q-separator class="formseparatorYellow" />
+
+                            <div>
+                              <div
+                                class="row q-col-gutter-md q-mt-xs q-mb-xs items-center"
+                                v-for="(
+                                  item, index
+                                ) in IRRCADetailss.RCAPreventiveLog"
+                                :key="index"
+                              >
+                                <div class="col-6">
+                                  <div
+                                    class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                                  >
+                                    Preventive Measure Note
+                                  </div>
+                                  <q-input
+                                    autogrow
+                                    rounded
+                                    outlined
+                                    :model-value="
+                                      item.preventiveMeasure || 'No Data Available'
+                                    "
+                                  />
+                                </div>
+
+                                <div class="col-2">
+                                  <div
+                                    class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                                  >
+                                    Timeline From
+                                  </div>
+                                  <q-input
+                                    autogrow
+                                    rounded
+                                    outlined
+                                    :model-value="
+                                      FormatDate(item.preTimelineFromDate) ||
+                                      'No Data Available'
+                                    "
+                                  />
+                                </div>
+
+                                <div class="col-2">
+                                  <div
+                                    class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                                  >
+                                    Timeline To
+                                  </div>
+                                  <q-input
+                                    autogrow
+                                    rounded
+                                    outlined
+                                    :model-value="
+                                      FormatDate(item.preTimelineToDate) ||
+                                      'No Data Available'
+                                    "
+                                  />
+                                </div>
+
+                                <div class="col-2">
+                                  <div
+                                    class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                                  >
+                                    Responsible Person/s
+                                  </div>
+                                  <q-input
+                                    autogrow
+                                    rounded
+                                    outlined
+                                    :model-value="
+                                      EmploFullName(item.responsiblePer) || 'No Data Available'
+                                    "
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div> -->
+
+                          <q-separator class="formseparatorWhite" />
+
+                          <div
+                            class="QADes1"
+                            style="
+                              border: 2px solid #ddd;
+                              border-radius: 10px;
+                              padding: 30px;
+                            "
+                          >
+                            <div
+                              class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                            >
+                              Risk
+                            </div>
+
+                            <div
+                              class="q-mb-sm"
+                              style="font-size: 15px; color: #737373"
+                            >
+                              These are the risks associated with or arising from this specific incident that
+                              should be recorded in the risk register to support effective risk management.
+                            </div>
+
+                            <q-separator class="formseparatorYellow" />
+
+                            <div>
+                              <div
+                                class="row q-col-gutter-md q-mt-xs q-mb-xs items-center"
+                                v-for="(
+                                  item, index
+                                ) in IRRCADetailss.RCARisk"
+                                :key="index"
+                              >
+
+                              <q-input
+                                rounded
+                                autogrow
+                                outlined
+                                disable
+                                :model-value="item.riskItem"
+                                style="width: 100%"
+                              />
+                              </div>
+                            </div>
+                          </div>
+                        </q-card-section>
                       </div>
-                    </q-item-section>
-                  </div>
-                </div>
-              </q-card-section>
+
+                      <div class="col-3">
+                        <q-item-section
+                          class="q-pa-xs"
+                          style="border: 3px solid #6b7c93"
+                        >
+                          <div class="QADes1">
+                            <div
+                              class="text-info text-subtitle1 text-weight-bold q-mb-sm"
+                            >
+                              Content Root Cause Analysis (RCA) Status
+                            </div>
+
+                            <div class="text-body2 text-grey-7 q-mb-sm">
+                              Update the status of each action to ensure timely
+                              completion and accountability.
+                            </div>
+
+                            <q-separator class="formseparatorYellow" />
+
+                            <div
+                              v-for="(item, index) in filteredForRevisionItems"
+                              :key="index"
+                              :style="{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                backgroundColor: ' #e3f2fd',
+                                border: '2px solid #003566',
+                                padding: '10px',
+                                margin: '10px',
+                                borderRadius: '10px',
+                                opacity: item.disabled ? '0.5' : '1',
+                                pointerEvents: item.disabled ? 'none' : 'auto',
+                              }"
+                              @click="!item.disabled && handleClick(item)"
+                            >
+                              <q-icon
+                                name="assignment_add"
+                                size="3.5em"
+                                class="q-mr-md text-primary"
+                              />
+                              <div class="column">
+                                <div
+                                  class="text-subtitle1 text-weight-medium text-primary"
+                                >
+                                  {{ item.status }}
+                                </div>
+                                <div class="text-caption text-dark">
+                                  {{ item.revisionCode }}
+                                </div>
+                                <div class="text-caption text-dark">
+                                  {{ FormatDate(item.dateTimeCreated) }}
+                                </div>
+                              </div>
+                            </div>
+
+                            <q-dialog maximized v-model="setReviseForm" persistent>
+                              <div class="QADialogAction">
+                                <q-card class="contentFormAction">
+                                  <q-card-section
+                                    class="q-mb-sm row items-center justify-between"
+                                  >
+                                    <div>
+                                      <div
+                                        class="text-secondary text-weight-bold"
+                                        style="font-size: 25px; color: #002b5c"
+                                      >
+                                        Revise Root Cause Analysis (RCA) Details
+                                      </div>
+
+                                      <div style="font-size: 18px; color: #333333">
+                                        <b>Instruction:</b> This section describes
+                                        the items identified through the Root Cause
+                                        Analysis and implemented by the department
+                                        to address and mitigate the incident.
+                                      </div>
+                                    </div>
+
+                                    <q-btn
+                                      flat
+                                      icon="close"
+                                      style="
+                                        color: #003566;
+                                        background-color: rgba(22, 110, 204, 0.1);
+                                      "
+                                      @click="this.setReviseForm = false"
+                                      v-close-popup
+                                    >
+                                      <q-tooltip class="bg-info text-white">
+                                        Close Form
+                                      </q-tooltip>
+                                    </q-btn>
+                                  </q-card-section>
+
+                                  <q-card-section
+                                    class="rounded-borders shadow-2 q-mt-md q-mb-md"
+                                    style="border: 2px solid #ddd"
+                                  >
+                                    <div
+                                      class="QADes1 column items-center justify-center q-mb-md"
+                                    >
+                                      <div
+                                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                                      >
+                                        Fishbone / Ishikawa Diagram and 5 Whys
+                                        Analysis
+                                      </div>
+                                      <div
+                                        class="text-center q-mb-md"
+                                        style="font-size: 15px; color: #737373"
+                                      >
+                                        Identify potential root causes using a
+                                        Fishbone Diagram, then apply the 5 Whys
+                                        technique to each cause to determine the
+                                        true root issue.
+                                      </div>
+                                    </div>
+
+                                    <q-card-section class="row q-col-gutter-xl q-ml-sm q-mr-sm q-mb-md" v-if="whyLogs.length > 0">
+                                      <div
+                                        class="col-6 q-px-sx"
+                                        v-if="whyLogs.filter(m => m.problemName === 'MANPOWER').length"
+                                      >
+                                        <div
+                                          class="fishboneDesign q-pa-md bg-white"
+                                          style="
+                                            border: 5px solid rgba(211, 47, 47, 0.6);
+                                            border-radius: 40px;
+                                          "
+                                        >
+                                          <div
+                                            class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                                          >
+                                            Manpower/s
+                                          </div>
+
+                                          <div
+                                            class="text-center text-black q-mb-md"
+                                            style="font-size: 15px"
+                                          >
+                                            This refers to the manpowers involved in the process,
+                                            including skills, <br/> training, experience, communication, and accountability.
+                                          </div>
+
+                                          <div
+                                            class="q-mx-sm q-pa-sm q-mb-md"
+                                            style="border: 2px solid #8d92a8; border-radius: 20px;"
+                                            v-for="(item, index) in whyLogs.filter(
+                                              (m) => m.problemName === 'MANPOWER'
+                                            ) || []"
+                                            :key="index"
+                                          >
+                                            <!-- QA Section -->
+                                            <div
+                                              class="q-pa-sm q-mb-xs"
+                                              style="
+                                                background-color: #f0f9ff;
+                                                border-radius: 8px;
+                                                border: 1px solid #2196f3;
+                                              "
+                                            >
+                                              <div class="row items-center q-mb-sm">
+                                                <div
+                                                  class="q-badge bg-blue text-white q-mr-sm"
+                                                >
+                                                  Quality Assurance Comment &
+                                                  Suggestion
+                                                </div>
+                                              </div>
+
+                                              <div class="row q-col-gutter-xs">
+                                                <div class="col">
+                                                  <div
+                                                    class="text-body2 text-grey-7 q-mb-xs"
+                                                  >
+                                                    <b>Note :</b>
+                                                    {{ item.whyNote }}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+
+                                            <!-- Input Section -->
+                                            <q-card-section
+                                              class="row q-col-gutter-sm"
+                                            >
+                                              <div class="col">
+                                                <q-input
+                                                  autogrow
+                                                  rounded
+                                                  outlined
+                                                  label="Input Revised Content"
+                                                  v-model="ReturnWhy[item.code]"
+                                                />
+                                              </div>
+                                            </q-card-section>
+
+                                            <!-- Rejected Content Section -->
+                                            <div
+                                              class="q-pa-sm"
+                                              style="
+                                                background-color: #fff3f3;
+                                                border-radius: 8px;
+                                                border: 1px solid #e53935;
+                                              "
+                                            >
+                                              <div class="row items-center q-mb-sm">
+                                                <div
+                                                  class="q-badge bg-red text-white q-mr-sm"
+                                                >
+                                                  Rejected Created Content
+                                                </div>
+                                              </div>
+
+                                              <div class="row q-col-gutter-xs">
+                                                <div class="col-8">
+                                                  <div
+                                                    class="text-body2 text-grey-7 q-mb-xs"
+                                                  >
+                                                    <b>Why Note :</b>
+                                                    {{ item.description }}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div
+                                        class="col-6 q-px-sx"
+                                        v-if="whyLogs.filter(m => m.problemName === 'METHOD').length"
+                                      >
+                                        <div
+                                          class="fishboneDesign q-pa-md bg-white"
+                                          style="
+                                            border: 5px solid rgba(255, 193, 7, 0.6);
+                                            border-radius: 40px;
+                                          "
+                                        >
+                                          <div
+                                            class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                                          >
+                                            Method/s
+                                          </div>
+
+                                          <div
+                                            class="text-center text-black q-mb-md"
+                                            style="font-size: 15px"
+                                          >
+                                            This refers to the methods and
+                                            procedures an organization uses <br/> to
+                                            produce or deliver its product or
+                                            service.
+                                          </div>
+
+                                          <div
+                                            class="q-mx-md q-pa-sm q-mb-md"
+                                            style="border: 2px solid #8d92a8; border-radius: 20px;"
+                                            v-for="(item, index) in whyLogs.filter(
+                                              (m) => m.problemName === 'METHOD'
+                                            ) || []"
+                                            :key="index"
+                                          >
+                                            <!-- QA Section -->
+                                            <div
+                                              class="q-pa-sm q-mb-xs"
+                                              style="
+                                                background-color: #f0f9ff;
+                                                border-radius: 8px;
+                                                border: 1px solid #2196f3;
+                                              "
+                                            >
+                                              <div class="row items-center q-mb-sm">
+                                                <div
+                                                  class="q-badge bg-blue text-white q-mr-sm"
+                                                >
+                                                  Quality Assurance Comment &
+                                                  Suggestion
+                                                </div>
+                                              </div>
+
+                                              <div class="row q-col-gutter-xs">
+                                                <div class="col">
+                                                  <div
+                                                    class="text-body2 text-grey-7 q-mb-xs"
+                                                  >
+                                                    <b>Note :</b>
+                                                    {{ item.whyNote }}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+
+                                            <!-- Input Section -->
+                                            <q-card-section
+                                              class="row q-col-gutter-sm"
+                                            >
+                                              <div class="col">
+                                                <q-input
+                                                  autogrow
+                                                  rounded
+                                                  outlined
+                                                  label="Input Revised Content"
+                                                  v-model="ReturnWhy[item.code]"
+                                                />
+                                              </div>
+                                            </q-card-section>
+
+                                            <!-- Rejected Content Section -->
+                                            <div
+                                              class="q-pa-sm"
+                                              style="
+                                                background-color: #fff3f3;
+                                                border-radius: 8px;
+                                                border: 1px solid #e53935;
+                                              "
+                                            >
+                                              <div class="row items-center q-mb-sm">
+                                                <div
+                                                  class="q-badge bg-red text-white q-mr-sm"
+                                                >
+                                                  Rejected Created Content
+                                                </div>
+                                              </div>
+
+                                              <div class="row q-col-gutter-xs">
+                                                <div class="col-8">
+                                                  <div
+                                                    class="text-body2 text-grey-7 q-mb-xs"
+                                                  >
+                                                    <b>Why Note :</b>
+                                                    {{ item.description }}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div
+                                        class="col-6 q-px-sx"
+                                        v-if="whyLogs.filter(m => m.problemName === 'MACHINE').length"
+                                      >
+                                        <div
+                                          class="fishboneDesign q-pa-md bg-white"
+                                          style="
+                                            border: 5px solid rgba(233, 30, 99, 0.6);
+                                            border-radius: 40px;
+                                          "
+                                        >
+                                          <div
+                                            class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                                          >
+                                            Machine/s
+                                          </div>
+
+                                          <div
+                                            class="text-center text-black q-mb-md"
+                                            style="font-size: 15px"
+                                          >
+                                            This refers to the assets such as
+                                            machines and equipement <br/> used to create
+                                            or provide the product or services.
+                                          </div>
+
+                                          <div
+                                            class="q-mx-md q-pa-sm q-mb-md"
+                                            style="border: 2px solid #8d92a8; border-radius: 20px;"
+                                            v-for="(item, index) in whyLogs.filter(
+                                              (m) => m.problemName === 'MACHINE'
+                                            ) || []"
+                                            :key="index"
+                                          >
+                                            <!-- QA Section -->
+                                            <div
+                                              class="q-pa-sm q-mb-xs"
+                                              style="
+                                                background-color: #f0f9ff;
+                                                border-radius: 8px;
+                                                border: 1px solid #2196f3;
+                                              "
+                                            >
+                                              <div class="row items-center q-mb-sm">
+                                                <div
+                                                  class="q-badge bg-blue text-white q-mr-sm"
+                                                >
+                                                  Quality Assurance Comment &
+                                                  Suggestion
+                                                </div>
+                                              </div>
+
+                                              <div class="row q-col-gutter-xs">
+                                                <div class="col">
+                                                  <div
+                                                    class="text-body2 text-grey-7 q-mb-xs"
+                                                  >
+                                                    <b>Note :</b>
+                                                    {{ item.whyNote }}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+
+                                            <!-- Input Section -->
+                                            <q-card-section
+                                              class="row q-col-gutter-sm"
+                                            >
+                                              <div class="col">
+                                                <q-input
+                                                  autogrow
+                                                  rounded
+                                                  outlined
+                                                  label="Input Revised Content"
+                                                  v-model="ReturnWhy[item.code]"
+                                                />
+                                              </div>
+                                            </q-card-section>
+
+                                            <!-- Rejected Content Section -->
+                                            <div
+                                              class="q-pa-sm"
+                                              style="
+                                                background-color: #fff3f3;
+                                                border-radius: 8px;
+                                                border: 1px solid #e53935;
+                                              "
+                                            >
+                                              <div class="row items-center q-mb-sm">
+                                                <div
+                                                  class="q-badge bg-red text-white q-mr-sm"
+                                                >
+                                                  Rejected Created Content
+                                                </div>
+                                              </div>
+
+                                              <div class="row q-col-gutter-xs">
+                                                <div class="col-8">
+                                                  <div
+                                                    class="text-body2 text-grey-7 q-mb-xs"
+                                                  >
+                                                    <b>Why Note :</b>
+                                                    {{ item.description }}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div
+                                        class="col-6 q-px-sx"
+                                        v-if="whyLogs.filter(m => m.problemName === 'MATERIAL').length"
+                                      >
+                                        <div
+                                          class="fishboneDesign q-pa-md bg-white"
+                                          style="
+                                            border: 5px solid
+                                              rgba(156, 39, 176, 0.6);
+                                            border-radius: 40px;
+                                          "
+                                        >
+                                          <div
+                                            class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                                          >
+                                            Material/s
+                                          </div>
+
+                                          <div
+                                            class="text-center text-black q-mb-md"
+                                            style="font-size: 15px"
+                                          >
+                                            This refers to any physical or
+                                            non-physical components <br/> of the system,
+                                            including people, resources, and tools.
+                                          </div>
+
+                                          <div
+                                            class="q-mx-md q-pa-sm q-mb-md"
+                                            style="border: 2px solid #8d92a8; border-radius: 20px;"
+                                            v-for="(item, index) in whyLogs.filter(
+                                              (m) => m.problemName === 'MATERIAL'
+                                            ) || []"
+                                            :key="index"
+                                          >
+                                            <!-- QA Section -->
+                                            <div
+                                              class="q-pa-sm q-mb-xs"
+                                              style="
+                                                background-color: #f0f9ff;
+                                                border-radius: 8px;
+                                                border: 1px solid #2196f3;
+                                              "
+                                            >
+                                              <div class="row items-center q-mb-sm">
+                                                <div
+                                                  class="q-badge bg-blue text-white q-mr-sm"
+                                                >
+                                                  Quality Assurance Comment &
+                                                  Suggestion
+                                                </div>
+                                              </div>
+
+                                              <div class="row q-col-gutter-xs">
+                                                <div class="col">
+                                                  <div
+                                                    class="text-body2 text-grey-7 q-mb-xs"
+                                                  >
+                                                    <b>Note :</b>
+                                                    {{ item.whyNote }}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+
+                                            <!-- Input Section -->
+                                            <q-card-section
+                                              class="row q-col-gutter-sm"
+                                            >
+                                              <div class="col">
+                                                <q-input
+                                                  autogrow
+                                                  rounded
+                                                  outlined
+                                                  label="Input Revised Content"
+                                                  v-model="ReturnWhy[item.code]"
+                                                />
+                                              </div>
+                                            </q-card-section>
+
+                                            <!-- Rejected Content Section -->
+                                            <div
+                                              class="q-pa-sm"
+                                              style="
+                                                background-color: #fff3f3;
+                                                border-radius: 8px;
+                                                border: 1px solid #e53935;
+                                              "
+                                            >
+                                              <div class="row items-center q-mb-sm">
+                                                <div
+                                                  class="q-badge bg-red text-white q-mr-sm"
+                                                >
+                                                  Rejected Created Content
+                                                </div>
+                                              </div>
+
+                                              <div class="row q-col-gutter-xs">
+                                                <div class="col-8">
+                                                  <div
+                                                    class="text-body2 text-grey-7 q-mb-xs"
+                                                  >
+                                                    <b>Why Note :</b>
+                                                    {{ item.description }}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div
+                                        class="col-6 q-px-sx"
+                                        v-if="whyLogs.filter(m => m.problemName === 'MEASUREMENT').length"
+                                      >
+                                        <div
+                                          class="fishboneDesign q-pa-md bg-white"
+                                          style="
+                                            border: 5px solid rgba(3, 169, 244, 0.6);
+                                            border-radius: 40px;
+                                          "
+                                        >
+                                          <div
+                                            class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                                          >
+                                            Measurement/s
+                                          </div>
+
+                                          <div
+                                            class="text-center text-black q-mb-md"
+                                            style="font-size: 15px"
+                                          >
+                                            This refers to the tools and methods
+                                            that organizations <br/> use to effectively
+                                            measure progress, outcomes, and overall
+                                            performance.
+                                          </div>
+
+                                          <div
+                                            class="q-mx-md q-pa-sm q-mb-md"
+                                            style="border: 2px solid #8d92a8; border-radius: 20px;"
+                                            v-for="(item, index) in whyLogs.filter(
+                                              (m) => m.problemName === 'MEASUREMENT'
+                                            ) || []"
+                                            :key="index"
+                                          >
+                                            <!-- QA Section -->
+                                            <div
+                                              class="q-pa-sm q-mb-xs"
+                                              style="
+                                                background-color: #f0f9ff;
+                                                border-radius: 8px;
+                                                border: 1px solid #2196f3;
+                                              "
+                                            >
+                                              <div class="row items-center q-mb-sm">
+                                                <div
+                                                  class="q-badge bg-blue text-white q-mr-sm"
+                                                >
+                                                  Quality Assurance Comment &
+                                                  Suggestion
+                                                </div>
+                                              </div>
+
+                                              <div class="row q-col-gutter-xs">
+                                                <div class="col">
+                                                  <div
+                                                    class="text-body2 text-grey-7 q-mb-xs"
+                                                  >
+                                                    <b>Note :</b>
+                                                    {{ item.whyNote }}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+
+                                            <!-- Input Section -->
+                                            <q-card-section
+                                              class="row q-col-gutter-sm"
+                                            >
+                                              <div class="col">
+                                                <q-input
+                                                  autogrow
+                                                  rounded
+                                                  outlined
+                                                  label="Input Revised Content"
+                                                  v-model="ReturnWhy[item.code]"
+                                                />
+                                              </div>
+                                            </q-card-section>
+
+                                            <!-- Rejected Content Section -->
+                                            <div
+                                              class="q-pa-sm"
+                                              style="
+                                                background-color: #fff3f3;
+                                                border-radius: 8px;
+                                                border: 1px solid #e53935;
+                                              "
+                                            >
+                                              <div class="row items-center q-mb-sm">
+                                                <div
+                                                  class="q-badge bg-red text-white q-mr-sm"
+                                                >
+                                                  Rejected Created Content
+                                                </div>
+                                              </div>
+
+                                              <div class="row q-col-gutter-xs">
+                                                <div class="col-8">
+                                                  <div
+                                                    class="text-body2 text-grey-7 q-mb-xs"
+                                                  >
+                                                    <b>Why Note :</b>
+                                                    {{ item.description }}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div
+                                        class="col-6 q-px-sx"
+                                        v-if="whyLogs.filter(m => m.problemName === 'ENVIRONMENT').length"
+                                      >
+                                        <div
+                                          class="fishboneDesign q-pa-md bg-white"
+                                          style="
+                                            border: 5px solid rgba(76, 175, 80, 0.6);
+                                            border-radius: 40px;
+                                          "
+                                        >
+                                          <div
+                                            class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                                          >
+                                            Environment/s
+                                          </div>
+
+                                          <div
+                                            class="text-center text-black q-mb-md"
+                                            style="font-size: 15px"
+                                          >
+                                            This refers to the external factors that
+                                            <br/> affect the system including weather,
+                                            geography, and regulation.
+                                          </div>
+
+                                          <div
+                                            class="q-mx-md q-pa-sm q-mb-md"
+                                            style="border: 2px solid #8d92a8; border-radius: 20px;"
+                                            v-for="(item, index) in whyLogs.filter(
+                                              (m) => m.problemName === 'ENVIRONMENT'
+                                            ) || []"
+                                            :key="index"
+                                          >
+                                            <!-- QA Section -->
+                                            <div
+                                              class="q-pa-sm q-mb-xs"
+                                              style="
+                                                background-color: #f0f9ff;
+                                                border-radius: 8px;
+                                                border: 1px solid #2196f3;
+                                              "
+                                            >
+                                              <div class="row items-center q-mb-sm">
+                                                <div
+                                                  class="q-badge bg-blue text-white q-mr-sm"
+                                                >
+                                                  Quality Assurance Comment &
+                                                  Suggestion
+                                                </div>
+                                              </div>
+
+                                              <div class="row q-col-gutter-xs">
+                                                <div class="col">
+                                                  <div
+                                                    class="text-body2 text-grey-7 q-mb-xs"
+                                                  >
+                                                    <b>Note :</b>
+                                                    {{ item.whyNote }}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+
+                                            <!-- Input Section -->
+                                            <q-card-section
+                                              class="row q-col-gutter-sm"
+                                            >
+                                              <div class="col">
+                                                <q-input
+                                                  autogrow
+                                                  rounded
+                                                  outlined
+                                                  label="Input Revised Content"
+                                                  v-model="ReturnWhy[item.code]"
+                                                />
+                                              </div>
+                                            </q-card-section>
+
+                                            <!-- Rejected Content Section -->
+                                            <div
+                                              class="q-pa-sm"
+                                              style="
+                                                background-color: #fff3f3;
+                                                border-radius: 8px;
+                                                border: 1px solid #e53935;
+                                              "
+                                            >
+                                              <div class="row items-center q-mb-sm">
+                                                <div
+                                                  class="q-badge bg-red text-white q-mr-sm"
+                                                >
+                                                  Rejected Created Content
+                                                </div>
+                                              </div>
+
+                                              <div class="row q-col-gutter-xs">
+                                                <div class="col-8">
+                                                  <div
+                                                    class="text-body2 text-grey-7 q-mb-xs"
+                                                  >
+                                                    <b>Why Note :</b>
+                                                    {{ item.description }}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </q-card-section>
+
+                                    <q-card-section class="QAFileDes column flex-center"  v-else>
+                                      <div
+                                        class="text-subtitle1 items-center text-weight-bold text-dark"
+                                      >
+                                        <i>~ No Content Available ~</i>
+                                      </div>
+                                    </q-card-section>
+                                  </q-card-section>
+
+                                  <q-card-section
+                                    class="rounded-borders shadow-2 q-mt-md q-mb-md"
+                                    style="border: 2px solid #ddd"
+                                    v-if="actionableLogs.length > 0"
+                                  >
+                                    <div v-if="actionableLogs && actionableLogs.length">
+
+                                    <div class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center">
+                                      Actionable Root Cause
+                                    </div>
+
+                                    <div class="text-center q-mb-md" style="font-size: 15px; color: #737373">
+                                      From the results of your Fishbone Diagram and 5 Whys analysis, <br />
+                                      this represents the most critical underlying cause that requires corrective action
+                                      to prevent the issue from recurring.
+                                    </div>
+
+                                      <q-input
+                                        rounded
+                                        outlined
+                                        disable
+                                        :model-value="getDomainLabel(actionableLogs[0].domain)"
+                                        label="Domain"
+                                        class="q-mt-md"
+                                        style="width: 100%"
+                                      />
+
+                                      <div class="q-mx-sm">
+                                        <div
+                                          class="col q-ma-sm q-pa-sm"
+                                          v-for="(item, index) in actionableLogs ||
+                                          []"
+                                          :key="index"
+                                          style="border: 2px solid white"
+                                        >
+                                          <!-- QA Section -->
+                                          <div
+                                            class="q-pa-sm q-mb-xs"
+                                            style="
+                                              background-color: #f0f9ff;
+                                              border-radius: 8px;
+                                              border: 1px solid #2196f3;
+                                            "
+                                          >
+                                            <div class="row items-center q-mb-sm">
+                                              <div
+                                                class="q-badge bg-blue text-white q-mr-sm"
+                                              >
+                                                Quality Assurance Comment &
+                                                Suggestion
+                                              </div>
+                                            </div>
+
+                                            <div class="row q-col-gutter-xs">
+                                              <div class="col">
+                                                <div
+                                                  class="text-body2 text-grey-7 q-mb-xs"
+                                                >
+                                                  <b>Note :</b>
+                                                  {{ item.actionableQANote }}
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+
+                                          <!-- Input Section -->
+                                          <q-card-section
+                                            class="row q-col-gutter-sm"
+                                          >
+                                            <div class="col">
+                                              <q-input
+                                                type="textarea"
+                                                rounded
+                                                outlined
+                                                label="Input Revised Content"
+                                                v-model="
+                                                  ReturnActionable[item.code]
+                                                "
+                                              />
+                                            </div>
+                                          </q-card-section>
+
+                                          <!-- Rejected Content Section -->
+                                          <div
+                                            class="q-pa-sm"
+                                            style="
+                                              background-color: #fff3f3;
+                                              border-radius: 8px;
+                                              border: 1px solid #e53935;
+                                            "
+                                          >
+                                            <div class="row items-center q-mb-sm">
+                                              <div
+                                                class="q-badge bg-red text-white q-mr-sm"
+                                              >
+                                                Rejected Created Content
+                                              </div>
+                                            </div>
+
+                                            <div class="row q-col-gutter-xs">
+                                              <div class="col-8">
+                                                <div
+                                                  class="text-body2 text-grey-7 q-mb-xs"
+                                                >
+                                                  <b>Actionable Note :</b>
+                                                  {{ item.actionable }}
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                    </div>
+                                  </q-card-section>
+
+                                  <q-card-section
+                                    class="rounded-borders shadow-2 q-mt-md"
+                                    style="border: 2px solid #ddd"
+                                  >
+                                    <div
+                                      class="QADes1 column items-center justify-center q-mb-md"
+                                    >
+                                      <div
+                                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                                      >
+                                        Solution Identification
+                                      </div>
+                                      <div
+                                        class="text-center"
+                                        style="font-size: 15px; color: #737373"
+                                      >
+                                        Identify effective solutions by proposing
+                                        corrective actions to immediately address
+                                        root causes and preventive measures to avoid
+                                        recurrence, specifying responsibilities and
+                                        timelines for each.
+                                      </div>
+                                    </div>
+
+                                    <q-card-section v-if="corpreReviewLogs.length > 0">
+                                    <div
+                                      class="QADes1"
+                                      style="
+                                        border: 2px solid #6b7c93;
+                                        border-radius: 40px;
+                                        padding: 20px;
+                                      "
+                                      v-if="correctiveLogs && correctiveLogs.length">
+
+                                      <div
+                                        class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                                      >
+                                        Corrective Action
+                                      </div>
+
+                                      <div
+                                        class="q-mb-sm"
+                                        style="font-size: 15px; color: #737373"
+                                      >
+                                        Specify immediate actions to address
+                                        identified root causes, including
+                                        responsible individuals and deadlines for
+                                        implementation. You may add more fields as
+                                        needed.
+                                      </div>
+
+                                      <q-separator class="formseparatorYellow" />
+
+                                      <div class="q-mx-md q-pa-sm">
+                                        <div
+                                          class="col q-ma-sm q-pa-sm q-pa-md q-mb-md"
+                                          v-for="(item, index) in correctiveLogs ||
+                                          []"
+                                          :key="index"
+                                          style="border: 2px solid #8d92a8; border-radius: 20px;"
+                                        >
+                                          <!-- QA Section -->
+                                          <div
+                                            class="q-pa-sm q-mb-xs"
+                                            style="
+                                              background-color: #f0f9ff;
+                                              border-radius: 8px;
+                                              border: 1px solid #2196f3;
+                                            "
+                                          >
+                                            <div class="row items-center q-mb-sm">
+                                              <div
+                                                class="q-badge bg-blue text-white q-mr-sm"
+                                              >
+                                                Quality Assurance Comment &
+                                                Suggestion
+                                              </div>
+                                            </div>
+
+                                            <div class="row q-col-gutter-xs">
+                                              <div class="col">
+                                                <div
+                                                  class="text-body2 text-grey-7 q-mb-xs"
+                                                >
+                                                  <b>Note :</b>
+                                                  {{ item.correctiveNote }}
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+
+                                          <!-- Input Section -->
+                                          <q-card-section
+                                            class="row q-col-gutter-sm"
+                                          >
+                                            <div class="col">
+                                              <q-input
+                                                autogrow
+                                                rounded
+                                                outlined
+                                                label="Input Revised Content"
+                                                v-model="
+                                                  ReturnCorrective[item.code]
+                                                "
+                                              />
+                                            </div>
+                                          </q-card-section>
+
+                                          <!-- Rejected Content Section -->
+                                          <div
+                                            class="q-pa-sm"
+                                            style="
+                                              background-color: #fff3f3;
+                                              border-radius: 8px;
+                                              border: 1px solid #e53935;
+                                            "
+                                          >
+                                            <div class="row items-center q-mb-sm">
+                                              <div
+                                                class="q-badge bg-red text-white q-mr-sm"
+                                              >
+                                                Rejected Created Content
+                                              </div>
+                                            </div>
+
+                                            <div class="row q-col-gutter-xs">
+                                              <div class="col-8">
+                                                <div
+                                                  class="text-body2 text-grey-7 q-mb-xs"
+                                                >
+                                                  <b>Why Note :</b>
+                                                  {{ item.correctiveAction }}
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <q-separator class="formseparatorWhite" />
+
+                                    <!-- <div
+                                      class="QADes1"
+                                      style="
+                                        border: 2px solid #6b7c93;
+                                        border-radius: 40px;
+                                        padding: 20px;
+                                      "
+                                      v-if="preventiveLogs && preventiveLogs.length">
+
+                                      <div
+                                        class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                                      >
+                                        Preventive Measures
+                                      </div>
+
+                                      <div
+                                        class="q-mb-sm"
+                                        style="font-size: 15px; color: #737373"
+                                      >
+                                        Outline long-term preventive measures,
+                                        considering changes to policies, procedures,
+                                        training, and organizational culture. You
+                                        may add more fields as needed.
+                                      </div>
+
+                                      <q-separator class="formseparatorYellow" />
+
+                                      <div class="q-mx-md">
+                                        <div
+                                          class="col q-ma-md q-pa-sm"
+                                          v-for="(item, index) in preventiveLogs ||
+                                          []"
+                                          :key="index"
+                                          style="border: 2px solid white"
+                                        >
+
+                                          <div
+                                            class="q-pa-sm q-mb-xs"
+                                            style="
+                                              background-color: #f0f9ff;
+                                              border-radius: 8px;
+                                              border: 1px solid #2196f3;
+                                            "
+                                          >
+                                            <div class="row items-center q-mb-sm">
+                                              <div
+                                                class="q-badge bg-blue text-white q-mr-sm"
+                                              >
+                                                Quality Assurance Comment &
+                                                Suggestion
+                                              </div>
+                                            </div>
+
+                                            <div class="row q-col-gutter-xs">
+                                              <div class="col">
+                                                <div
+                                                  class="text-body2 text-grey-7 q-mb-xs"
+                                                >
+                                                  <b>Note :</b>
+                                                  {{ item.preventiveNote }}
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+
+                                          <q-card-section
+                                            class="row q-col-gutter-sm"
+                                          >
+                                            <div class="col">
+                                              <q-input
+                                                autogrow
+                                                rounded
+                                                outlined
+                                                label="Input Revised Content"
+                                                v-model="
+                                                  ReturnPreventive[item.code]
+                                                "
+                                              />
+                                            </div>
+                                          </q-card-section>
+
+                                          <div
+                                            class="q-pa-sm"
+                                            style="
+                                              background-color: #fff3f3;
+                                              border-radius: 8px;
+                                              border: 1px solid #e53935;
+                                            "
+                                          >
+                                            <div class="row items-center q-mb-sm">
+                                              <div
+                                                class="q-badge bg-red text-white q-mr-sm"
+                                              >
+                                                Rejected Created Content
+                                              </div>
+                                            </div>
+
+                                            <div class="row q-col-gutter-xs">
+                                              <div class="col-8">
+                                                <div
+                                                  class="text-body2 text-grey-7 q-mb-xs"
+                                                >
+                                                  <b>Why Note :</b>
+                                                  {{ item.preventiveMeasure }}
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div> -->
+                                    </q-card-section>
+
+                                    <q-card-section class="QAFileDes column flex-center"  v-else>
+                                      <div
+                                        class="text-subtitle1 items-center text-weight-bold text-dark"
+                                      >
+                                        <i>~ No Content Available ~</i>
+                                      </div>
+                                    </q-card-section>
+                                  </q-card-section>
+
+                                  <q-card-actions
+                                    align="center"
+                                    class="q-mt-md column items-center footer-actions"
+                                  >
+                                    <div class="row q-gutter-xxl; justify-center">
+                                      <q-btn
+                                        flat
+                                        rounded
+                                        push
+                                        label="Cancel"
+                                        class="buttonCancelDesign text-info"
+                                        @click="this.setReviseForm = false"
+                                        style="width: 195px"
+                                      />
+
+                                      <q-btn
+                                        flat
+                                        rounded
+                                        push
+                                        label="Save"
+                                        class="buttonSaveDesign bg-accent text-black"
+                                        @click="submiteditReturnRCA(selectedIrNo)"
+                                        style="width: 195px"
+                                      />
+                                    </div>
+                                  </q-card-actions>
+                                </q-card>
+                              </div>
+                            </q-dialog>
+                          </div>
+                        </q-item-section>
+                      </div>
+                    </div>
+                  </q-card-section>
+                </q-card-section>
             </q-card>
           </div>
         </q-dialog>
@@ -4098,7 +6030,7 @@
                           <q-input
                             rounded
                             outlined
-                            :model-value="FormatRCADate(props.row.subjectDate)"
+                            :model-value="FormatRCADate(IRQADetailss.subjectDate)"
                             disable
                           />
                         </div>
@@ -4114,7 +6046,7 @@
                           <q-input
                             rounded
                             outlined
-                            :model-value="FormatRCATime(props.row.subjectDate)"
+                            :model-value="FormatRCATime(IRQADetailss.subjectDate)"
                             disable
                           />
                         </div>
@@ -4130,7 +6062,7 @@
                           <q-input
                             rounded
                             outlined
-                            v-model="props.row.subjectLoc"
+                            v-model="IRQADetailss.subjectLoc"
                             disable
                           />
                         </div>
@@ -4160,7 +6092,7 @@
                           autogrow
                           rounded
                           outlined
-                          v-model="props.row.subjectResponse"
+                          v-model="IRQADetailss.subjectResponse"
                           disable
                           input-class="q-pa-md"
                         />
@@ -4747,7 +6679,13 @@
 
                 <div
                   class="QADes1"
-                  v-if="(IRRCAApprovedDetailss.RCACorrectiveApproved || []).length">
+                  v-if="(IRRCAApprovedDetailss.RCACorrectiveApproved || []).length"
+                  style="
+                    border: 3px solid #6b7c93;
+                    border-radius: 40px;
+                    padding: 30px;
+                  "
+                >
 
                   <div
                     class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
@@ -4765,7 +6703,7 @@
 
                   <div class="q-mx-sm">
                     <div
-                      class="q-pa-md"
+                      class="q-pa-sm"
                       v-for="(item, index) in IRRCAApprovedDetailss.RCACorrectiveApproved"
                       :key="index">
 
@@ -5193,6 +7131,20 @@ export default {
       accomplishLoading: false,
 
       confirmRCA: false,
+      draftRCA: false,
+      isLoadingRCA: false,
+      setRCADraftForm: false,
+      isLoadingRCADraft: false,
+      IRQADraft: [],
+
+      mandraftparties: [{ ManDraftwhy: "" }],
+      methoddraftparties: [{ MethodDraftwhy: "" }],
+      machinedraftparties: [{ MachineDraftwhy: "" }],
+      materialdraftparties: [{ MaterialDraftwhy: ""}],
+      measurementdraftparties: [{ MeasurementDraftwhy: ""}],
+      environmentdraftparties: [{ EnvironmentDraftwhy: ""}],
+
+      confirmdraftRCA: false,
     };
   },
   computed: {
@@ -5230,7 +7182,6 @@ export default {
       return [...corrective, ...preventive];
     },
 
-
     filteredForRevisionItems() {
       const result = [];
 
@@ -5252,6 +7203,52 @@ export default {
 
       return result;
     },
+
+    problemDraftLogs(){
+      return this.IRQADraft?.RCAProblemStatementLogs || [];
+    },
+
+    whyDraftLogs(){
+      return this.IRQADraft?.RCAWhyLog || [];
+    },
+
+    manpowerwhyDrafts() {
+      return this.getWhyDrafts('MANPOWER');
+    },
+
+    methodwhyDrafts() {
+      return this.getWhyDrafts('METHOD');
+    },
+
+    machinewhyDrafts() {
+      return this.getWhyDrafts('MACHINE');
+    },
+
+    materialwhyDrafts(){
+      return this.getWhyDrafts('MATERIAL');
+    },
+
+    measurementwhyDrafts(){
+      return this.getWhyDrafts('MEASUREMENT');
+    },
+
+    environmentwhyDrafts(){
+      return this.getWhyDrafts('ENVIRONMENT');
+    },
+
+    actionableDraftLogs(){
+      return this.IRQADraft?.RCAActionableLog || [];
+    },
+
+    correctiveDraftLogs() {
+      return (this.IRQADraft?.RCACorrectiveLog || []).filter(
+        item => !item.isDeleted
+      );
+    },
+
+    riskDraftLogs(){
+      return (this.IRQADraft?.RCARisk || []).filter(i => !i.isDeleted);
+    }
   },
 
   created() {
@@ -5303,11 +7300,23 @@ export default {
       return employee ? employee.fullName : null;
     },
 
-    async viewIReport(IRNo) {
+    async viewIReportDetails(IRNo) {
       try {
         this.IRDialog = true;
-        this.isLoadingIRDetails = true
+        this.isLoadingIRDetails = true;
+        await this.viewIReport(IRNo); // ✅ wait for it to finish
 
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        this.isLoadingIRDetails = false; // ✅ runs after awaitIRQADetailss
+      }
+    },
+
+    async viewIReport(IRNo) {
+      try {
         const data = {
           iRNo: IRNo,
         };
@@ -5366,14 +7375,21 @@ export default {
     async viewRCAForm(IRNo) {
       try {
         this.setRCAForm = true;
+        this.isLoadingRCA = true;
+
         const data = {
           iRNo: IRNo,
         };
         this.selectedIrNo = IRNo;
         const response = await this.$store.dispatch("ApplyStore/disIrp", data);
         this.IRQADetailss = this.getQACon;
+
+        // ensure minimum 2 seconds loading
+        await new Promise(resolve => setTimeout(resolve, 2000));
       } catch (error) {
         console.error("Error inserting data:", error);
+      } finally {
+        this.isLoadingRCA = false;
       }
     },
 
@@ -5494,6 +7510,7 @@ export default {
     ///////////////////////////////////////////////////////////////////// INSERT RCA //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     onCancelRCAItem() {
+      this.draftRCA = false;
       this.IrNo = "";
       this.ManProbStatement = "";
       this.MethodStatement = "";
@@ -5595,20 +7612,6 @@ export default {
           AccountablePer: this.correctiveparties.map(
             (party) => party.AccountablePer
           ),
-
-          // PreventiveMeasure: this.preventiveparties.map(
-          //   (party) => party.PreventiveMeasure
-          // ),
-          // PreTimelineFromDate: this.preventiveparties.map(
-          //   (party) => party.PreTimelineFromDate
-          // ),
-          // PreTimelineToDate: this.preventiveparties.map(
-          //   (party) => party.PreTimelineToDate
-          // ),
-          // ResponsiblePer: this.preventiveparties.map(
-          //   (party) => party.ResponsiblePer
-          // ),
-
           actionableRoot: this.actionableRoot,
           domainActionable: this.domainActionable.value,
           RiskItems: this.riskparties.map( (party) => party.RiskItems ),
@@ -5662,11 +7665,361 @@ export default {
       }
     },
 
+    ///////////////////////////////////////////////////////////////////// INSERT DRAFT RCA //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    handleSubmitDraft(){
+      this.draftRCA = true;
+    },
+
+    async submitRCAItemDraft(){
+      this.waitingRCA = true;
+      try {
+        const payload = {
+          IRNo: this.selectedIrNo,
+          ManProbStatement: this.ManProbStatement,
+          Manwhy: this.manparties.map((party) => party.Manwhy),
+
+          MethodStatement: this.MethodStatement,
+          Methodwhy: this.methodparties.map((party) => party.Methodwhy),
+
+          MachineStatement: this.MachineStatement,
+          Machinewhy: this.machineparties.map((party) => party.Machinewhy),
+
+          MaterialStatement: this.MaterialStatement,
+          Materialwhy: this.materialparties.map((party) => party.Materialwhy),
+
+          MeasurementStatement: this.MeasurementStatement,
+          Measurementwhy: this.measurementparties.map(
+            (party) => party.Measurementwhy
+          ),
+
+          EnvironmentStatement: this.EnvironmentStatement,
+          Environmentwhy: this.environmentparties.map(
+            (party) => party.Environmentwhy
+          ),
+
+          CorrectiveAction: this.correctiveparties.map(
+            (party) => party.CorrectiveAction
+          ),
+          CorTimelineFromDate: this.correctiveparties.map(
+            (party) => party.CorTimelineFromDate
+          ),
+          CorTimelineToDate: this.correctiveparties.map(
+            (party) => party.CorTimelineToDate
+          ),
+          AccountablePer: this.correctiveparties.map(
+            (party) => party.AccountablePer
+          ),
+          actionableRoot: this.actionableRoot,
+          domainActionable: this.domainActionable.value,
+          RiskItems: this.riskparties.map( (party) => party.RiskItems ),
+        };
+
+        this.onCancelRCAItem();
+        await this.$store.dispatch("ApplyStore/addRCADraftItem", payload);
+        this.$q.notify({
+          color: "green-8",
+          position: "top",
+          message: "SUCCESS RCA",
+          icon: "check",
+          iconColor: "white",
+          timeout: 3000,
+          progress: true,
+        });
+
+        setTimeout( async () => {
+          this.getPrimaryDeptRCA();
+          this.waitingRCA = false;
+          await this.viewRCADetailsForm(this.selectedIrNo); // Fixed reference to selectedIrNo
+          this.setRCADetailsForm = true;
+        }, 6000);
+
+      } catch (error) {
+        console.error("Error inserting data:", error);
+      }
+    },
+
+    ///////////////////////////////////////////////////////////////////// DISPLAY DRAFT RCA //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    async viewRCADraft(IRNo) {
+      try {
+        this.setRCADraftForm = true;
+        this.isLoadingRCADraft = true;
+        this.selectedIrNo = IRNo;
+
+        await this.viewIReport(IRNo);
+        await this.displayRCADraft(IRNo);
+
+        // optional: minimum 2 seconds loading
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+      } catch (error) {
+        console.error("Error loading draft:", error);
+      } finally {
+        this.isLoadingRCADraft = false;
+      }
+    },
+
+    async displayRCADraft(){
+      try {
+        const data = {
+          iRNo: this.selectedIrNo,
+        };
+        const response = await this.$store.dispatch("ApplyStore/disRCASaveDraftIrp", data);
+        this.IRQADraft = this.getQACon;
+      } catch (error) {
+        console.error("Error inserting data:", error);
+      }
+    },
+
+    ///////////////////////////////////////////////////////////////// DRAFTING PROCESS ////////////////////////////////////////////
+
+    hasProblemStatement(problemCode, fallbackValue) {
+      const item = this.problemDraftLogs.find(
+        m => m.problemCode === problemCode
+      );
+
+      // check description from draft logs
+      if (item?.description?.trim()) {
+        return true;
+      }
+
+      // fallback local model
+      return !!fallbackValue?.trim();
+    },
+
+    getWhyDrafts(type) {
+      return (this.IRQADraft?.RCAWhyLog || []).filter(
+        m => m.problemName === type && !m.isDeleted
+      );
+    },
+
+    removeWhyDraft(item) {
+      const list = this.IRQADraft?.RCAWhyLog || [];
+      const index = list.findIndex(
+        m => m.code === item.code
+      );
+      if (index === -1) return;
+      if (item.id) {
+        list[index].isDeleted = true;
+      } else {
+        list.splice(index, 1);
+      }
+    },
+
+    removeDraftItem(listName, index) {
+      if (
+        Array.isArray(this[listName]) &&
+        index > -1 &&
+        index < this[listName].length
+      ) {
+        this[listName].splice(index, 1);
+      }
+    },
+
+    addDraftItem(listName, fieldName) {
+      if (Array.isArray(this[listName])) {
+        this[listName].push({
+          [fieldName]: ""
+        });
+      }
+    },
+
+    removeCorrectiveDraft(index) {
+      const item = this.correctiveDraftLogs[index];
+      if (item.id) {
+        this.correctiveDraftLogs[index].isDeleted = true;
+      } else {
+        this.correctiveDraftLogs.splice(index, 1);
+      }
+    },
+
+    removeRiskDraft(index) {
+      const item = this.riskDraftLogs[index];
+      if (item.id) {
+        this.riskDraftLogs[index].isDeleted = true;
+      } else {
+        this.riskDraftLogs.splice(index, 1);
+      }
+    },
+
+    submitRCADraft(){
+      this.confirmdraftRCA = true;
+    },
+
+    onCancelRCAConfirm(){
+      this.confirmdraftRCA = false;
+    },
+
+    async handleFormSubmitDraft() {
+      this.waitingRCA = true;
+      this.confirmdraftRCA = false;
+      try {
+        const payloadDraft = {
+          RCAProblemStatementLogs: this.problemDraftLogs.map((item) => ({
+              iRNo: this.selectedIrNo,
+              code: item.code,
+              problemCode: item.problemCode,
+              description: item.description,
+              isDeleted: item.isDeleted || false,
+          })).filter((item) => item.iRNo && item.code),
+
+          RCAWhyLog: this.whyDraftLogs
+            .map((item) => ({
+              iRNo: this.selectedIrNo,
+              problemCode: item.problemCode,
+              problemName: item.problemName,
+              code: item.code,
+              description: item.description,
+              isDeleted: item.isDeleted || false,
+            })).filter((item) => item.iRNo && item.code),
+
+          RCAActionableLog: this.actionableDraftLogs.map((item) => ({
+              iRNo: this.selectedIrNo,
+              code: item.code,
+              domain: item.domain,
+              actionable: item.actionable,
+            })).filter((item) => item.iRNo && item.code),
+
+          RCACorrectiveLog: this.correctiveDraftLogs.map((item) => ({
+              iRNo: this.selectedIrNo,
+              code: item.code,
+              accountablePer: item.accountablePer,
+              corTimelineFromDate: item.corTimelineFromDate,
+              corTimelineToDate: item.corTimelineToDate,
+              correctiveAction: item.correctiveAction,
+              isDeleted: item.isDeleted || false,
+            })).filter((item) => item.iRNo && item.code),
+
+          RCARiskLog: this.riskDraftLogs.map((item) => ({
+              iRNo: this.selectedIrNo,
+              code: item.code,
+              riskItem: item.riskItem,
+              isDeleted: item.isDeleted || false,
+            })).filter((item) => item.iRNo && item.code),
+        }
+
+        const payloadParties = {
+          ManProbStatement: this.ManProbStatement,
+          MethodStatement: this.MethodStatement,
+          MachineStatement: this.MachineStatement,
+          MaterialStatement: this.MaterialStatement,
+          MeasurementStatement: this.MeasurementStatement,
+          EnvironmentStatement: this.EnvironmentStatement,
+
+          Manwhy: this.mandraftparties.map((party) => party.ManDraftwhy),
+          Methodwhy: this.methoddraftparties.map((party) => party.MethodDraftwhy),
+          Machinewhy: this.machinedraftparties.map((party) => party.MachineDraftwhy),
+          Materialwhy: this.materialdraftparties.map((party) => party.MaterialDraftwhy),
+          Measurementwhy: this.measurementdraftparties.map(
+            (party) => party.MeasurementDraftwhy
+          ),
+          Environmentwhy: this.environmentdraftparties.map(
+            (party) => party.EnvironmentDraftwhy
+          ),
+
+          actionableRoot: this.actionableRoot,
+          domainActionable: this.domainActionable.value,
+          CorrectiveAction: this.correctiveparties.map(
+            (party) => party.CorrectiveAction
+          ),
+          CorTimelineFromDate: this.correctiveparties.map(
+            (party) => party.CorTimelineFromDate
+          ),
+          CorTimelineToDate: this.correctiveparties.map(
+            (party) => party.CorTimelineToDate
+          ),
+          AccountablePer: this.correctiveparties.map(
+            (party) => party.AccountablePer
+          ),
+          RiskItems: this.riskparties.map( (party) => party.RiskItems ),
+        }
+
+        const payload = {
+          irNo: this.selectedIrNo,
+          payloadDraft,
+          payloadParties
+        };
+
+        this.onCancelRCAItemDraft();
+        await this.$store.dispatch("ApplyStore/addConfirmDraftRCA", payload);
+        this.$q.notify({
+          color: "green-8",
+          position: "top",
+          message: "SUCCESS DRAFT RCA",
+          icon: "check",
+          iconColor: "white",
+          timeout: 3000,
+          progress: true,
+        });
+
+        setTimeout( async () => {
+          this.getPrimaryDeptRCA();
+          this.waitingRCA = false;
+          await this.viewRCADetailsForm(this.selectedIrNo); // Fixed reference to selectedIrNo
+          this.setRCADetailsForm = true;
+        }, 6000);
+
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    },
+
+    onCancelRCAItemDraft() {
+      this.confirmdraftRCA = false;
+      this.setRCADraftForm = false;
+
+      this.IrNo = "";
+      this.ManProbStatement = "";
+      this.MethodStatement = "";
+      this.MachineStatement = "";
+      this.MaterialStatement = "";
+      this.MeasurementStatement = "";
+      this.EnvironmentStatement = "";
+      this.actionableRoot = "";
+      this.domainActionable = "";
+
+      this.mandraftparties = [{ ManDraftwhy: "" }];
+      this.methoddraftparties = [{ MethodDraftwhy: "" }];
+      this.machinedraftparties = [{ MachineDraftwhy: "" }];
+      this.materialdraftparties = [{ MaterialDraftwhy: ""}];
+      this.measurementdraftparties =  [{ MeasurementDraftwhy: ""}];
+      this.environmentdraftparties = [{ EnvironmentDraftwhy: ""}];
+
+      this.correctiveparties = [
+        {
+          CorrectiveAction: "",
+          CorTimelineFromDate: "",
+          CorTimelineToDate: "",
+          AccountablePer: "",
+        },
+      ];
+
+      this.riskparties = [
+        {
+          RiskItems: ""
+        }
+      ];
+    },
+
     ///////////////////////////////////////////////////////////////////// DISPLAY RCA //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    viewRCAConfirmDetails(IRNo) {
-      this.setRCADetailsForm = true;
-      this.viewRCADetailsForm(IRNo);
+    async viewRCAConfirmDetails(IRNo) {
+      try {
+        this.setRCADetailsForm = true;
+        this.isLoadingIRDetails = true;
+
+        await this.viewIReport(IRNo);
+        await this.viewRCADetailsForm(IRNo);
+
+        // Optional delay
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      } catch (error) {
+        console.error("Error fetching RCA confirm details:", error);
+      } finally {
+        this.isLoadingIRDetails = false;
+      }
     },
 
     onCancelRCADetailsItem() {
@@ -5850,7 +8203,6 @@ export default {
     },
 
     async viewRCAApprovedDetails(IRNo) {
-      this.setRCAApprovedDetails = true;
       const data = {
         iRNo: IRNo,
       };
@@ -5859,6 +8211,12 @@ export default {
         data
       );
       this.IRRCAApprovedDetailss = this.getRCA;
+    },
+
+    async viewApprovedAction(IRNo) {
+      this.setRCAApprovedDetails = true;
+      this.viewIReport(IRNo);
+      this.viewRCAApprovedDetails(IRNo);
     },
 
     onCancelRCAApproved() {

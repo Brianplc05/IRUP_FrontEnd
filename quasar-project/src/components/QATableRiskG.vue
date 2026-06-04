@@ -774,144 +774,158 @@
               </q-card-section>
 
               <q-card-section
-                class="rounded-borders shadow-2"
-                style="border: 2px solid #ddd"
+                v-if="isLoadingAction"
+                class="column flex-center q-pa-xl"
+                style="height: 600px"
               >
-                <div class="QADesContent">
-                  <div class="QAFixDesign">
-                    <div class="QADes1">
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-sm"
-                      >
-                        Action Item Details
-                      </div>
-                      <div class="text-body2 text-grey-7 q-mb-sm">
-                        This section outlines the action items implemented by
-                        the department to address and mitigate the incident.
-                      </div>
-                      <q-separator class="formseparatorYellow" />
+                <q-spinner size="90px" color="primary" />
+                <div class="q-mt-md text-primary text-weight-medium">
+                  Loading Details...
+                </div>
+              </q-card-section>
 
-                      <div class="q-mt-md" style="margin: 20px">
+              <q-card-section v-else>
+                <q-card-section
+                  class="rounded-borders"
+                  style="border: 2px solid #ddd"
+                >
+                  <div class="QADesContent">
+                    <div class="QAFixDesign">
+                      <div class="QADes1">
                         <div
-                          class="q-pa-sm q-mb-md"
-                          v-for="(item, index) in ActionQADetails"
-                          :key="index"
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-sm"
                         >
-                          <div class="row q-col-gutter-md">
-                            <div class="col-8">
-                              <div
-                                class="text-weight-bold text-primary q-mb-xs"
-                              >
-                                Action Item Notes
-                              </div>
-                              <q-input
-                                autogrow
-                                rounded
-                                outlined
-                                :model-value="
-                                  item.actionItem || 'No Data Available'
-                                "
-                                disable
-                              />
-                            </div>
+                          Action Item Details
+                        </div>
+                        <div class="text-body2 text-grey-7 q-mb-sm">
+                          This section outlines the action items implemented by
+                          the department to address and mitigate the incident.
+                        </div>
+                        <q-separator class="formseparatorYellow" />
 
-                            <div class="col-2">
-                              <div
-                                class="text-weight-bold text-primary q-mb-xs"
-                              >
-                                Timeline From
+                        <div class="q-mt-md" style="margin: 20px">
+                          <div
+                            class="q-pa-sm q-mb-md"
+                            v-for="(item, index) in ActionQADetails"
+                            :key="index"
+                          >
+                            <div class="row q-col-gutter-md">
+                              <div class="col-8">
+                                <div
+                                  class="text-weight-bold text-primary q-mb-xs"
+                                >
+                                  Action Item Notes
+                                </div>
+                                <q-input
+                                  autogrow
+                                  rounded
+                                  outlined
+                                  :model-value="
+                                    item.actionItem || 'No Data Available'
+                                  "
+                                  disable
+                                />
                               </div>
-                              <q-input
-                                rounded
-                                outlined
-                                :model-value="
-                                  FormatDateIR(item.timelineFromDate) ||
-                                  'No Data Available'
-                                "
-                                disable
-                              />
-                            </div>
 
-                            <div class="col-2">
-                              <div
-                                class="text-weight-bold text-primary q-mb-xs"
-                              >
-                                Timeline To
+                              <div class="col-2">
+                                <div
+                                  class="text-weight-bold text-primary q-mb-xs"
+                                >
+                                  Timeline From
+                                </div>
+                                <q-input
+                                  rounded
+                                  outlined
+                                  :model-value="
+                                    FormatDateIR(item.timelineFromDate) ||
+                                    'No Data Available'
+                                  "
+                                  disable
+                                />
                               </div>
-                              <q-input
-                                rounded
-                                outlined
-                                :model-value="
-                                  FormatDateIR(item.timelineToDate) ||
-                                  'No Data Available'
-                                "
-                                disable
-                              />
+
+                              <div class="col-2">
+                                <div
+                                  class="text-weight-bold text-primary q-mb-xs"
+                                >
+                                  Timeline To
+                                </div>
+                                <q-input
+                                  rounded
+                                  outlined
+                                  :model-value="
+                                    FormatDateIR(item.timelineToDate) ||
+                                    'No Data Available'
+                                  "
+                                  disable
+                                />
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </q-card-section>
+                </q-card-section>
 
-              <q-card-section
-                class="q-mt-md rounded-borders shadow-2 flex column items-center justify-center"
-                style="border: 2px solid #ddd; text-align: center"
-              >
-                <div class="text-primary text-subtitle1 text-weight-bold q-mb-sm">
-                  Action Item Note
-                </div>
-                <div class="text-body2 text-grey-7 q-mb-sm">
-                  <b>Direction: This section is for confirmation purposes only and should be <br/> completed only upon approval of the incident.
-                  A note is not required if the incident is disapproved.</b>
-                </div>
+                <q-card-section
+                  class="q-mt-md rounded-borders flex column items-center justify-center"
+                  style="border: 2px solid #ddd; text-align: center"
+                >
+                  <div class="text-primary text-subtitle1 text-weight-bold q-mb-sm">
+                    Action Item Note
+                  </div>
 
-                <q-input
-                  outlined
-                  v-model="IrNo"
-                  label="IRNo."
-                  style="display: none"
-                />
-                <q-input
-                  v-model="newConclusion"
-                  rounded
-                  outlined
-                  label="Note"
-                  type="textarea"
-                  class="q-mt-md"
-                  autofocus
-                  style="width: 100%"
-                />
-              </q-card-section>
+                  <div class="text-body2 text-grey-7 q-mb-sm">
+                    <b>Direction: This section is for confirmation purposes only and should be <br/> completed only upon approval of the incident.
+                    A note is not required if the incident is disapproved.</b>
+                  </div>
 
-              <q-card-actions
-                align="center"
-                class="q-mt-md column items-center"
-              >
-                <div class="row q-gutter-xxl; justify-center">
-                  <q-btn
-                    flat
-                    rounded
-                    push
-                    label="DISAPPROVED"
-                    class="buttonCancelDesign text-info"
-                    @click="submitActionDisapproved(selectedIrNo)"
-                    style="width: 195px"
+                  <q-input
+                    outlined
+                    v-model="IrNo"
+                    label="IRNo."
+                    style="display: none"
                   />
-
-                  <q-btn
-                    flat
+                  <q-input
+                    v-model="newConclusion"
                     rounded
-                    push
-                    label="APPROVED"
-                    class="buttonSaveDesign bg-accent text-black"
-                    @click="submitActionReviewApproved(selectedIrNo)"
-                    style="width: 195px"
+                    outlined
+                    label="Note"
+                    type="textarea"
+                    class="q-mt-md"
+                    autofocus
+                    style="width: 100%"
                   />
-                </div>
-              </q-card-actions>
+                </q-card-section>
+
+                <q-card-actions
+                  align="center"
+                  class="q-mt-md column items-center"
+                >
+                  <div class="row q-gutter-xxl; justify-center">
+                    <q-btn
+                      flat
+                      rounded
+                      push
+                      label="DISAPPROVED"
+                      class="buttonCancelDesign text-info"
+                      @click="submitActionDisapproved(selectedIrNo)"
+                      style="width: 195px"
+                    />
+
+                    <q-btn
+                      flat
+                      rounded
+                      push
+                      label="APPROVED"
+                      class="buttonSaveDesign bg-accent text-black"
+                      @click="submitActionReviewApproved(selectedIrNo)"
+                      style="width: 195px"
+                    />
+                  </div>
+                </q-card-actions>
+              </q-card-section>
             </q-card>
           </div>
         </q-dialog>
@@ -1336,124 +1350,137 @@
               </q-card-section>
 
               <q-card-section
-                class="rounded-borders shadow-2"
-                style="border: 2px solid #ddd"
+                v-if="isLoadingActionRevision"
+                class="column flex-center q-pa-xl"
+                style="height: 600px"
               >
-                <div class="QADesContent">
-                  <div class="QAFixDesign">
-                    <div class="QADes1">
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-sm"
-                      >
-                        Action Item Details
-                      </div>
-                      <div class="text-body2 text-grey-7 q-mb-sm">
-                        This section outlines the action items implemented by
-                        the department to address and mitigate the incident.
-                      </div>
-                      <q-separator class="formseparatorYellow" />
+                <q-spinner size="90px" color="primary" />
+                <div class="q-mt-md text-primary text-weight-medium">
+                  Loading Details...
+                </div>
+              </q-card-section>
 
-                      <div class="q-mt-md" style="margin: 20px">
+              <q-card-section v-else>
+                <q-card-section
+                  class="rounded-borders"
+                  style="border: 2px solid #ddd"
+                >
+                  <div class="QADesContent">
+                    <div class="QAFixDesign">
+                      <div class="QADes1">
                         <div
-                          class="q-pa-sm q-mb-md"
-                          v-for="(item, index) in IRActionReturnReviewDetailss"
-                          :key="index"
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-sm"
                         >
-                          <div class="row q-col-gutter-md">
-                            <div class="col-8">
-                              <div
-                                class="text-weight-bold text-primary q-mb-xs"
-                              >
-                                Action Item Notes
-                              </div>
-                              <q-input
-                                autogrow
-                                rounded
-                                outlined
-                                :model-value="
-                                  item.actionItem || 'No Data Available'
-                                "
-                                disable
-                              />
-                            </div>
+                          Action Item Details
+                        </div>
+                        <div class="text-body2 text-grey-7 q-mb-sm">
+                          This section outlines the action items implemented by
+                          the department to address and mitigate the incident.
+                        </div>
+                        <q-separator class="formseparatorYellow" />
 
-                            <div class="col-2">
-                              <div
-                                class="text-weight-bold text-primary q-mb-xs"
-                              >
-                                Timeline From
+                        <div class="q-mt-md" style="margin: 20px">
+                          <div
+                            class="q-pa-sm q-mb-md"
+                            v-for="(item, index) in IRActionReturnReviewDetailss"
+                            :key="index"
+                          >
+                            <div class="row q-col-gutter-md">
+                              <div class="col-8">
+                                <div
+                                  class="text-weight-bold text-primary q-mb-xs"
+                                >
+                                  Action Item Notes
+                                </div>
+                                <q-input
+                                  autogrow
+                                  rounded
+                                  outlined
+                                  :model-value="
+                                    item.actionItem || 'No Data Available'
+                                  "
+                                  disable
+                                />
                               </div>
-                              <q-input
-                                rounded
-                                outlined
-                                :model-value="
-                                  FormatDateIR(item.timelineFromDate) ||
-                                  'No Data Available'
-                                "
-                                disable
-                              />
-                            </div>
 
-                            <div class="col-2">
-                              <div
-                                class="text-weight-bold text-primary q-mb-xs"
-                              >
-                                Timeline To
+                              <div class="col-2">
+                                <div
+                                  class="text-weight-bold text-primary q-mb-xs"
+                                >
+                                  Timeline From
+                                </div>
+                                <q-input
+                                  rounded
+                                  outlined
+                                  :model-value="
+                                    FormatDateIR(item.timelineFromDate) ||
+                                    'No Data Available'
+                                  "
+                                  disable
+                                />
                               </div>
-                              <q-input
-                                rounded
-                                outlined
-                                :model-value="
-                                  FormatDateIR(item.timelineToDate) ||
-                                  'No Data Available'
-                                "
-                                disable
-                              />
+
+                              <div class="col-2">
+                                <div
+                                  class="text-weight-bold text-primary q-mb-xs"
+                                >
+                                  Timeline To
+                                </div>
+                                <q-input
+                                  rounded
+                                  outlined
+                                  :model-value="
+                                    FormatDateIR(item.timelineToDate) ||
+                                    'No Data Available'
+                                  "
+                                  disable
+                                />
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </q-card-section>
+                </q-card-section>
 
-              <q-card-section
-                class="q-mt-md rounded-borders shadow-2 flex column items-center justify-center"
-                style="border: 2px solid #ddd; text-align: center"
-              >
-                <div class="text-primary text-subtitle1 text-weight-bold q-mb-sm">
-                  Action Item Note
-                </div>
-                <div class="text-body2 text-grey-7 q-mb-sm">
-                  <b>Direction:</b> This section outlines the action items
-                  implemented by the department to address and mitigate the
-                  incident.
-                </div>
+                <q-card-section
+                  class="q-mt-md rounded-borders flex column items-center justify-center"
+                  style="border: 2px solid #ddd; text-align: center"
+                >
+                  <div class="text-primary text-subtitle1 text-weight-bold q-mb-sm">
+                    Action Item Note
+                  </div>
+                  <div class="text-body2 text-grey-7 q-mb-sm">
+                    <b>Direction:</b> This section outlines the action items
+                    implemented by the department to address and mitigate the
+                    incident.
+                  </div>
 
-                <q-input
-                  outlined
-                  v-model="RevisionActionCode"
-                  style="display: none"
-                />
+                  <q-input
+                    outlined
+                    v-model="RevisionActionCode"
+                    style="display: none"
+                  />
 
-                <q-input
-                  outlined
-                  v-model="IrNo"
-                  label="IRNo."
-                  style="display: none"
-                />
+                  <q-input
+                    outlined
+                    v-model="IrNo"
+                    label="IRNo."
+                    style="display: none"
+                  />
 
-                <q-input
-                  v-model="newConclusion"
-                  rounded
-                  outlined
-                  label="Note"
-                  type="textarea"
-                  class="q-mt-md"
-                  autofocus
-                  style="width: 100%"
-                />
+                  <q-input
+                    v-model="newConclusion"
+                    rounded
+                    outlined
+                    label="Note"
+                    type="textarea"
+                    class="q-mt-md"
+                    autofocus
+                    style="width: 100%"
+                  />
+                </q-card-section>
               </q-card-section>
 
               <q-card-actions
@@ -2865,6 +2892,9 @@ export default {
       setActionRevisionApprovedDetails: false,
       RevisionAPAction: false,
       IRReturnACAPDetailss: [],
+
+      isLoadingAction: false,
+      isLoadingActionRevision: false
     };
   },
 
@@ -3144,9 +3174,20 @@ export default {
       }
     },
 
-    editReviewAction(IRNo) {
-      this.setActionReviewDialog = true;
-      this.viewActionDetails(IRNo);
+    async editReviewAction(IRNo) {
+      try {
+        this.setActionReviewDialog = true;
+        this.isLoadingAction = true;
+
+        await this.viewActionDetails(IRNo);
+
+        // ensure minimum 3 seconds loading
+        await new Promise(resolve => setTimeout(resolve, 3000));
+      } catch (error) {
+        console.error("Error fetching action items:", error);
+      } finally {
+        this.isLoadingAction = false;
+      }
     },
 
     async submitActionDisapproved(IRNo) {
@@ -3388,14 +3429,24 @@ export default {
       try {
         this.selectedIrNo;
         this.RevisionActionCode = latestRevisionActionCode;
+
         this.setActionRevisionDialog = false;
         this.setActionReturnRevisionDialog = true;
-        this.viewEditReviewActionDetails(
+        this.isLoadingActionRevision = true
+
+
+        await this.viewEditReviewActionDetails(
           selectedIrNo,
           latestRevisionActionCode
         );
+
+        // ensure minimum 3 seconds loading
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
       } catch (error) {
         console.error("Error updating status:", error);
+      } finally {
+        this.isLoadingActionRevision = false;
       }
     },
 

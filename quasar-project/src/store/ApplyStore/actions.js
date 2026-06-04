@@ -51,7 +51,7 @@ export default {
   async Login({ commit }, logs) {
     try {
       const response = await axios.post(
-        `${ApiUrl}/incident-report/Login`,
+        `${ApiUrl}/incident-report/login`,
         logs
       );
       const decodedUser = jwtDecode(response.data);
@@ -133,7 +133,7 @@ export default {
   async displayReportList({ commit }, data) {
     try {
       const token = localStorage.getItem("authToken");
-      const response = await axios.get(`${ApiUrl}/incident-report/DisplayReportList`, {
+      const response = await axios.get(`${ApiUrl}/incident-report/display-report-list`, {
         params: data,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -282,7 +282,7 @@ export default {
     try {
       const token = localStorage.getItem("authToken");
       const response = await axios.get(
-        `${ApiUrl}/incident-report/EmpdeptForm`,
+        `${ApiUrl}/incident-report/employee-department`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -300,7 +300,7 @@ export default {
     try {
       const token = localStorage.getItem("authToken");
       const response = await axios.get(
-        `${ApiUrl}/incident-report/SubNameForm`,
+        `${ApiUrl}/incident-report/subject-name`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -336,7 +336,7 @@ export default {
     try {
       const token = localStorage.getItem("authToken");
       const response = await axios.get(
-        `${ApiUrl}/incident-report/DivisionForm`,
+        `${ApiUrl}/incident-report/division`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -354,7 +354,7 @@ export default {
     try {
       const token = localStorage.getItem("authToken");
       const response = await axios.post(
-        `${ApiUrl}/incident-report/AddIncident`,
+        `${ApiUrl}/incident-report/add-incident-report`,
         formData,
         {
           headers: {
@@ -625,6 +625,25 @@ export default {
     }
   },
 
+  async disRiskGrading({ commit }, data) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.get(
+        `${ApiUrl}/incident-report/DisplayRiskGradingForm`,
+        {
+          params: data,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      commit("GET_QAFORM", response.data);
+    } catch (error) {
+      console.error("ERROR", error);
+      throw error;
+    }
+  },
+
   async disHead({ commit }) {
     try {
       const token = localStorage.getItem("authToken");
@@ -721,6 +740,38 @@ export default {
     try {
       const token = localStorage.getItem("authToken");
       const response = await axios.get(`${ApiUrl}/incident-report/DisplayIRP`, {
+        params: data,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      commit("GET_QAIR", response.data);
+    } catch (error) {
+      console.error("ERROR", error);
+      throw error;
+    }
+  },
+
+  async disSaveDraftIrp({ commit }, data) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.get(`${ApiUrl}/incident-report/DisplayDraftIRP`, {
+        params: data,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      commit("GET_QAIR", response.data);
+    } catch (error) {
+      console.error("ERROR", error);
+      throw error;
+    }
+  },
+
+async disRCASaveDraftIrp({ commit }, data) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.get(`${ApiUrl}/incident-report/DisplayRCAIRPDraftItem`, {
         params: data,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -1369,6 +1420,44 @@ export default {
     }
   },
 
+  async addActionDraftVL({ commit }, payload) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.post(
+        `${ApiUrl}/incident-report/addActionDraftVL`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      commit("ADD_QAFORM", response.data);
+    } catch (error) {
+      console.error("ERROR", error.response.data);
+      throw error;
+    }
+  },
+
+  async addConfirmDraftAct({ commit }, payload) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.post(
+        `${ApiUrl}/incident-report/addConfirmDraftAct`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      commit("ADD_QAFORM", response.data);
+    } catch (error) {
+      console.error("ERROR", error.response.data);
+      throw error;
+    }
+  },
+
   async addActionItemVL({ commit }, payload) {
     try {
       const token = localStorage.getItem("authToken");
@@ -1549,6 +1638,44 @@ export default {
       const token = localStorage.getItem("authToken");
       const response = await axios.post(
         `${ApiUrl}/incident-report/addRCAItem`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      commit("GET_RCA", response.data);
+    } catch (error) {
+      console.error("ERROR", error.response.data);
+      throw error;
+    }
+  },
+
+  async addRCADraftItem({ commit }, payload) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.post(
+        `${ApiUrl}/incident-report/addRCADraftItem`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      commit("GET_RCA", response.data);
+    } catch (error) {
+      console.error("ERROR", error.response.data);
+      throw error;
+    }
+  },
+
+  async addConfirmDraftRCA({ commit }, payload) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.post(
+        `${ApiUrl}/incident-report/addRCADraftConfirm`,
         payload,
         {
           headers: {

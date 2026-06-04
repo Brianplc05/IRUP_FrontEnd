@@ -1419,68 +1419,86 @@
         </div>
       </div>
 
+      <div
+        v-if="loading"
+        class="fixed-full flex flex-center column q-gutter-md"
+        style="background-color: rgba(255, 255, 255, 0.7); z-index: 9999"
+      >
+        <q-spinner-ball size="150px" color="primary" />
+        <div class="text-subtitle1 text-primary">Please wait...</div>
+      </div>
+
       <q-card-section
-        class="row q-mb-sm bg-warning q-pa-md rounded-borders shadow-1"
+        class="bg-white q-pa-sm rounded-borders shadow-1"
         style="border-radius: 10px"
       >
-        <div
-          v-if="loading"
-          class="fixed-full flex flex-center column q-gutter-md"
-          style="background-color: rgba(255, 255, 255, 0.7); z-index: 9999"
-        >
-          <q-spinner-ball size="150px" color="primary" />
-          <div class="text-subtitle1 text-primary">Please wait...</div>
+
+        <div class="q-pb-md q-pt-md q-pl-xs">
+          <div
+            class="text-primary text-weight-bold"
+            style="font-size: 22px"
+          >
+            INCIDENT REPORT HISTORY
+          </div>
+
+          <div
+            style="font-size: 18px; color: #333333"
+            class="text-weight-bold"
+          >
+            Total Incident Report : <q-badge class="q-pa-sm text-bold" outline color="primary" style="font-size: 18px;"> {{ totalReport }} </q-badge>
+          </div>
         </div>
 
-        <q-card-section class="column fit full-width">
-          <div class="row items-center justify-between q-mb-md">
-            <div>
-              <q-btn-dropdown
-                v-if="loggedInUser.AreaCode === null"
-                rounded
-                :label="selectedArea?.division || 'FILTER AREA'"
-                menu-anchor="top right"
-                style="width: 25ch"
-                class="bg-info text-white q-mr-sm"
-              >
-                <q-list>
-                  <q-item
-                    v-for="option in areaOptions"
-                    :key="option.divisionCode"
-                    clickable
-                    @click="selectArea(option)"
-                  >
-                    <q-item-section>
-                      {{ option.division }}
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-btn-dropdown>
+        <div class="row items-center justify-between q-col-gutter-md">
+          <!-- LEFT SIDE -->
+          <div class="col-12 col-md-auto row q-gutter-sm justify-end">
+            <q-btn-dropdown
+              v-if="loggedInUser.AreaCode === null"
+              rounded
+              :label="selectedArea?.division || 'FILTER AREA'"
+              menu-anchor="top right"
+              style="width: 25ch"
+              class="bg-info text-white"
+            >
+              <q-list>
+                <q-item
+                  v-for="option in areaOptions"
+                  :key="option.divisionCode"
+                  clickable
+                  @click="selectArea(option)"
+                >
+                  <q-item-section>
+                    {{ option.division }}
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
 
+            <q-btn-dropdown
+              rounded
+              label="FILTER STATUS"
+              menu-anchor="top right"
+              style="width: 25ch"
+              class="bg-info text-white"
+            >
+              <q-list>
+                <q-item
+                  v-for="option in qaStats"
+                  :key="option.value"
+                  clickable
+                  @click="selectStatus(option)"
+                >
+                  <q-item-section>{{ option.label }}</q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+          </div>
 
-              <q-btn-dropdown
-                rounded
-                label="FILTER STATUS"
-                menu-anchor="top right"
-                style="width: 25ch"
-                class="bg-info text-white"
-              >
-                <q-list>
-                  <q-item
-                    v-for="option in qaStats"
-                    :key="option.value"
-                    clickable
-                    @click="selectStatus(option)"
-                  >
-                    <q-item-section>{{ option.label }}</q-item-section>
-                  </q-item>
-                </q-list>
-              </q-btn-dropdown>
-            </div>
-
+          <!-- RIGHT SIDE -->
+          <div class="col-12 col-md-4">
             <q-input
               v-model="searchQuery"
-              label="SEARCH "
+              label="SEARCH"
               dense
               outlined
               rounded
@@ -1491,62 +1509,45 @@
             </q-input>
           </div>
 
-          <q-card-section
-            class="bg-white q-pa-sm rounded-borders shadow-1 q-mb-md"
-            style="border-radius: 10px"
-          >
-            <div class="q-pb-md q-pt-md q-pl-sm">
-              <div
-                class="text-primary text-weight-bold"
-                style="font-size: 22px"
-              >
-                INCIDENT REPORT HISTORY
-              </div>
-              <div
-                style="font-size: 18px; color: #333333"
-                class="text-weight-bold"
-              >
-                Total Incident Report : <q-badge class="q-pa-sm text-bold" outline color="primary" style="font-size: 18px;"> {{ totalReport }} </q-badge>
-              </div>
+        </div>
+
+        <div class="q-table-scroll-wrapper q-ma-md">
+          <QATables
+            v-show="showTable"
+            :items="riskGradingItem"
+            :columns="disColumnsRiskGrading"
+            :getInc="getInc"
+            :getQAForm="getQAForm"
+            :disDept="disDept"
+            :rcaStats="rcaStats"
+            :qaStats="qaStats"
+            :lostStatus="lostStatus"
+            :loading="loading"
+            :rows-per-page-options="[5]"
+            flat
+            bordered
+            class="my-custom-scroll"
+          />
+        </div>
+      </q-card-section>
+
+      <q-card-section
+        class="bg-white q-pa-sm rounded-borders shadow-1 q-mt-md"
+        style="border-radius: 10px"
+      >
+        <q-toolbar class="bg-white q-pa-xs q-mt-md">
+          <div>
+            <div
+              class="text-primary text-weight-bold"
+              style="font-size: 22px"
+            >
+              RISK GRADING
             </div>
 
-            <div class="q-table-scroll-wrapper">
-              <QATables
-                v-show="showTable"
-                :items="riskGradingItem"
-                :columns="disColumnsRiskGrading"
-                :getInc="getInc"
-                :getQAForm="getQAForm"
-                :disDept="disDept"
-                :rcaStats="rcaStats"
-                :qaStats="qaStats"
-                :lostStatus="lostStatus"
-                :loading="loading"
-                :rows-per-page-options="[5]"
-                flat
-                bordered
-                class="my-custom-scroll"
-              />
+            <div style="font-size: 18px; color: #333333">
+              Incident Report Dashboard
             </div>
-          </q-card-section>
-
-          <q-card-section
-            class="bg-white q-pa-sx rounded-borders shadow-1"
-            style="border-radius: 10px"
-          >
-            <div class="q-pa-sx">
-              <q-toolbar class="bg-white q-pa-sx">
-                <div>
-                  <div
-                    class="text-primary text-weight-bold"
-                    style="font-size: 22px"
-                  >
-                    RISK GRADING
-                  </div>
-                  <div style="font-size: 18px; color: #333333">
-                    Incident Report Dashboard
-                  </div>
-                </div>
+          </div>
 
                 <q-space></q-space>
 
@@ -1565,6 +1566,7 @@
                     name="veryLow"
                     label="Very Low Risk"
                     :class="['tab-equal', getRiskTabClass('veryLow')]"
+                    @click="viewRiskGradingDetails(1)"
                   >
                     <q-badge color="primary" floating>{{
                       veryLowRiskItemsCount
@@ -1575,6 +1577,7 @@
                     name="low"
                     label="Low Risk"
                     :class="['tab-equal', getRiskTabClass('low')]"
+                    @click="viewRiskGradingDetails(2)"
                   >
                     <q-badge color="primary" floating>{{
                       lowRiskItemsCount
@@ -1585,6 +1588,7 @@
                     name="moderate"
                     label="Moderate Risk"
                     :class="['tab-equal', getRiskTabClass('moderate')]"
+                    @click="viewRiskGradingDetails(3)"
                   >
                     <q-badge color="primary" floating>{{
                       moderateRiskItemsCount
@@ -1595,6 +1599,7 @@
                     name="high"
                     label="High Risk"
                     :class="['tab-equal', getRiskTabClass('high')]"
+                    @click="viewRiskGradingDetails(4)"
                   >
                     <q-badge color="primary" floating>{{
                       highRiskItemsCount
@@ -1605,6 +1610,7 @@
                     name="veryHigh"
                     label="Very High Risk"
                     :class="['tab-equal', getRiskTabClass('veryHigh')]"
+                    @click="viewRiskGradingDetails(5)"
                   >
                     <q-badge color="primary" floating>{{
                       veryHighRiskItemsCount
@@ -1613,8 +1619,19 @@
                 </q-tabs>
               </q-toolbar>
 
-              <q-tab-panels v-model="Riskgrandingtab" animated class="q-mt-sm">
+        <q-tab-panels v-model="Riskgrandingtab" animated class="q-mt-xs">
                 <q-tab-panel name="veryLow">
+                  <q-card-section
+                    v-if="isLoadingRiskGrade"
+                    class="column flex-center q-pa-xl"
+                    style="height: 600px"
+                  >
+                    <q-spinner size="90px" color="primary" />
+                    <div class="q-mt-md text-primary text-weight-medium">
+                      Loading Details...
+                    </div>
+                  </q-card-section>
+
                   <QATablesRisk
                     v-show="showTable"
                     :items="veryLowRiskItems"
@@ -1622,13 +1639,23 @@
                     :getInc="getInc"
                     :rcaStats="rcaStats"
                     :loading="loading"
-                    virtual-scroll
-                    hide-pagination
-                    :rows-per-page-options="[0]"
+                    :rows-per-page-options="[15]"
+                    v-else
                   />
                 </q-tab-panel>
 
                 <q-tab-panel name="low">
+                  <q-card-section
+                    v-if="isLoadingRiskGrade"
+                    class="column flex-center q-pa-xl"
+                    style="height: 600px"
+                  >
+                    <q-spinner size="90px" color="primary" />
+                    <div class="q-mt-md text-primary text-weight-medium">
+                      Loading Details...
+                    </div>
+                  </q-card-section>
+
                   <QATablesRisk
                     v-show="showTable"
                     :items="lowRiskItems"
@@ -1636,13 +1663,23 @@
                     :getInc="getInc"
                     :rcaStats="rcaStats"
                     :loading="loading"
-                    virtual-scroll
-                    hide-pagination
-                    :rows-per-page-options="[0]"
+                    :rows-per-page-options="[15]"
+                    v-else
                   />
                 </q-tab-panel>
 
                 <q-tab-panel name="moderate">
+                  <q-card-section
+                    v-if="isLoadingRiskGrade"
+                    class="column flex-center q-pa-xl"
+                    style="height: 600px"
+                  >
+                    <q-spinner size="90px" color="primary" />
+                    <div class="q-mt-md text-primary text-weight-medium">
+                      Loading Details...
+                    </div>
+                  </q-card-section>
+
                   <QATables
                     v-show="showTable"
                     :items="moderateRiskItems"
@@ -1654,13 +1691,23 @@
                     :qaStats="qaStats"
                     :lostStatus="lostStatus"
                     :loading="loading"
-                    virtual-scroll
-                    hide-pagination
-                    :rows-per-page-options="[0]"
+                    :rows-per-page-options="[15]"
+                    v-else
                   />
                 </q-tab-panel>
 
                 <q-tab-panel name="high">
+                  <q-card-section
+                    v-if="isLoadingRiskGrade"
+                    class="column flex-center q-pa-xl"
+                    style="height: 600px"
+                  >
+                    <q-spinner size="90px" color="primary" />
+                    <div class="q-mt-md text-primary text-weight-medium">
+                      Loading Details...
+                    </div>
+                  </q-card-section>
+
                   <QATables
                     v-show="showTable"
                     :items="highRiskItems"
@@ -1672,13 +1719,23 @@
                     :qaStats="qaStats"
                     :lostStatus="lostStatus"
                     :loading="loading"
-                    virtual-scroll
-                    hide-pagination
-                    :rows-per-page-options="[0]"
+                    :rows-per-page-options="[15]"
+                    v-else
                   />
                 </q-tab-panel>
 
                 <q-tab-panel name="veryHigh">
+                  <q-card-section
+                    v-if="isLoadingRiskGrade"
+                    class="column flex-center q-pa-xl"
+                    style="height: 600px"
+                  >
+                    <q-spinner size="90px" color="primary" />
+                    <div class="q-mt-md text-primary text-weight-medium">
+                      Loading Details...
+                    </div>
+                  </q-card-section>
+
                   <QATables
                     v-show="showTable"
                     :items="veryHighRiskItems"
@@ -1690,21 +1747,17 @@
                     :qaStats="qaStats"
                     :lostStatus="lostStatus"
                     :loading="loading"
-                    virtual-scroll
-                    hide-pagination
-                    :rows-per-page-options="[0]"
+                    :rows-per-page-options="[15]"
+                    v-else
                   />
                 </q-tab-panel>
-              </q-tab-panels>
-            </div>
-          </q-card-section>
-        </q-card-section>
+        </q-tab-panels>
       </q-card-section>
     </div>
   </div>
 
   <img
-    src="../assets/OMBRE-GRAY.jpg"
+    src="../assets/BGCORE.png"
     style="
       position: absolute;
       top: 0;
@@ -2127,6 +2180,8 @@ export default {
 
       RemoveRequestAccess: false,
       selectedID: "",
+      disAllRiskGrade: [],
+      isLoadingRiskGrade: false
     };
   },
 
@@ -2317,23 +2372,23 @@ export default {
     },
 
     veryLowRiskItems() {
-      return this.filteredDisAll.filter((item) => item.riskGrading === 1);
+      return this.disAllRiskGrade;
     },
 
     lowRiskItems() {
-      return this.filteredDisAll.filter((item) => item.riskGrading === 2);
+      return this.disAllRiskGrade;
     },
 
     moderateRiskItems() {
-      return this.filteredDisAll.filter((item) => item.riskGrading === 3);
+      return this.disAllRiskGrade;
     },
 
     highRiskItems() {
-      return this.filteredDisAll.filter((item) => item.riskGrading === 4);
+      return this.disAllRiskGrade;
     },
 
     veryHighRiskItems() {
-      return this.filteredDisAll.filter((item) => item.riskGrading === 5);
+      return this.disAllRiskGrade;
     },
 
     // veryLowRiskItemsCount() {
@@ -2423,6 +2478,8 @@ export default {
     this.interval = setInterval(() => {
       this.getInc();
     }, 60000);
+
+    this.viewRiskGradingDetails(1);
   },
 
   components: {
@@ -2540,6 +2597,29 @@ export default {
         opt => String(opt.deptCode) === String(value)
       );
       return found ? found.dept_Desc : '';
+    },
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    async viewRiskGradingDetails(riskgrade) {
+      try {
+        this.isLoadingRiskGrade = true;
+
+        const payload = {
+          Riskgrade: riskgrade,
+        };
+
+        await this.$store.dispatch("ApplyStore/disRiskGrading", payload);
+        this.disAllRiskGrade = this.getQAForm;
+
+        // ensure minimum 3 seconds loading
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+      } catch (error) {
+        console.error("Error fetching action items:", error);
+      } finally {
+        this.isLoadingRiskGrade = false;
+      }
     },
 
 
@@ -3169,12 +3249,20 @@ export default {
   border: 1px solid #ffffff; /* Border style */
   border-radius: 1px; /* Border radius */
 }
-.QADialog {
+
+/* .QADialog {
   background-image: url("../assets/BGCORE.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-color: #f4f7fc;
+  padding-top: 20px;
+  padding-bottom: 40px;
+  min-height: 100vh;
+} */
+
+.QADialog {
+  background-color: #2f5d80;
   padding-top: 20px;
   padding-bottom: 40px;
   min-height: 100vh;
@@ -3186,7 +3274,7 @@ export default {
   border-radius: 25px;
   padding: 20px;
   background-color: #ffffff;
-  width: 1100px;
+  width: 1200px;
   height: auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -3220,7 +3308,7 @@ export default {
   border-radius: 25px;
   padding: 20px;
   background-color: #ffffff;
-  width: 1500px;
+  width: 1200px;
   height: auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -3977,11 +4065,7 @@ export default {
 }
 
 .QAModuleDiag {
-  background-image: url("../assets/BGCORE.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-color: #f4f7fc;
+  background-color: #2f5d80;
   padding-top: 20px;
   padding-bottom: 40px;
   min-height: 100vh;
@@ -3994,7 +4078,7 @@ export default {
   border-radius: 25px;
   padding: 20px;
   background-color: #ffffff;
-  width: 1600px;
+  width: 1200px;
   height: auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }

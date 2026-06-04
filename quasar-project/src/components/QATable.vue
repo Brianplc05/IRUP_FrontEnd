@@ -1756,6 +1756,7 @@
 
                   <!-- Actionable Text -->
                   <q-input
+                    autogrow
                     rounded
                     outlined
                     label="Actionable Root Cause"
@@ -2017,6 +2018,7 @@
                       :key="index"
                     >
                       <q-input
+                        autogrow
                         rounded
                         outlined
                         disable
@@ -2174,89 +2176,70 @@
                 </q-btn>
               </q-card-section>
 
-              <q-card-section class="q-mt-md" style="border: 2px solid #ddd">
-                <div class="QADes1 column items-center justify-center q-mb-md">
-                  <div
-                    class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                  >
-                    Fishbone / Ishikawa Diagram and 5 Whys Analysis
-                  </div>
-                  <div
-                    class="text-center q-mb-md"
-                    style="font-size: 15px; color: #737373"
-                  >
-                    <b>Identify potential root causes using a Fishbone Diagram,
-                    then apply the 5 Whys technique to each cause to determine
-                    the true root issue.</b>
-                  </div>
+              <q-card-section
+                v-if="isLoadingRCASub"
+                class="column flex-center q-pa-xl"
+                style="height: 600px"
+              >
+                <q-spinner size="90px" color="primary" />
+                <div class="q-mt-md text-primary text-weight-medium">
+                  Loading Details...
                 </div>
+              </q-card-section>
 
-                <div class="row q-col-gutter-md q-ml-sx q-mr-sx">
-                  <div
-                    class="col-6 q-px-sx"
-                    v-if="
-                      IRRCADetailss.RCAProblemStatementLogs?.find(
-                        (m) => m.problemCode === 'MANPOWER'
-                      )?.description
-                    "
-                  >
+              <q-card-section v-else>
+                <q-card-section class="q-mt-md" style="border: 2px solid #ddd">
+                  <div class="QADes1 column items-center justify-center q-mb-md">
                     <div
-                      class="fishboneDesign q-pa-sm bg-white"
-                      style="
-                        border: 5px solid rgba(211, 47, 47, 0.6);
-                        border-radius: 40px;
+                      class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                    >
+                      Fishbone / Ishikawa Diagram and 5 Whys Analysis
+                    </div>
+                    <div
+                      class="text-center q-mb-md"
+                      style="font-size: 15px; color: #737373"
+                    >
+                      <b>Identify potential root causes using a Fishbone Diagram,
+                      then apply the 5 Whys technique to each cause to determine
+                      the true root issue.</b>
+                    </div>
+                  </div>
+
+                  <div class="row q-col-gutter-md q-ml-sx q-mr-sx">
+                    <div
+                      class="col-6 q-px-sx"
+                      v-if="
+                        IRRCADetailss.RCAProblemStatementLogs?.find(
+                          (m) => m.problemCode === 'MANPOWER'
+                        )?.description
                       "
                     >
                       <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(211, 47, 47, 0.6);
+                          border-radius: 40px;
+                        "
                       >
-                        Manpower/s
-                      </div>
-
-                      <div
-                        class="text-center text-black q-mb-md"
-                        style="font-size: 15px"
-                      >
-                        This refers to the manpowers involved in the process, including skills, training, experience, communication, and accountability.
-                      </div>
-
-                      <div class="q-mx-sm">
                         <div
-                          class="text-primary text-weight-bold"
-                          style="font-size: 15px"
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
                         >
-                          Problem statement
+                          Manpower/s
                         </div>
 
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          :model-value="
-                            IRRCADetailss.RCAProblemStatementLogs?.find(
-                              (m) => m.problemCode === 'MANPOWER'
-                            )?.description
-                          "
-                          disable
-                        />
-                      </div>
-
-                      <q-separator class="formseparatorYellow" />
-
-                      <div class="q-mx-sm q-mb-sm">
                         <div
-                          v-for="(
-                            item, index
-                          ) in IRRCADetailss.RCAWhyLog?.filter(
-                            (m) => m.problemName === 'MANPOWER'
-                          )"
-                          :key="index"
-                          class="q-mb-sm"
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
                         >
+                          This refers to the manpowers involved in the process, including skills, training, experience, communication, and accountability.
+                        </div>
+
+                        <div class="q-mx-sm">
                           <div
-                            class="text-primary text-subtitle1 text-weight-bold"
+                            class="text-primary text-weight-bold"
+                            style="font-size: 15px"
                           >
-                            Why?
+                            Problem statement
                           </div>
 
                           <q-input
@@ -2264,64 +2247,13 @@
                             rounded
                             outlined
                             :model-value="
-                              item.description || 'No Data Available'
+                              IRRCADetailss.RCAProblemStatementLogs?.find(
+                                (m) => m.problemCode === 'MANPOWER'
+                              )?.description
                             "
                             disable
                           />
                         </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    class="col-6 q-px-sx"
-                    v-if="
-                      IRRCADetailss.RCAProblemStatementLogs?.find(
-                        (m) => m.problemCode === 'METHOD'
-                      )?.description
-                    "
-                  >
-                    <div
-                      class="fishboneDesign q-pa-sm bg-white"
-                      style="
-                        border: 5px solid rgba(255, 193, 7, 0.6);
-                        border-radius: 40px;
-                      "
-                    >
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                      >
-                        Method/s
-                      </div>
-
-                      <div
-                        class="text-center text-black q-mb-md"
-                        style="font-size: 15px"
-                      >
-                        This refers to the methods and procedures an
-                        organization uses <br/> to produce or deliver its product or
-                        service.
-                      </div>
-
-                      <div class="q-mx-sm">
-                        <div
-                          class="text-primary text-weight-bold"
-                          style="font-size: 15px"
-                        >
-                          Problem statement
-                        </div>
-
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          :model-value="
-                            IRRCADetailss.RCAProblemStatementLogs?.find(
-                              (m) => m.problemCode === 'METHOD'
-                            )?.description
-                          "
-                          disable
-                        />
 
                         <q-separator class="formseparatorYellow" />
 
@@ -2330,7 +2262,420 @@
                             v-for="(
                               item, index
                             ) in IRRCADetailss.RCAWhyLog?.filter(
-                              (m) => m.problemName === 'METHOD'
+                              (m) => m.problemName === 'MANPOWER'
+                            )"
+                            :key="index"
+                            class="q-mb-sm"
+                          >
+                            <div
+                              class="text-primary text-subtitle1 text-weight-bold"
+                            >
+                              Why?
+                            </div>
+
+                            <q-input
+                              autogrow
+                              rounded
+                              outlined
+                              :model-value="
+                                item.description || 'No Data Available'
+                              "
+                              disable
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      class="col-6 q-px-sx"
+                      v-if="
+                        IRRCADetailss.RCAProblemStatementLogs?.find(
+                          (m) => m.problemCode === 'METHOD'
+                        )?.description
+                      "
+                    >
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(255, 193, 7, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Method/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to the methods and procedures an
+                          organization uses <br/> to produce or deliver its product or
+                          service.
+                        </div>
+
+                        <div class="q-mx-sm">
+                          <div
+                            class="text-primary text-weight-bold"
+                            style="font-size: 15px"
+                          >
+                            Problem statement
+                          </div>
+
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            :model-value="
+                              IRRCADetailss.RCAProblemStatementLogs?.find(
+                                (m) => m.problemCode === 'METHOD'
+                              )?.description
+                            "
+                            disable
+                          />
+
+                          <q-separator class="formseparatorYellow" />
+
+                          <div class="q-mx-sm q-mb-sm">
+                            <div
+                              v-for="(
+                                item, index
+                              ) in IRRCADetailss.RCAWhyLog?.filter(
+                                (m) => m.problemName === 'METHOD'
+                              )"
+                              :key="index"
+                              class="q-mb-sm"
+                            >
+                              <div
+                                class="text-primary text-subtitle1 text-weight-bold"
+                              >
+                                Why?
+                              </div>
+
+                              <q-input
+                                autogrow
+                                rounded
+                                outlined
+                                :model-value="
+                                  item.description || 'No Data Available'
+                                "
+                                disable
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      class="col-6 q-px-sx"
+                      v-if="
+                        IRRCADetailss.RCAProblemStatementLogs?.find(
+                          (m) => m.problemCode === 'MACHINE'
+                        )?.description
+                      "
+                    >
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(233, 30, 99, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Machine/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to the assets such as machines and
+                          equipement used <br/> to create or provide the product or
+                          services.
+                        </div>
+
+                        <div class="q-mx-sm">
+                          <div
+                            class="text-primary text-weight-bold"
+                            style="font-size: 15px"
+                          >
+                            Problem statement
+                          </div>
+
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            :model-value="
+                              IRRCADetailss.RCAProblemStatementLogs?.find(
+                                (m) => m.problemCode === 'MACHINE'
+                              )?.description
+                            "
+                            disable
+                          />
+                        </div>
+
+                        <q-separator class="formseparatorYellow" />
+
+                        <div class="q-mx-sm q-mb-sm">
+                          <div
+                            v-for="(
+                              item, index
+                            ) in IRRCADetailss.RCAWhyLog?.filter(
+                              (m) => m.problemName === 'MACHINE'
+                            )"
+                            :key="index"
+                            class="q-mb-sm"
+                          >
+                            <div
+                              class="text-primary text-subtitle1 text-weight-bold"
+                            >
+                              Why?
+                            </div>
+
+                            <q-input
+                              autogrow
+                              rounded
+                              outlined
+                              :model-value="
+                                item.description || 'No Data Available'
+                              "
+                              disable
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      class="col-6 q-px-sx"
+                      v-if="
+                        IRRCADetailss.RCAProblemStatementLogs?.find(
+                          (m) => m.problemCode === 'MATERIAL'
+                        )?.description
+                      "
+                    >
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(156, 39, 176, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Material/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to any physical or non-physical components
+                          <br/> of the system, including people, resources, and tools.
+                        </div>
+
+                        <div class="q-mx-sm">
+                          <div
+                            class="text-primary text-weight-bold"
+                            style="font-size: 15px"
+                          >
+                            Problem statement
+                          </div>
+
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            :model-value="
+                              IRRCADetailss.RCAProblemStatementLogs?.find(
+                                (m) => m.problemCode === 'MATERIAL'
+                              )?.description
+                            "
+                            disable
+                          />
+                        </div>
+
+                        <q-separator class="formseparatorYellow" />
+
+                        <div class="q-mx-sm q-mb-sm">
+                          <div
+                            v-for="(
+                              item, index
+                            ) in IRRCADetailss.RCAWhyLog?.filter(
+                              (m) => m.problemName === 'MATERIAL'
+                            )"
+                            :key="index"
+                            class="q-mb-sm"
+                          >
+                            <div
+                              class="text-primary text-subtitle1 text-weight-bold"
+                            >
+                              Why?
+                            </div>
+
+                            <q-input
+                              autogrow
+                              rounded
+                              outlined
+                              :model-value="
+                                item.description || 'No Data Available'
+                              "
+                              disable
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      class="col-6 q-px-sx"
+                      v-if="
+                        IRRCADetailss.RCAProblemStatementLogs?.find(
+                          (m) => m.problemCode === 'MEASUREMENT'
+                        )?.description
+                      "
+                    >
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(3, 169, 244, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Measurement/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to the tools and methods that organizations
+                          use <br/> to effectively measure progress, outcomes, and
+                          overall performance.
+                        </div>
+
+                        <div class="q-mx-sm">
+                          <div
+                            class="text-primary text-weight-bold"
+                            style="font-size: 15px"
+                          >
+                            Problem statement
+                          </div>
+
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            :model-value="
+                              IRRCADetailss.RCAProblemStatementLogs?.find(
+                                (m) => m.problemCode === 'MEASUREMENT'
+                              )?.description
+                            "
+                            disable
+                          />
+                        </div>
+
+                        <q-separator class="formseparatorYellow" />
+
+                        <div class="q-mx-sm q-mb-sm">
+                          <div
+                            v-for="(
+                              item, index
+                            ) in IRRCADetailss.RCAWhyLog?.filter(
+                              (m) => m.problemName === 'MEASUREMENT'
+                            )"
+                            :key="index"
+                            class="q-mb-sm"
+                          >
+                            <div
+                              class="text-primary text-subtitle1 text-weight-bold"
+                            >
+                              Why?
+                            </div>
+
+                            <q-input
+                              autogrow
+                              rounded
+                              outlined
+                              :model-value="
+                                item.description || 'No Data Available'
+                              "
+                              disable
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      class="col-6 q-px-sx"
+                      v-if="
+                        IRRCADetailss.RCAProblemStatementLogs?.find(
+                          (m) => m.problemCode === 'ENVIRONMENT'
+                        )?.description
+                      "
+                    >
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(76, 175, 80, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Environment/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to the external factors that affect the
+                          <br/> system including weather, geography, and regulation.
+                        </div>
+
+                        <div class="q-mx-sm">
+                          <div
+                            class="text-primary text-weight-bold"
+                            style="font-size: 15px"
+                          >
+                            Problem statement
+                          </div>
+
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            :model-value="
+                              IRRCADetailss.RCAProblemStatementLogs?.find(
+                                (m) => m.problemCode === 'ENVIRONMENT'
+                              )?.description
+                            "
+                            disable
+                          />
+                        </div>
+
+                        <q-separator class="formseparatorYellow" />
+
+                        <div class="q-mx-sm q-mb-sm">
+                          <div
+                            v-for="(
+                              item, index
+                            ) in IRRCADetailss.RCAWhyLog?.filter(
+                              (m) => m.problemName === 'ENVIRONMENT'
                             )"
                             :key="index"
                             class="q-mb-sm"
@@ -2355,82 +2700,163 @@
                       </div>
                     </div>
                   </div>
+                </q-card-section>
+
+                <q-card-section class="q-mt-md" style="border: 2px solid #ddd">
+                  <div
+                    v-for="(item, index) in IRRCADetailss.RCAActionableLog"
+                    :key="index"
+                    class="QADes1 column items-center justify-center q-mb-md"
+                  >
+                    <div class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center">
+                      Actionable Root Cause
+                    </div>
+
+                    <div class="text-center q-mb-md" style="font-size: 15px; color: #737373">
+                      <b>From the results of your Fishbone Diagram and 5 Whys analysis, <br />
+                      this represents the most critical underlying cause that requires corrective action
+                      to prevent the issue from recurring.</b>
+                    </div>
+
+                    <!-- Domain Label -->
+                    <q-input
+                      rounded
+                      outlined
+                      disable
+                      :model-value="getDomainLabel(item.domain)"
+                      label="Domain"
+                      class="q-mt-md"
+                      style="width: 100%"
+                    />
+
+                    <!-- Actionable Text -->
+                    <q-input
+                      rounded
+                      outlined
+                      autogrow
+                      label="Actionable Root Cause"
+                      type="textarea"
+                      disable
+                      :model-value="item.actionable"
+                      class="q-mt-md"
+                      style="width: 100%"
+                    />
+                  </div>
+                </q-card-section>
+
+                <q-card-section class="q-mt-md" style="border: 2px solid #ddd">
+                  <div class="QADes1 column items-center justify-center q-mb-md">
+                    <div
+                      class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                    >
+                      Solution Identification
+                    </div>
+                    <div
+                      class="text-center"
+                      style="font-size: 15px; color: #737373"
+                    >
+                      <b>Identify effective solutions by proposing corrective actions
+                      to immediately address root causes and <br/> preventive measures
+                      to avoid recurrence, specifying responsibilities and
+                      timelines for each.</b>
+                    </div>
+                  </div>
+
+                  <q-separator class="formseparatorWhite" />
 
                   <div
-                    class="col-6 q-px-sx"
-                    v-if="
-                      IRRCADetailss.RCAProblemStatementLogs?.find(
-                        (m) => m.problemCode === 'MACHINE'
-                      )?.description
+                    class="QADes1 shadow-2"
+                    style="
+                      border: 3px solid #6b7c93;
+                      border-radius: 40px;
+                      padding: 30px;
                     "
                   >
                     <div
-                      class="fishboneDesign q-pa-sm bg-white"
-                      style="
-                        border: 5px solid rgba(233, 30, 99, 0.6);
-                        border-radius: 40px;
-                      "
+                      class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
                     >
+                      Corrective Action
+                    </div>
+
+                    <div class="q-mb-sm" style="font-size: 15px; color: #737373">
+                      Specify immediate actions to address identified root causes,
+                      including responsible individuals and deadlines for
+                      implementation. You may add more fields as needed.
+                    </div>
+
+                    <q-separator class="formseparatorYellow" />
+
+                    <div>
                       <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        class="row q-col-gutter-md q-mt-xs q-mb-xs items-center"
+                        v-for="(item, index) in IRRCADetailss.RCACorrectiveLog"
+                        :key="index"
                       >
-                        Machine/s
-                      </div>
-
-                      <div
-                        class="text-center text-black q-mb-md"
-                        style="font-size: 15px"
-                      >
-                        This refers to the assets such as machines and
-                        equipement used <br/> to create or provide the product or
-                        services.
-                      </div>
-
-                      <div class="q-mx-sm">
-                        <div
-                          class="text-primary text-weight-bold"
-                          style="font-size: 15px"
-                        >
-                          Problem statement
-                        </div>
-
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          :model-value="
-                            IRRCADetailss.RCAProblemStatementLogs?.find(
-                              (m) => m.problemCode === 'MACHINE'
-                            )?.description
-                          "
-                          disable
-                        />
-                      </div>
-
-                      <q-separator class="formseparatorYellow" />
-
-                      <div class="q-mx-sm q-mb-sm">
-                        <div
-                          v-for="(
-                            item, index
-                          ) in IRRCADetailss.RCAWhyLog?.filter(
-                            (m) => m.problemName === 'MACHINE'
-                          )"
-                          :key="index"
-                          class="q-mb-sm"
-                        >
+                        <div class="col-6">
                           <div
-                            class="text-primary text-subtitle1 text-weight-bold"
+                            class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
                           >
-                            Why?
+                            Corrective Action Note
                           </div>
-
                           <q-input
                             autogrow
                             rounded
                             outlined
                             :model-value="
-                              item.description || 'No Data Available'
+                              item.correctiveAction || 'No Data Available'
+                            "
+                            disable
+                          />
+                        </div>
+
+                        <div class="col-2">
+                          <div
+                            class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                          >
+                            Timeline From
+                          </div>
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            :model-value="
+                              FormatDate(item.corTimelineFromDate) ||
+                              'No Data Available'
+                            "
+                            disable
+                          />
+                        </div>
+
+                        <div class="col-2">
+                          <div
+                            class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                          >
+                            Timeline To
+                          </div>
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            :model-value="
+                              FormatDate(item.corTimelineFromDate) ||
+                              'No Data Available'
+                            "
+                            disable
+                          />
+                        </div>
+
+                        <div class="col-2">
+                          <div
+                            class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                          >
+                            Accountable Person/s
+                          </div>
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            :model-value="
+                              EmploFullName(item.accountablePer) || 'No Data Available'
                             "
                             disable
                           />
@@ -2439,585 +2865,176 @@
                     </div>
                   </div>
 
+                  <!-- <q-separator class="formseparatorWhite" />
+
                   <div
-                    class="col-6 q-px-sx"
-                    v-if="
-                      IRRCADetailss.RCAProblemStatementLogs?.find(
-                        (m) => m.problemCode === 'MATERIAL'
-                      )?.description
+                    class="QADes1 shadow-2"
+                    style="
+                      border: 3px solid #6b7c93;
+                      border-radius: 40px;
+                      padding: 30px;
                     "
                   >
                     <div
-                      class="fishboneDesign q-pa-sm bg-white"
-                      style="
-                        border: 5px solid rgba(156, 39, 176, 0.6);
-                        border-radius: 40px;
-                      "
+                      class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
                     >
+                      Preventive Measures
+                    </div>
+
+                    <div class="q-mb-sm" style="font-size: 15px; color: #737373">
+                      Outline long-term preventive measures, considering changes
+                      to policies, procedures, training, and organizational
+                      culture. You may add more fields as needed.
+                    </div>
+
+                    <q-separator class="formseparatorYellow" />
+
+                    <div>
                       <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        class="row q-col-gutter-md q-mt-xs q-mb-xs items-center"
+                        v-for="(item, index) in IRRCADetailss.RCAPreventiveLog"
+                        :key="index"
                       >
-                        Material/s
-                      </div>
-
-                      <div
-                        class="text-center text-black q-mb-md"
-                        style="font-size: 15px"
-                      >
-                        This refers to any physical or non-physical components
-                        <br/> of the system, including people, resources, and tools.
-                      </div>
-
-                      <div class="q-mx-sm">
-                        <div
-                          class="text-primary text-weight-bold"
-                          style="font-size: 15px"
-                        >
-                          Problem statement
-                        </div>
-
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          :model-value="
-                            IRRCADetailss.RCAProblemStatementLogs?.find(
-                              (m) => m.problemCode === 'MATERIAL'
-                            )?.description
-                          "
-                          disable
-                        />
-                      </div>
-
-                      <q-separator class="formseparatorYellow" />
-
-                      <div class="q-mx-sm q-mb-sm">
-                        <div
-                          v-for="(
-                            item, index
-                          ) in IRRCADetailss.RCAWhyLog?.filter(
-                            (m) => m.problemName === 'MATERIAL'
-                          )"
-                          :key="index"
-                          class="q-mb-sm"
-                        >
+                        <div class="col-6">
                           <div
-                            class="text-primary text-subtitle1 text-weight-bold"
+                            class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
                           >
-                            Why?
+                            Preventive Measure Note
                           </div>
-
                           <q-input
                             autogrow
                             rounded
                             outlined
                             :model-value="
-                              item.description || 'No Data Available'
+                              item.preventiveMeasure || 'No Data Available'
                             "
-                            disable
                           />
                         </div>
-                      </div>
-                    </div>
-                  </div>
 
-                  <div
-                    class="col-6 q-px-sx"
-                    v-if="
-                      IRRCADetailss.RCAProblemStatementLogs?.find(
-                        (m) => m.problemCode === 'MEASUREMENT'
-                      )?.description
-                    "
-                  >
-                    <div
-                      class="fishboneDesign q-pa-sm bg-white"
-                      style="
-                        border: 5px solid rgba(3, 169, 244, 0.6);
-                        border-radius: 40px;
-                      "
-                    >
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                      >
-                        Measurement/s
-                      </div>
-
-                      <div
-                        class="text-center text-black q-mb-md"
-                        style="font-size: 15px"
-                      >
-                        This refers to the tools and methods that organizations
-                        use <br/> to effectively measure progress, outcomes, and
-                        overall performance.
-                      </div>
-
-                      <div class="q-mx-sm">
-                        <div
-                          class="text-primary text-weight-bold"
-                          style="font-size: 15px"
-                        >
-                          Problem statement
-                        </div>
-
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          :model-value="
-                            IRRCADetailss.RCAProblemStatementLogs?.find(
-                              (m) => m.problemCode === 'MEASUREMENT'
-                            )?.description
-                          "
-                          disable
-                        />
-                      </div>
-
-                      <q-separator class="formseparatorYellow" />
-
-                      <div class="q-mx-sm q-mb-sm">
-                        <div
-                          v-for="(
-                            item, index
-                          ) in IRRCADetailss.RCAWhyLog?.filter(
-                            (m) => m.problemName === 'MEASUREMENT'
-                          )"
-                          :key="index"
-                          class="q-mb-sm"
-                        >
+                        <div class="col-2">
                           <div
-                            class="text-primary text-subtitle1 text-weight-bold"
+                            class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
                           >
-                            Why?
+                            Timeline From
                           </div>
-
                           <q-input
                             autogrow
                             rounded
                             outlined
                             :model-value="
-                              item.description || 'No Data Available'
+                              FormatDate(item.preTimelineFromDate) ||
+                              'No Data Available'
                             "
-                            disable
                           />
                         </div>
-                      </div>
-                    </div>
-                  </div>
 
-                  <div
-                    class="col-6 q-px-sx"
-                    v-if="
-                      IRRCADetailss.RCAProblemStatementLogs?.find(
-                        (m) => m.problemCode === 'ENVIRONMENT'
-                      )?.description
-                    "
-                  >
-                    <div
-                      class="fishboneDesign q-pa-sm bg-white"
-                      style="
-                        border: 5px solid rgba(76, 175, 80, 0.6);
-                        border-radius: 40px;
-                      "
-                    >
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                      >
-                        Environment/s
-                      </div>
-
-                      <div
-                        class="text-center text-black q-mb-md"
-                        style="font-size: 15px"
-                      >
-                        This refers to the external factors that affect the
-                        <br/> system including weather, geography, and regulation.
-                      </div>
-
-                      <div class="q-mx-sm">
-                        <div
-                          class="text-primary text-weight-bold"
-                          style="font-size: 15px"
-                        >
-                          Problem statement
-                        </div>
-
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          :model-value="
-                            IRRCADetailss.RCAProblemStatementLogs?.find(
-                              (m) => m.problemCode === 'ENVIRONMENT'
-                            )?.description
-                          "
-                          disable
-                        />
-                      </div>
-
-                      <q-separator class="formseparatorYellow" />
-
-                      <div class="q-mx-sm q-mb-sm">
-                        <div
-                          v-for="(
-                            item, index
-                          ) in IRRCADetailss.RCAWhyLog?.filter(
-                            (m) => m.problemName === 'ENVIRONMENT'
-                          )"
-                          :key="index"
-                          class="q-mb-sm"
-                        >
+                        <div class="col-2">
                           <div
-                            class="text-primary text-subtitle1 text-weight-bold"
+                            class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
                           >
-                            Why?
+                            Timeline To
                           </div>
-
                           <q-input
                             autogrow
                             rounded
                             outlined
                             :model-value="
-                              item.description || 'No Data Available'
+                              FormatDate(item.preTimelineToDate) ||
+                              'No Data Available'
                             "
-                            disable
+                          />
+                        </div>
+
+                        <div class="col-2">
+                          <div
+                            class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                          >
+                            Responsible Person/s
+                          </div>
+                          <q-input
+                            autogrow
+                            rounded
+                            outlined
+                            :model-value="
+                              EmploFullName(item.responsiblePer) || 'No Data Available'
+                            "
                           />
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </q-card-section>
+                  </div> -->
 
-              <q-card-section class="q-mt-md" style="border: 2px solid #ddd">
-                <div
-                  v-for="(item, index) in IRRCADetailss.RCAActionableLog"
-                  :key="index"
-                  class="QADes1 column items-center justify-center q-mb-md"
+                  <q-separator class="formseparatorWhite" />
+
+                  <div
+                    class="QADes1 shadow-2"
+                    style="
+                      border: 3px solid #6b7c93;
+                      border-radius: 40px;
+                      padding: 30px;
+                    "
+                  >
+                    <div
+                      class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                    >
+                      Risk
+                    </div>
+
+                    <div class="q-mb-sm" style="font-size: 15px; color: #737373">
+                      These are the risks associated with or arising from this specific incident that
+                      should be recorded in the risk register to support effective risk management.
+                    </div>
+
+                    <q-separator class="formseparatorYellow" />
+
+                    <div>
+                      <div
+                        class="row q-col-gutter-md q-mt-xs q-mb-xs items-center"
+                        v-for="(item, index) in IRRCADetailss.RCARisk"
+                        :key="index"
+                      >
+                        <q-input
+                          rounded
+                          autogrow
+                          outlined
+                          disable
+                          :model-value="item.riskItem"
+                          style="width: 100%"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </q-card-section>
+
+                <q-card-section
+                  class="q-mt-md rounded-borders shadow-2 flex column items-center justify-center"
+                  style="border: 2px solid #ddd; text-align: center"
                 >
-                  <div class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center">
-                    Actionable Root Cause
+                  <div class="text-info text-subtitle1 text-weight-bold q-mb-sm">
+                    Root Cause Analysis (RCA) Note
+                  </div>
+                  <div style="font-size: 15px; color: #737373">
+                    <b>Direction: This section is for confirmation purposes only and should be <br/> completed only upon approval of the incident.
+                    A note is not required if the incident is disapproved.</b>
                   </div>
 
-                  <div class="text-center q-mb-md" style="font-size: 15px; color: #737373">
-                    <b>From the results of your Fishbone Diagram and 5 Whys analysis, <br />
-                    this represents the most critical underlying cause that requires corrective action
-                    to prevent the issue from recurring.</b>
-                  </div>
-
-                  <!-- Domain Label -->
                   <q-input
-                    rounded
                     outlined
-                    disable
-                    :model-value="getDomainLabel(item.domain)"
-                    label="Domain"
-                    class="q-mt-md"
-                    style="width: 100%"
+                    v-model="IrNo"
+                    label="IRNo."
+                    style="display: none"
                   />
-
-                  <!-- Actionable Text -->
                   <q-input
+                    v-model="newConclusion"
                     rounded
                     outlined
-                    label="Actionable Root Cause"
+                    label="Note"
                     type="textarea"
-                    disable
-                    :model-value="item.actionable"
                     class="q-mt-md"
+                    autofocus
                     style="width: 100%"
                   />
-                </div>
-              </q-card-section>
-
-              <q-card-section class="q-mt-md" style="border: 2px solid #ddd">
-                <div class="QADes1 column items-center justify-center q-mb-md">
-                  <div
-                    class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                  >
-                    Solution Identification
-                  </div>
-                  <div
-                    class="text-center"
-                    style="font-size: 15px; color: #737373"
-                  >
-                    <b>Identify effective solutions by proposing corrective actions
-                    to immediately address root causes and <br/> preventive measures
-                    to avoid recurrence, specifying responsibilities and
-                    timelines for each.</b>
-                  </div>
-                </div>
-
-                <q-separator class="formseparatorWhite" />
-
-                <div
-                  class="QADes1 shadow-2"
-                  style="
-                    border: 3px solid #6b7c93;
-                    border-radius: 40px;
-                    padding: 30px;
-                  "
-                >
-                  <div
-                    class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                  >
-                    Corrective Action
-                  </div>
-
-                  <div class="q-mb-sm" style="font-size: 15px; color: #737373">
-                    Specify immediate actions to address identified root causes,
-                    including responsible individuals and deadlines for
-                    implementation. You may add more fields as needed.
-                  </div>
-
-                  <q-separator class="formseparatorYellow" />
-
-                  <div>
-                    <div
-                      class="row q-col-gutter-md q-mt-xs q-mb-xs items-center"
-                      v-for="(item, index) in IRRCADetailss.RCACorrectiveLog"
-                      :key="index"
-                    >
-                      <div class="col-6">
-                        <div
-                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                        >
-                          Corrective Action Note
-                        </div>
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          :model-value="
-                            item.correctiveAction || 'No Data Available'
-                          "
-                          disable
-                        />
-                      </div>
-
-                      <div class="col-2">
-                        <div
-                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                        >
-                          Timeline From
-                        </div>
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          :model-value="
-                            FormatDate(item.corTimelineFromDate) ||
-                            'No Data Available'
-                          "
-                          disable
-                        />
-                      </div>
-
-                      <div class="col-2">
-                        <div
-                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                        >
-                          Timeline To
-                        </div>
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          :model-value="
-                            FormatDate(item.corTimelineFromDate) ||
-                            'No Data Available'
-                          "
-                          disable
-                        />
-                      </div>
-
-                      <div class="col-2">
-                        <div
-                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                        >
-                          Accountable Person/s
-                        </div>
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          :model-value="
-                            EmploFullName(item.accountablePer) || 'No Data Available'
-                          "
-                          disable
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- <q-separator class="formseparatorWhite" />
-
-                <div
-                  class="QADes1 shadow-2"
-                  style="
-                    border: 3px solid #6b7c93;
-                    border-radius: 40px;
-                    padding: 30px;
-                  "
-                >
-                  <div
-                    class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                  >
-                    Preventive Measures
-                  </div>
-
-                  <div class="q-mb-sm" style="font-size: 15px; color: #737373">
-                    Outline long-term preventive measures, considering changes
-                    to policies, procedures, training, and organizational
-                    culture. You may add more fields as needed.
-                  </div>
-
-                  <q-separator class="formseparatorYellow" />
-
-                  <div>
-                    <div
-                      class="row q-col-gutter-md q-mt-xs q-mb-xs items-center"
-                      v-for="(item, index) in IRRCADetailss.RCAPreventiveLog"
-                      :key="index"
-                    >
-                      <div class="col-6">
-                        <div
-                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                        >
-                          Preventive Measure Note
-                        </div>
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          :model-value="
-                            item.preventiveMeasure || 'No Data Available'
-                          "
-                        />
-                      </div>
-
-                      <div class="col-2">
-                        <div
-                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                        >
-                          Timeline From
-                        </div>
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          :model-value="
-                            FormatDate(item.preTimelineFromDate) ||
-                            'No Data Available'
-                          "
-                        />
-                      </div>
-
-                      <div class="col-2">
-                        <div
-                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                        >
-                          Timeline To
-                        </div>
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          :model-value="
-                            FormatDate(item.preTimelineToDate) ||
-                            'No Data Available'
-                          "
-                        />
-                      </div>
-
-                      <div class="col-2">
-                        <div
-                          class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                        >
-                          Responsible Person/s
-                        </div>
-                        <q-input
-                          autogrow
-                          rounded
-                          outlined
-                          :model-value="
-                            EmploFullName(item.responsiblePer) || 'No Data Available'
-                          "
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div> -->
-
-                <q-separator class="formseparatorWhite" />
-
-                <div
-                  class="QADes1 shadow-2"
-                  style="
-                    border: 3px solid #6b7c93;
-                    border-radius: 40px;
-                    padding: 30px;
-                  "
-                >
-                  <div
-                    class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                  >
-                    Risk
-                  </div>
-
-                  <div class="q-mb-sm" style="font-size: 15px; color: #737373">
-                    These are the risks associated with or arising from this specific incident that
-                    should be recorded in the risk register to support effective risk management.
-                  </div>
-
-                  <q-separator class="formseparatorYellow" />
-
-                  <div>
-                    <div
-                      class="row q-col-gutter-md q-mt-xs q-mb-xs items-center"
-                      v-for="(item, index) in IRRCADetailss.RCARisk"
-                      :key="index"
-                    >
-                      <q-input
-                        rounded
-                        outlined
-                        disable
-                        :model-value="item.riskItem"
-                        style="width: 100%"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </q-card-section>
-
-              <q-card-section
-                class="q-mt-md rounded-borders shadow-2 flex column items-center justify-center"
-                style="border: 2px solid #ddd; text-align: center"
-              >
-                <div class="text-info text-subtitle1 text-weight-bold q-mb-sm">
-                  Root Cause Analysis (RCA) Note
-                </div>
-                <div style="font-size: 15px; color: #737373">
-                  <b>Direction: This section is for confirmation purposes only and should be <br/> completed only upon approval of the incident.
-                  A note is not required if the incident is disapproved.</b>
-                </div>
-
-                <q-input
-                  outlined
-                  v-model="IrNo"
-                  label="IRNo."
-                  style="display: none"
-                />
-                <q-input
-                  v-model="newConclusion"
-                  rounded
-                  outlined
-                  label="Note"
-                  type="textarea"
-                  class="q-mt-md"
-                  autofocus
-                  style="width: 100%"
-                />
+                </q-card-section>
               </q-card-section>
 
               <q-card-actions
@@ -4598,428 +4615,391 @@
                 </q-btn>
               </q-card-section>
 
-              <q-card-section class="q-mt-md" style="border: 2px solid #ddd">
-                <div class="QADes1 column items-center justify-center q-mb-md">
-                  <div
-                    class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                  >
-                    Fishbone / Ishikawa Diagram and 5 Whys Analysis
-                  </div>
-                  <div
-                    class="text-center q-mb-md"
-                    style="font-size: 15px; color: #737373"
-                  >
-                    Identify potential root causes using a Fishbone Diagram,
-                    then apply the 5 Whys technique to each cause to determine
-                    the true root issue.
-                  </div>
-                </div>
-
-                <div class="row q-col-gutter-md q-ml-sx q-mr-sx" v-if="whyReviewLogs.length > 0">
-                  <div
-                    class="col-6 q-px-sx"
-                    v-if="(IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
-                      (m) => m.problemName === 'MANPOWER'
-                    ) || []).length > 0"
-                  >
-                    <div
-                      class="fishboneDesign q-pa-sm bg-white"
-                      style="
-                        border: 5px solid rgba(211, 47, 47, 0.6);
-                        border-radius: 40px;
-                      "
-                    >
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                      >
-                        Manpower/s
-                      </div>
-
-                      <div
-                        class="text-center text-black q-mb-md"
-                        style="font-size: 15px"
-                      >
-                        This refers to the manpowers involved in the process,
-                        including skills, training, experience, communication, and accountability.
-                      </div>
-
-                      <q-separator class="formseparatorYellow" />
-
-                      <div class="q-mx-sm q-mb-sm">
-                        <div
-                          v-for="(
-                            item, index
-                          ) in IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
-                            (m) => m.problemName === 'MANPOWER'
-                          )"
-                          :key="index"
-                          class="q-mb-sm"
-                        >
-                          <div
-                            class="text-primary text-subtitle1 text-weight-bold"
-                          >
-                            Why?
-                          </div>
-
-                          <q-input
-                            autogrow
-                            rounded
-                            outlined
-                            :model-value="
-                              item.description || 'No Data Available'
-                            "
-                            disable
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    class="col-6 q-px-sx"
-                    v-if="(IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
-                      (m) => m.problemName === 'METHOD'
-                    ) || []).length > 0"
-                  >
-                    <div
-                      class="fishboneDesign q-pa-sm bg-white"
-                      style="
-                        border: 5px solid rgba(255, 193, 7, 0.6);
-                        border-radius: 40px;
-                      "
-                    >
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                      >
-                        Method/s
-                      </div>
-
-                      <div
-                        class="text-center text-black q-mb-md"
-                        style="font-size: 15px"
-                      >
-                        This refers to the methods and procedures an
-                        organization uses <br/> to produce or deliver its product or
-                        service.
-                      </div>
-
-                      <q-separator class="formseparatorYellow" />
-
-                      <div class="q-mx-sm q-mb-sm">
-                        <div
-                          v-for="(
-                            item, index
-                          ) in IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
-                            (m) => m.problemName === 'METHOD'
-                          )"
-                          :key="index"
-                          class="q-mb-sm"
-                        >
-                          <div
-                            class="text-primary text-subtitle1 text-weight-bold"
-                          >
-                            Why?
-                          </div>
-
-                          <q-input
-                            autogrow
-                            rounded
-                            outlined
-                            :model-value="
-                              item.description || 'No Data Available'
-                            "
-                            disable
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    class="col-6 q-px-sx"
-                    v-if="(IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
-                      (m) => m.problemName === 'MACHINE'
-                    ) || []).length > 0"
-                  >
-                    <div
-                      class="fishboneDesign q-pa-sm bg-white"
-                      style="
-                        border: 5px solid rgba(233, 30, 99, 0.6);
-                        border-radius: 40px;
-                      "
-                    >
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                      >
-                        Machine/s
-                      </div>
-
-                      <div
-                        class="text-center text-black q-mb-md"
-                        style="font-size: 15px"
-                      >
-                        This refers to the assets such as machines and
-                        equipement used <br/> to create or provide the product or
-                        services.
-                      </div>
-
-                      <q-separator class="formseparatorYellow" />
-
-                      <div class="q-mx-sm q-mb-sm">
-                        <div
-                          v-for="(
-                            item, index
-                          ) in IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
-                            (m) => m.problemName === 'MACHINE'
-                          )"
-                          :key="index"
-                          class="q-mb-sm"
-                        >
-                          <div
-                            class="text-primary text-subtitle1 text-weight-bold"
-                          >
-                            Why?
-                          </div>
-
-                          <q-input
-                            autogrow
-                            rounded
-                            outlined
-                            :model-value="
-                              item.description || 'No Data Available'
-                            "
-                            disable
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    class="col-6 q-px-sx"
-                    v-if="(IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
-                      (m) => m.problemName === 'MATERIAL'
-                    ) || []).length > 0"
-                  >
-                    <div
-                      class="fishboneDesign q-pa-sm bg-white"
-                      style="
-                        border: 5px solid rgba(156, 39, 176, 0.6);
-                        border-radius: 40px;
-                      "
-                    >
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                      >
-                        Material/s
-                      </div>
-
-                      <div
-                        class="text-center text-black q-mb-md"
-                        style="font-size: 15px"
-                      >
-                        This refers to any physical or non-physical components
-                        <br/> of the system, including people, resources, and tools.
-                      </div>
-
-                      <q-separator class="formseparatorYellow" />
-
-                      <div class="q-mx-sm q-mb-sm">
-                        <div
-                          v-for="(
-                            item, index
-                          ) in IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
-                            (m) => m.problemName === 'MATERIAL'
-                          )"
-                          :key="index"
-                          class="q-mb-sm"
-                        >
-                          <div
-                            class="text-primary text-subtitle1 text-weight-bold"
-                          >
-                            Why?
-                          </div>
-
-                          <q-input
-                            autogrow
-                            rounded
-                            outlined
-                            :model-value="
-                              item.description || 'No Data Available'
-                            "
-                            disable
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    class="col-6 q-px-sx"
-                    v-if="(IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
-                      (m) => m.problemName === 'MEASUREMENT'
-                    ) || []).length > 0"
-                  >
-                    <div
-                      class="fishboneDesign q-pa-sm bg-white"
-                      style="
-                        border: 5px solid rgba(3, 169, 244, 0.6);
-                        border-radius: 40px;
-                      "
-                    >
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                      >
-                        Measurement/s
-                      </div>
-
-                      <div
-                        class="text-center text-black q-mb-md"
-                        style="font-size: 15px"
-                      >
-                        This refers to the tools and methods that organizations
-                        use <br/> to effectively measure progress, outcomes, and
-                        overall performance.
-                      </div>
-
-                      <q-separator class="formseparatorYellow" />
-
-                      <div class="q-mx-sm q-mb-sm">
-                        <div
-                          v-for="(
-                            item, index
-                          ) in IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
-                            (m) => m.problemName === 'MEASUREMENT'
-                          )"
-                          :key="index"
-                          class="q-mb-sm"
-                        >
-                          <div
-                            class="text-primary text-subtitle1 text-weight-bold"
-                          >
-                            Why?
-                          </div>
-
-                          <q-input
-                            autogrow
-                            rounded
-                            outlined
-                            :model-value="
-                              item.description || 'No Data Available'
-                            "
-                            disable
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    class="col-6 q-px-sx"
-                    v-if="(IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
-                      (m) => m.problemName === 'ENVIRONMENT'
-                    ) || []).length > 0"
-                  >
-                    <div
-                      class="fishboneDesign q-pa-sm bg-white"
-                      style="
-                        border: 5px solid rgba(76, 175, 80, 0.6);
-                        border-radius: 40px;
-                      "
-                    >
-                      <div
-                        class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                      >
-                        Environment/s
-                      </div>
-
-                      <div
-                        class="text-center text-black q-mb-md"
-                        style="font-size: 15px"
-                      >
-                        This refers to the external factors that affect <br/> the
-                        system including weather, geography, and regulation.
-                      </div>
-
-                      <q-separator class="formseparatorYellow" />
-
-                      <div class="q-mx-sm q-mb-sm">
-                        <div
-                          v-for="(
-                            item, index
-                          ) in IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
-                            (m) => m.problemName === 'ENVIRONMENT'
-                          )"
-                          :key="index"
-                          class="q-mb-sm"
-                        >
-                          <div
-                            class="text-primary text-subtitle1 text-weight-bold"
-                          >
-                            Why?
-                          </div>
-
-                          <q-input
-                            autogrow
-                            rounded
-                            outlined
-                            :model-value="
-                              item.description || 'No Data Available'
-                            "
-                            disable
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="QAFileDes column flex-center" v-else>
-                  <div
-                    class="text-subtitle1 items-center text-weight-bold text-dark"
-                  >
-                    <i>~ No Content Available ~</i>
-                  </div>
+              <q-card-section
+                v-if="isLoadingRCAReview"
+                class="column flex-center q-pa-xl"
+                style="height: 600px"
+              >
+                <q-spinner size="90px" color="primary" />
+                <div class="q-mt-md text-primary text-weight-medium">
+                  Loading Details...
                 </div>
               </q-card-section>
 
-              <q-card-section class="q-mt-md" style="border: 2px solid #ddd">
-                  <div class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center">
-                    Actionable Root Cause
+              <q-card-section v-else>
+                <q-card-section class="q-mt-md" style="border: 2px solid #ddd">
+                  <div class="QADes1 column items-center justify-center q-mb-md">
+                    <div
+                      class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                    >
+                      Fishbone / Ishikawa Diagram and 5 Whys Analysis
+                    </div>
+                    <div
+                      class="text-center q-mb-md"
+                      style="font-size: 15px; color: #737373"
+                    >
+                      Identify potential root causes using a Fishbone Diagram,
+                      then apply the 5 Whys technique to each cause to determine
+                      the true root issue.
+                    </div>
                   </div>
 
-                  <div class="text-center q-mb-md" style="font-size: 15px; color: #737373">
-                    From the results of your Fishbone Diagram and 5 Whys analysis, <br />
-                    this represents the most critical underlying cause that requires corrective action
-                    to prevent the issue from recurring.
-                  </div>
+                  <div class="row q-col-gutter-md q-ml-sx q-mr-sx" v-if="whyReviewLogs.length > 0">
+                    <div
+                      class="col-6 q-px-sx"
+                      v-if="(IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
+                        (m) => m.problemName === 'MANPOWER'
+                      ) || []).length > 0"
+                    >
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(211, 47, 47, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Manpower/s
+                        </div>
 
-                  <div v-if="actionableReviewLogs.length > 0">
-                    <q-input
-                      rounded
-                      outlined
-                      disable
-                      :model-value="getDomainLabel(actionableReviewLogs[0].domain)"
-                      label="Domain"
-                      class="q-mt-md"
-                      style="width: 100%"
-                    />
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to the manpowers involved in the process,
+                          including skills, training, experience, communication, and accountability.
+                        </div>
 
-                    <div v-for="( item, index)
-                    in IRRCAReturnReviewDetailss.RCAActionableReviewLogReturn"
-                    :key="index">
+                        <q-separator class="formseparatorYellow" />
 
-                      <q-input
-                        rounded
-                        outlined
-                        label="Note"
-                        type="textarea"
-                        class="q-mt-md"
-                        :model-value="item.actionable"
-                        autofocus
-                        disable
-                        style="width: 100%"
-                      />
+                        <div class="q-mx-sm q-mb-sm">
+                          <div
+                            v-for="(
+                              item, index
+                            ) in IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
+                              (m) => m.problemName === 'MANPOWER'
+                            )"
+                            :key="index"
+                            class="q-mb-sm"
+                          >
+                            <div
+                              class="text-primary text-subtitle1 text-weight-bold"
+                            >
+                              Why?
+                            </div>
+
+                            <q-input
+                              autogrow
+                              rounded
+                              outlined
+                              :model-value="
+                                item.description || 'No Data Available'
+                              "
+                              disable
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      class="col-6 q-px-sx"
+                      v-if="(IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
+                        (m) => m.problemName === 'METHOD'
+                      ) || []).length > 0"
+                    >
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(255, 193, 7, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Method/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to the methods and procedures an
+                          organization uses <br/> to produce or deliver its product or
+                          service.
+                        </div>
+
+                        <q-separator class="formseparatorYellow" />
+
+                        <div class="q-mx-sm q-mb-sm">
+                          <div
+                            v-for="(
+                              item, index
+                            ) in IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
+                              (m) => m.problemName === 'METHOD'
+                            )"
+                            :key="index"
+                            class="q-mb-sm"
+                          >
+                            <div
+                              class="text-primary text-subtitle1 text-weight-bold"
+                            >
+                              Why?
+                            </div>
+
+                            <q-input
+                              autogrow
+                              rounded
+                              outlined
+                              :model-value="
+                                item.description || 'No Data Available'
+                              "
+                              disable
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      class="col-6 q-px-sx"
+                      v-if="(IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
+                        (m) => m.problemName === 'MACHINE'
+                      ) || []).length > 0"
+                    >
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(233, 30, 99, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Machine/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to the assets such as machines and
+                          equipement used <br/> to create or provide the product or
+                          services.
+                        </div>
+
+                        <q-separator class="formseparatorYellow" />
+
+                        <div class="q-mx-sm q-mb-sm">
+                          <div
+                            v-for="(
+                              item, index
+                            ) in IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
+                              (m) => m.problemName === 'MACHINE'
+                            )"
+                            :key="index"
+                            class="q-mb-sm"
+                          >
+                            <div
+                              class="text-primary text-subtitle1 text-weight-bold"
+                            >
+                              Why?
+                            </div>
+
+                            <q-input
+                              autogrow
+                              rounded
+                              outlined
+                              :model-value="
+                                item.description || 'No Data Available'
+                              "
+                              disable
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      class="col-6 q-px-sx"
+                      v-if="(IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
+                        (m) => m.problemName === 'MATERIAL'
+                      ) || []).length > 0"
+                    >
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(156, 39, 176, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Material/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to any physical or non-physical components
+                          <br/> of the system, including people, resources, and tools.
+                        </div>
+
+                        <q-separator class="formseparatorYellow" />
+
+                        <div class="q-mx-sm q-mb-sm">
+                          <div
+                            v-for="(
+                              item, index
+                            ) in IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
+                              (m) => m.problemName === 'MATERIAL'
+                            )"
+                            :key="index"
+                            class="q-mb-sm"
+                          >
+                            <div
+                              class="text-primary text-subtitle1 text-weight-bold"
+                            >
+                              Why?
+                            </div>
+
+                            <q-input
+                              autogrow
+                              rounded
+                              outlined
+                              :model-value="
+                                item.description || 'No Data Available'
+                              "
+                              disable
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      class="col-6 q-px-sx"
+                      v-if="(IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
+                        (m) => m.problemName === 'MEASUREMENT'
+                      ) || []).length > 0"
+                    >
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(3, 169, 244, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Measurement/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to the tools and methods that organizations
+                          use <br/> to effectively measure progress, outcomes, and
+                          overall performance.
+                        </div>
+
+                        <q-separator class="formseparatorYellow" />
+
+                        <div class="q-mx-sm q-mb-sm">
+                          <div
+                            v-for="(
+                              item, index
+                            ) in IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
+                              (m) => m.problemName === 'MEASUREMENT'
+                            )"
+                            :key="index"
+                            class="q-mb-sm"
+                          >
+                            <div
+                              class="text-primary text-subtitle1 text-weight-bold"
+                            >
+                              Why?
+                            </div>
+
+                            <q-input
+                              autogrow
+                              rounded
+                              outlined
+                              :model-value="
+                                item.description || 'No Data Available'
+                              "
+                              disable
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      class="col-6 q-px-sx"
+                      v-if="(IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
+                        (m) => m.problemName === 'ENVIRONMENT'
+                      ) || []).length > 0"
+                    >
+                      <div
+                        class="fishboneDesign q-pa-sm bg-white"
+                        style="
+                          border: 5px solid rgba(76, 175, 80, 0.6);
+                          border-radius: 40px;
+                        "
+                      >
+                        <div
+                          class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                        >
+                          Environment/s
+                        </div>
+
+                        <div
+                          class="text-center text-black q-mb-md"
+                          style="font-size: 15px"
+                        >
+                          This refers to the external factors that affect <br/> the
+                          system including weather, geography, and regulation.
+                        </div>
+
+                        <q-separator class="formseparatorYellow" />
+
+                        <div class="q-mx-sm q-mb-sm">
+                          <div
+                            v-for="(
+                              item, index
+                            ) in IRRCAReturnReviewDetailss.RCAWhyReviewLogReturn?.filter(
+                              (m) => m.problemName === 'ENVIRONMENT'
+                            )"
+                            :key="index"
+                            class="q-mb-sm"
+                          >
+                            <div
+                              class="text-primary text-subtitle1 text-weight-bold"
+                            >
+                              Why?
+                            </div>
+
+                            <q-input
+                              autogrow
+                              rounded
+                              outlined
+                              :model-value="
+                                item.description || 'No Data Available'
+                              "
+                              disable
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -5029,175 +5009,226 @@
                     >
                       <i>~ No Content Available ~</i>
                     </div>
-                </div>
-              </q-card-section>
-
-              <q-card-section class="q-mt-md" style="border: 2px solid #ddd">
-                <div class="QADes1 column items-center justify-center q-mb-md">
-                  <div
-                    class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
-                  >
-                    Solution Identification
                   </div>
-                  <div
-                    class="text-center"
-                    style="font-size: 15px; color: #737373"
-                  >
-                    Identify effective solutions by proposing corrective actions
-                    to immediately address root causes and preventive measures
-                    to avoid recurrence, specifying responsibilities and
-                    timelines for each.
-                  </div>
-                </div>
+                </q-card-section>
 
-                <div v-if="corReviewLogs.length > 0">
-                  <div
-                    class="QADes1 shadow-2"
-                    style="
-                      border: 3px solid #6b7c93;
-                      border-radius: 40px;
-                      padding: 30px;
-                    ">
-
-                    <div
-                      class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                    >
-                      Corrective Action
+                <q-card-section class="q-mt-md" style="border: 2px solid #ddd">
+                    <div class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center">
+                      Actionable Root Cause
                     </div>
 
-                    <div class="q-mb-sm" style="font-size: 15px; color: #737373">
-                      Specify immediate actions to address identified root causes,
-                      including responsible individuals and deadlines for
-                      implementation. You may add more fields as needed.
+                    <div class="text-center q-mb-md" style="font-size: 15px; color: #737373">
+                      From the results of your Fishbone Diagram and 5 Whys analysis, <br />
+                      this represents the most critical underlying cause that requires corrective action
+                      to prevent the issue from recurring.
                     </div>
 
-                    <q-separator class="formseparatorYellow" />
+                    <div v-if="actionableReviewLogs.length > 0">
+                      <q-input
+                        rounded
+                        outlined
+                        disable
+                        :model-value="getDomainLabel(actionableReviewLogs[0].domain)"
+                        label="Domain"
+                        class="q-mt-md"
+                        style="width: 100%"
+                      />
 
-                    <div>
+                      <div v-for="( item, index)
+                      in IRRCAReturnReviewDetailss.RCAActionableReviewLogReturn"
+                      :key="index">
+
+                        <q-input
+                          rounded
+                          outlined
+                          autogrow
+                          label="Note"
+                          type="textarea"
+                          class="q-mt-md"
+                          :model-value="item.actionable"
+                          autofocus
+                          disable
+                          style="width: 100%"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="QAFileDes column flex-center" v-else>
                       <div
-                        class="q-pa-sm"
-                        v-for="(
-                          item, index
-                        ) in IRRCAReturnReviewDetailss.RCACorrectiveReviewLogReturn"
-                        :key="index"
+                        class="text-subtitle1 items-center text-weight-bold text-dark"
                       >
-                        <div class="col">
-                          <div
-                            class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                          >
-                            Corrective Action Note
-                          </div>
+                        <i>~ No Content Available ~</i>
+                      </div>
+                  </div>
+                </q-card-section>
 
-                          <q-input
-                            autogrow
-                            rounded
-                            outlined
-                            :model-value="
-                              item.correctiveAction || 'No Data Available'
-                            "
-                            disable
-                          />
+                <q-card-section class="q-mt-md" style="border: 2px solid #ddd">
+                  <div class="QADes1 column items-center justify-center q-mb-md">
+                    <div
+                      class="text-primary text-subtitle1 text-weight-bold q-mb-xs text-center"
+                    >
+                      Solution Identification
+                    </div>
+                    <div
+                      class="text-center"
+                      style="font-size: 15px; color: #737373"
+                    >
+                      Identify effective solutions by proposing corrective actions
+                      to immediately address root causes and preventive measures
+                      to avoid recurrence, specifying responsibilities and
+                      timelines for each.
+                    </div>
+                  </div>
+
+                  <div v-if="corReviewLogs.length > 0">
+                    <div
+                      class="QADes1 shadow-2"
+                      style="
+                        border: 3px solid #6b7c93;
+                        border-radius: 40px;
+                        padding: 30px;
+                      ">
+
+                      <div
+                        class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                      >
+                        Corrective Action
+                      </div>
+
+                      <div class="q-mb-sm" style="font-size: 15px; color: #737373">
+                        Specify immediate actions to address identified root causes,
+                        including responsible individuals and deadlines for
+                        implementation. You may add more fields as needed.
+                      </div>
+
+                      <q-separator class="formseparatorYellow" />
+
+                      <div>
+                        <div
+                          class="q-pa-sm"
+                          v-for="(
+                            item, index
+                          ) in IRRCAReturnReviewDetailss.RCACorrectiveReviewLogReturn"
+                          :key="index"
+                        >
+                          <div class="col">
+                            <div
+                              class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                            >
+                              Corrective Action Note
+                            </div>
+
+                            <q-input
+                              autogrow
+                              rounded
+                              outlined
+                              :model-value="
+                                item.correctiveAction || 'No Data Available'
+                              "
+                              disable
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <!-- <div
-                    class="QADes1 shadow-2"
-                    style="
-                      border: 3px solid #6b7c93;
-                      border-radius: 40px;
-                      padding: 10px;
-                    "
-                    v-if="(IRRCAReturnReviewDetailss.RCAPreventiveReviewLogReturn || []).length">
+                    <!-- <div
+                      class="QADes1 shadow-2"
+                      style="
+                        border: 3px solid #6b7c93;
+                        border-radius: 40px;
+                        padding: 10px;
+                      "
+                      v-if="(IRRCAReturnReviewDetailss.RCAPreventiveReviewLogReturn || []).length">
 
-                    <div
-                      class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                    >
-                      Preventive Measures
-                    </div>
-
-                    <div class="q-mb-sm" style="font-size: 15px; color: #737373">
-                      Outline long-term preventive measures, considering changes
-                      to policies, procedures, training, and organizational
-                      culture. You may add more fields as needed.
-                    </div>
-
-                    <q-separator class="formseparatorYellow" />
-
-                    <div>
                       <div
-                        class="q-pa-md"
-                        v-for="(
-                          item, index
-                        ) in IRRCAReturnReviewDetailss.RCAPreventiveReviewLogReturn"
-                        :key="index"
+                        class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
                       >
-                        <div class="col">
-                          <div
-                            class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
-                          >
-                            Preventive Measure Note
-                          </div>
+                        Preventive Measures
+                      </div>
 
-                          <q-input
-                            autogrow
-                            rounded
-                            outlined
-                            :model-value="
-                              item.preventiveMeasure || 'No Data Available'
-                            "
-                          />
+                      <div class="q-mb-sm" style="font-size: 15px; color: #737373">
+                        Outline long-term preventive measures, considering changes
+                        to policies, procedures, training, and organizational
+                        culture. You may add more fields as needed.
+                      </div>
+
+                      <q-separator class="formseparatorYellow" />
+
+                      <div>
+                        <div
+                          class="q-pa-md"
+                          v-for="(
+                            item, index
+                          ) in IRRCAReturnReviewDetailss.RCAPreventiveReviewLogReturn"
+                          :key="index"
+                        >
+                          <div class="col">
+                            <div
+                              class="text-primary text-subtitle1 text-weight-bold q-mb-sx"
+                            >
+                              Preventive Measure Note
+                            </div>
+
+                            <q-input
+                              autogrow
+                              rounded
+                              outlined
+                              :model-value="
+                                item.preventiveMeasure || 'No Data Available'
+                              "
+                            />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div> -->
-                </div>
-
-                <div class="QAFileDes column flex-center" v-else>
-                  <div
-                    class="text-subtitle1 items-center text-weight-bold text-dark"
-                  >
-                    <i>~ No Content Available ~</i>
+                    </div> -->
                   </div>
-                </div>
-              </q-card-section>
 
-              <q-card-section
-                class="q-mt-md rounded-borders shadow-2 flex column items-center justify-center"
-                style="border: 2px solid #ddd; text-align: center"
-              >
-                <div class="text-info text-subtitle1 text-weight-bold q-mb-sm">
-                  Root Cause Analysis (RCA) Note
-                </div>
-                <div class="text-body2 text-grey-7 q-mb-sm">
-                  <b>Direction:</b> This section highlights the RCA measures
-                  implemented by the department to resolve and prevent the
-                  incident.
-                </div>
+                  <div class="QAFileDes column flex-center" v-else>
+                    <div
+                      class="text-subtitle1 items-center text-weight-bold text-dark"
+                    >
+                      <i>~ No Content Available ~</i>
+                    </div>
+                  </div>
+                </q-card-section>
 
-                <q-input
-                  outlined
-                  v-model="RevisionCode"
-                  style="display: none"
-                />
+                <q-card-section
+                  class="q-mt-md rounded-borders shadow-2 flex column items-center justify-center"
+                  style="border: 2px solid #ddd; text-align: center"
+                >
+                  <div class="text-info text-subtitle1 text-weight-bold q-mb-sm">
+                    Root Cause Analysis (RCA) Note
+                  </div>
+                  <div class="text-body2 text-grey-7 q-mb-sm">
+                    <b>Direction:</b> This section highlights the RCA measures
+                    implemented by the department to resolve and prevent the
+                    incident.
+                  </div>
 
-                <q-input
-                  outlined
-                  v-model="IrNo"
-                  label="IRNo."
-                  style="display: none"
-                />
+                  <q-input
+                    outlined
+                    v-model="RevisionCode"
+                    style="display: none"
+                  />
 
-                <q-input
-                  v-model="newConclusion"
-                  rounded
-                  outlined
-                  label="Note"
-                  type="textarea"
-                  class="q-mt-md"
-                  autofocus
-                  style="width: 100%"
-                />
+                  <q-input
+                    outlined
+                    v-model="IrNo"
+                    label="IRNo."
+                    style="display: none"
+                  />
+
+                  <q-input
+                    v-model="newConclusion"
+                    rounded
+                    outlined
+                    label="Note"
+                    type="textarea"
+                    class="q-mt-md"
+                    autofocus
+                    style="width: 100%"
+                  />
+                </q-card-section>
               </q-card-section>
 
               <q-card-actions
@@ -9406,6 +9437,8 @@ export default {
 
       setRejectStatus: false,
       rejectNote: "",
+      isLoadingRCASub: false,
+      isLoadingRCAReview: false
     };
   },
 
@@ -9943,9 +9976,17 @@ export default {
       try {
         this.setRCARevisionSubDialogs = false;
         this.addConclusionRevision = true;
-        this.viewRCADetails(selectedIrNo);
+        this.isLoadingRCASub = true;
+
+        await this.viewRCADetails(selectedIrNo);
+
+        // ensure minimum 3 seconds loading
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
       } catch (error) {
-        console.error("Error updating status:", error);
+        console.error("Error fetching action items:", error);
+      } finally {
+        this.isLoadingRCASub = false;
       }
     },
 
@@ -10408,9 +10449,16 @@ export default {
         });
         this.setRCAReviewSubDialogs = false;
         this.setReviewDisplay = true;
-        this.viewEditReviewRCADetails(selectedIrNo, latestRevisionCode);
+        this.isLoadingRCAReview = true;
+        await this.viewEditReviewRCADetails(selectedIrNo, latestRevisionCode);
+
+        // ensure minimum 3 seconds loading
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
       } catch (error) {
         console.error("Error updating status:", error);
+      } finally {
+        this.isLoadingRCAReview = false;
       }
     },
 
