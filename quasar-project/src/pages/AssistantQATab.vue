@@ -1,71 +1,96 @@
 <template>
   <div id="q-app" style="position: relative; z-index: 1">
     <div style="height: 100%; width: 100%" class="q-pa-lg">
-      <div
-        class="row items-center justify-between q-mb-md bg-white q-pa-sm rounded-borders shadow-1"
-        style="border-radius: 10px"
+      <q-card
+        class="dashboard-header"
+        style="border: 2px solid #e0e0e0;"
       >
-        <div>
-          <div class="text-primary text-weight-bold" style="font-size: 30px">
-            ASSISTANT QUALITY ASSURANCE (AQA) MODULE
-          </div>
-          <div style="font-size: 18px; color: #333333">
-            Incident Report Details
-          </div>
-        </div>
+        <q-card-section class="row items-center no-wrap">
+          <div class="row items-center no-wrap">
+            <div class="icon-wrapper">
+              <q-icon
+                name="inventory"
+                size="35px"
+                color="primary"
+              />
+            </div>
 
-        <div class="row items-center q-gutter-sm">
-          <q-input
-            v-model="searchContent"
-            label="SEARCH "
-            dense
-            outlined
-            rounded
-          >
-            <template v-slot:append>
-              <q-icon name="search" color="info" />
-            </template>
-          </q-input>
-        </div>
-      </div>
+            <div class="q-ml-md text-left">
+              <div class="text-h5 text-weight-medium text-primary text-uppercase">
+                ASSISTANT QUALITY ASSURANCE (AQA) MODULE
+              </div>
 
-      <q-card-section
-        class="row bg-warning q-pa-md rounded-borders shadow-1"
-        style="border-radius: 10px"
+              <div class="text-grey-7 q-mt-xs">
+                Welcome to the Incident Reporting & Unified Platform (IRUP) Assistant Quality Assurance!
+              </div>
+
+              <div class="accent-line q-mt-sm"></div>
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+
+      <q-card
+        class="dashboard-header q-mt-md q-pa-sm"
+        flat
+        bordered
       >
-        <div
-          v-if="loading"
-          class="fixed-full flex flex-center column q-gutter-md"
-          style="background-color: rgba(255, 255, 255, 0.7); z-index: 9999"
-        >
-          <q-spinner-ball size="150px" color="primary" />
-          <div class="text-subtitle1 text-primary">Please wait...</div>
-        </div>
+        <q-card-section style="border: 2px solid #e0e0e0;">
+          <!-- SEARCH -->
+          <q-card-section class="q-pa-sm">
+            <q-input
+              v-model="searchContent"
+              label="SEARCH"
+              dense
+              outlined
+              clearable
+            >
+              <template #append>
+                <q-icon
+                  name="search"
+                  color="info"
+                />
+              </template>
+            </q-input>
+          </q-card-section>
 
-        <q-card-section class="column fit full-width">
           <q-card-section
-            class="bg-white q-pa-sm rounded-borders shadow-1"
-            style="border-radius: 10px"
+            v-if="loading"
+            class="fixed-full flex flex-center column q-gutter-md"
+            style="background-color: rgba(255, 255, 255, 0.7); z-index: 9999"
           >
-            <AssistantQATable
-              v-show="showTable"
-              :rows="filteredDisAll"
-              :columns="disColumns"
-              row-key="IRNo"
-              :loading="loading"
-              :getAssistantQAs="getAssistantQAs"
-              virtual-scroll
-              hide-pagination
-              :rows-per-page-options="[0]"
-            />
+            <q-spinner-ball size="150px" color="primary" />
+            <div class="text-subtitle1 text-primary">Please wait...</div>
+          </q-card-section>
+
+          <!-- TABLE -->
+          <q-card-section class="q-pa-sm" v-else>
+            <q-card
+              class="bg-white q-pa-sm shadow-1"
+              style="border-radius: 10px"
+              flat
+              bordered
+            >
+              <AssistantQATable
+                v-show="showTable"
+                :rows="filteredDisAll"
+                :columns="disColumns"
+                row-key="IRNo"
+                :loading="loading"
+                :getAssistantQAs="getAssistantQAs"
+                virtual-scroll
+                hide-pagination
+                :rows-per-page-options="[0]"
+              />
+            </q-card>
           </q-card-section>
         </q-card-section>
-      </q-card-section>
+      </q-card>
     </div>
   </div>
 
   <img
-    src="../assets/OMBRE-GRAY.jpg"
+    src="../assets/BGCORE.png"
     style="
       position: absolute;
       top: 0;
@@ -172,6 +197,34 @@ export default {
 </script>
 
 <style>
+
+/* //////////////////// HEADER //////////////////// */
+
+.dashboard-header {
+  width: 100%;
+  border-radius: 8px;
+  background: #ffffff;
+  text-align: left;
+}
+
+.icon-wrapper {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(2, 64, 137, 0.08);
+}
+
+.accent-line {
+  width: 60px;
+  height: 3px;
+  background: #024089;
+  border-radius: 2px;
+}
+
+
 /* ///////////////////////////////////////QAHEADER////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 .my-card {

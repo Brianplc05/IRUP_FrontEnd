@@ -1,149 +1,307 @@
 <template>
   <div id="q-app" style="position: relative; z-index: 1">
     <div style="height: 100%; width: 100%" class="q-pa-lg">
-      <div
-        class="row items-center justify-between q-mb-md bg-white q-pa-sm rounded-borders shadow-1"
-        style="border-radius: 10px"
-      >
-        <div>
-          <div class="text-primary text-weight-bold" style="font-size: 30px">
-            DASHBOARD
-          </div>
-          <div style="font-size: 18px; color: #333333">
-            Incident Report Details
-          </div>
-        </div>
-
-        <div class="row items-center q-gutter-sm">
-          <q-input
-            v-model="searchContent"
-            label="Search "
-            dense
-            outlined
-            rounded
-          >
-            <template v-slot:append>
-              <q-icon name="search" color="info" />
-            </template>
-          </q-input>
-        </div>
-      </div>
-
-      <div style="display: flex; gap: 16px; background: #fff; padding: 16px; border-radius: 10px; border: 2px solid #e0e0e0;">
-        <!-- Left Column -->
-        <div style="flex: 2; border-radius: 10px; border: 2px solid #e0e0e0; padding: 8px;">
-          <div style="text-align: center; font-weight: bold; font-size: 1.25rem; color: #1976d2; margin-bottom: 10px;">
-            REPORTABLE INCIDENT
+      <q-card  class="dashboard-header" style="border: 2px solid #e0e0e0;">
+        <q-card-section class="row items-start no-wrap">
+          <div class="icon-wrapper">
+            <q-icon name="dashboard" size="35px" color="primary" />
           </div>
 
-          <BarGraph :options="chartOptions" :series="series"/>
-        </div>
+          <div class="q-ml-md text-left">
+            <div class="text-h5 text-weight-medium text-primary text-uppercase">
+              Dashboard
+            </div>
 
-        <!-- Right Column -->
-        <div style="flex: 1; border-radius: 10px; border: 2px solid #e0e0e0; padding: 8px;">
-          <q-btn-dropdown
-            color="primary"
-            label="REPORTABLE INCIDENT"
-            class="full-width text-h7"
-          >
-            <q-list>
-              <q-item
-                v-for="item in disCountRep"
-                :key="item.subjectCode"
-                clickable
-                v-close-popup
-                @click="getCountParticular(item.subjectCode)"
-              >
-                <q-item-section>
-                  {{ item.subjectName }}
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
+            <div class="text-grey-7 q-mt-xs">
+              Welcome to the Incident Reporting & Unified Platform (IRUP) Dashboard!
+            </div>
 
-          <div style="text-align: center; font-weight: bold; font-size: 1.1rem; color: #1976d2; text-transform: uppercase; margin: 10px 0;">
-            {{ disCountPar?.[0]?.subjectName || 'PARTICULAR INCIDENT' }}
+            <div class="accent-line q-mt-sm"></div>
           </div>
-
-          <PieGraph :data="disCountPar"/>
-        </div>
-      </div>
-
-      <div style="display: flex; gap: 16px; background: #fff; padding: 16px; border-radius: 10px; border: 2px solid #e0e0e0; flex-wrap: wrap;" class="q-mt-md">
-        <!-- First Chart -->
-        <div style="flex: 1; min-width: 300px; border-radius: 10px; border: 2px solid #e0e0e0; padding: 8px;">
-          <LineGraph
-            :options="chartOptionsTAT"
-            :series="seriesRepTAT"
-            :height="400"
-          />
-        </div>
-
-        <!-- Second Chart -->
-        <div style="flex: 1; min-width: 300px; border-radius: 10px; border: 2px solid #e0e0e0; padding: 8px;">
-          <LineGraph
-            :options="chartOptionRCSUBTaT"
-            :series="seriesRepRCSUBTaT"
-            :height="400"
-          />
-        </div>
-
-        <!-- Third Chart -->
-        <div style="flex: 1; min-width: 300px; border-radius: 10px; border: 2px solid #e0e0e0; padding: 8px;">
-          <LineGraph
-            :options="chartOptionAveRC"
-            :series="seriesAveRC"
-            :height="400"
-          />
-        </div>
-      </div>
-
-      <q-card-section
-        class="row q-mb-sm bg-white q-pa-md rounded-borders shadow-1 q-mt-md"
-        style="border-radius: 10px"
-      >
-        <div
-          v-if="loading"
-          class="fixed-full flex flex-center column q-gutter-md"
-          style="background-color: rgba(255, 255, 255, 0.7); z-index: 9999"
-        >
-          <q-spinner-ball size="150px" color="primary" />
-          <div class="text-subtitle1 text-primary">Please wait...</div>
-        </div>
-
-        <q-card-section class="bg-white column fit full-width">
-          <q-table
-            v-show="showTable"
-            :rows="filteredDisAll"
-            :columns="disColumns"
-            row-key="IRNo"
-            :pagination="{ rowsPerPage: 8 }"
-            :loading="loading"
-          >
-            <template v-slot:body-cell-subject="props">
-              <q-td :props="props" style="width: 20%">
-                <span
-                  v-if="!props.row.subjectSpecificExam"
-                  class="text-uppercase text-bold text-center"
-                >
-                  {{ props.row.subjectName }}
-                </span>
-                <span
-                  v-if="props.row.subjectSpecificExam"
-                  class="text-uppercase text-bold text-center"
-                >
-                  {{ props.row.subjectName }} -
-                  {{ props.row.subjectSpecificExam }}
-                </span>
-              </q-td>
-            </template>
-          </q-table>
         </q-card-section>
-      </q-card-section>
+      </q-card>
+
+      <q-card bordered flat class="q-mt-md">
+        <q-card-section class="dashboard-row">
+          <!-- INCIDENT STATUS - 35% -->
+          <div class="incident-status-panel ">
+            <div class="dashboard-panel q-pa-sm">
+
+              <div class="text-h5 text-weight-medium text-primary text-uppercase text-center q-pt-sm">
+                CAPA IMPLEMENTATION RATE
+              </div>
+
+              <div class="text-grey-7 q-mt-xs q-pa-sm">
+                <p>
+                  This section shows the percentage of Corrective and Preventive Actions (CAPA) that
+                  have been implemented based on the reported incidents. It provides an overview of the
+                  organization’s progress in addressing identified issues and ensuring that appropriate actions are completed.
+                </p>
+
+                <p class="q-mt-md">
+                  For more detailed information about the incidents and their corresponding CAPA actions,
+                  you may click <strong>“Download Incident Reports”</strong>.
+                </p>
+
+                <q-btn
+                  flat
+                  rounded
+                  push
+                  @click="downloadIncidentContent"
+                  :ripple="{ center: true }"
+                  icon="add_card"
+                  label="DOWNLOAD INCIDENT REPORTS"
+                  class="q-pa-sm bg-accent"
+                  color="black"
+                  style="width: 280px; border-radius: 10px"
+                >
+                  <q-dialog v-model="downloadIR" persistent>
+                    <q-card style="width: 1800px; max-width: 90vw">
+                      <q-card-section class="row items-center justify-between bg-primary text-white">
+                        <div class="text-h5 text-weight-medium text-white text-uppercase text-center">
+                          GENERATE INCIDENT REPORT DETAILS
+                        </div>
+
+                        <q-btn dense flat icon="close" v-close-popup @click="this.downloadIR = false">
+                          <q-tooltip>Close</q-tooltip>
+                        </q-btn>
+                      </q-card-section>
+
+                      <q-separator></q-separator>
+
+                      <q-card-section
+                        class="q-ma-md"
+                      >
+                        <div
+                          class="row q-col-gutter-md justify-start"
+                        >
+                          <div class="col-12 col-md-4 col-lg-2">
+                            <q-select
+                              outlined
+                              v-model="selectedMonth"
+                              :options="monthOption"
+                              option-label="label"
+                              option-value="value"
+                              emit-value
+                              map-options
+                              label="Month"
+                            />
+                          </div>
+
+                          <div class="col-12 col-md-4 col-lg-2">
+                            <q-input
+                              outlined
+                              v-model="inputedYear"
+                              label="Year"
+                              inputmode="numeric"
+                              maxlength="4"
+                              :error="yearError"
+                              error-message="Please enter numbers only."
+                              @update:model-value="validateYear"
+                            />
+                          </div>
+
+                          <div class="col-12 col-md-4 col-lg-2">
+                            <q-btn
+                              flat
+                              rounded
+                              push
+                              @click="filterIncidentContent()"
+                              :ripple="{ center: true }"
+                              label="FILTER INCIDENT REPORTS"
+                              class="q-pa-sm q-mt-sm bg-accent"
+                              color="black"
+                              style="width: 250px; border-radius: 10px"
+                            />
+                          </div>
+                        </div>
+
+
+                        <q-table
+                          flat
+                          bordered
+                          :rows="displayFilteredData"
+                          :columns="disFilterColumns"
+                          color="primary"
+                          row-key="iRNo"
+                          :rows-per-page-options="[10]"
+                        >
+                          <template v-slot:top-right>
+                            <q-btn
+                              flat
+                              rounded
+                              push
+                              class="q-pa-sm bg-primary"
+                              color="white"
+                              icon-right="archive"
+                              label="EXPORT TO CSV"
+                              no-caps
+                              @click="exportTable"
+                              style="width: 200px; border-radius: 10px"
+                            />
+                          </template>
+
+                          <template v-slot:body-cell-subjectDate="props">
+                            <q-td :props="props">
+                              {{ FormatDate(props.row.subjectDate) }}
+                            </q-td>
+                          </template>
+
+                          <template v-slot:body-cell-dateTimeCreated="props">
+                            <q-td :props="props">
+                              {{ FormatDate(props.row.dateTimeCreated) }}
+                            </q-td>
+                          </template>
+
+                          <template v-slot:body-cell-dateTimeRCA="props">
+                            <q-td :props="props">
+                              {{ FormatDate(props.row.dateTimeRCA) }}
+                            </q-td>
+                          </template>
+
+                          <template v-slot:body-cell-actionCorrectiveDate1="props">
+                            <q-td :props="props">
+                              {{ FormatDate(props.row.actionCorrectiveDate1) }}
+                            </q-td>
+                          </template>
+
+                          <template v-slot:body-cell-actionCorrectiveDate2="props">
+                            <q-td :props="props">
+                              {{ FormatDate(props.row.actionCorrectiveDate2) }}
+                            </q-td>
+                          </template>
+
+                          <template v-slot:body-cell-actionCorrectiveDate3="props">
+                            <q-td :props="props">
+                              {{ FormatDate(props.row.actionCorrectiveDate3) }}
+                            </q-td>
+                          </template>
+
+                          <template v-slot:body-cell-actionCorrectiveDate4="props">
+                            <q-td :props="props">
+                              {{ FormatDate(props.row.actionCorrectiveDate4) }}
+                            </q-td>
+                          </template>
+
+                          <template v-slot:body-cell-actionCorrectiveDate5="props">
+                            <q-td :props="props">
+                              {{ FormatDate(props.row.actionCorrectiveDate5) }}
+                            </q-td>
+                          </template>
+
+                          <template v-slot:no-data>
+                            <div class="text-center text-grey-7 q-pa-md">
+                              No incident reports found for the selected month and year.
+                            </div>
+                          </template>
+                        </q-table>
+                      </q-card-section>
+                    </q-card>
+                  </q-dialog>
+                </q-btn>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- REPORTABLE INCIDENT - 65% -->
+          <div class="reportable-incident-panel">
+            <div class="dashboard-panel ">
+              <div class="text-h5 text-weight-medium text-primary text-uppercase text-center q-pt-sm">
+                INCIDENT STATUS
+              </div>
+
+              <StackedGraph
+                :options="incidentStatusChartOptions"
+                :series="incidentStatusSeries"
+                class="q-mt-xs"
+              />
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+
+      <q-card bordered flat class="q-mt-md">
+        <q-card-section class="dashboard-row">
+          <!-- CLOSURE -->
+          <div class="closure-panel">
+            <div class="dashboard-panel q-pa-sm">
+              <div class="text-h5 text-weight-medium text-primary text-uppercase text-center">
+                INCIDENT CLOSURE TURNAROUND TIME (TAT)
+              </div>
+
+              <div class="text-grey-7 text-center q-mt-xs q-pa-sm">
+                <p>
+                  Measures the average time taken to close an incident from the date it was reported.
+                </p>
+              </div>
+
+              <BarClosureGraph :data="disCountClosureTaT" />
+            </div>
+          </div>
+
+          <!-- REPORTABLE -->
+          <div class="reported-panel">
+            <div class="dashboard-panel q-pa-sm">
+              <div class="text-h5 text-weight-medium text-primary text-uppercase text-center">
+                REPORTABLE INCIDENTS
+              </div>
+
+              <div class="text-grey-7 text-center q-mt-xs q-pa-sm">
+                <p>
+                  Any unusual, unplanned, or disruptive event, whether actual or potential, that poses
+                  or may pose a significant risk to the organization as defined by this policy.
+                </p>
+              </div>
+
+              <PieGraph :data="disCountRep" />
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+
+      <q-card bordered flat class="q-mt-md">
+        <q-card-section class="dashboard-row">
+          <!-- DEPARTMENT INVOLVED -->
+          <div class="reported-panel">
+            <div class="dashboard-panel q-pa-sm">
+              <div class="text-h5 text-weight-medium text-primary text-uppercase text-center">
+                INCIDENTS PER DEPARTMENT
+              </div>
+
+              <div class="text-grey-7 text-center q-mt-xs q-pa-sm">
+                <p>
+                  Displays the number of reported incidents categorized by department.
+                </p>
+              </div>
+
+              <PieDepartmentGraph :data="disCountDepartmentInvolved" />
+            </div>
+          </div>
+
+          <!-- AGING -->
+          <div class="aging-panel">
+            <div class="dashboard-panel q-pa-sm">
+              <div class="text-h5 text-weight-medium text-primary text-uppercase text-center">
+                AVERAGE AGING OF OPEN INCIDENTS (DAYS)
+              </div>
+
+              <div class="text-grey-7 text-center q-mt-xs q-pa-sm">
+                <p>
+                  Measures the average number of days that incidents have remained open and unresolved.
+                </p>
+              </div>
+
+              <BarAgingGraph :data="disCountAgingTaT" />
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
     </div>
   </div>
+
   <img
-    src="../assets/OMBRE-GRAY.jpg"
+    src="../assets/BGCORE.png"
     style="
       position: absolute;
       top: 0;
@@ -156,553 +314,575 @@
 </template>
 
 <script>
-import PieGraph from "src/components/Charts/PieGraph.vue";
-// import RepGraph from "src/components/Charts/RepPieGraph.vue";
-import BarGraph from "src/components/Charts/BarGraph.vue";
-import LineGraph from "src/components/Charts/LineGraph.vue";
+import Stacked from '../components/Charts/StackedGraph.vue'
+import Pie from '../components/Charts/PieGraph.vue'
+import PieDepartment from 'src/components/Charts/PieDepartment.vue';
+import BarClosureTaT from 'src/components/Charts/BarClosureTaT.vue';
+import BarAgingTaT from 'src/components/Charts/BarAgingTaT.vue';
 import { mapGetters } from "vuex";
+import { exportFile } from 'quasar';
 
 export default {
+  components: {
+    StackedGraph: Stacked,
+    PieGraph: Pie,
+    PieDepartmentGraph: PieDepartment,
+    BarClosureGraph: BarClosureTaT,
+    BarAgingGraph: BarAgingTaT,
+  },
+
   data() {
     return {
-      loading: true,
-      showTable: false,
-      selectedStatus: null,
-      searchContent: "",
-      disAllDash: [],
-      disColumns: [
-        { name: "IRNo", label: "IRNUMBER", align: "left", field: "iRNo" },
+      displayIncidentStatus: [],
+      downloadIR: false,
+
+      selectedMonth: null,
+      inputedYear: null,
+      yearError: false,
+
+      monthOption: [
+        { label: "All Months", value: 0 },
+        { label: "January", value: 1 },
+        { label: "February", value: 2 },
+        { label: "March", value: 3 },
+        { label: "April", value: 4 },
+        { label: "May", value: 5 },
+        { label: "June", value: 6 },
+        { label: "July", value: 7 },
+        { label: "August", value: 8 },
+        { label: "September", value: 9 },
+        { label: "October", value: 10 },
+        { label: "November", value: 11 },
+        { label: "December", value: 12 },
+      ],
+
+      displayFilteredData: [],
+
+      disFilterColumns: [
         {
-          name: "departmentNumber",
-          label: "INCIDENT RESPONDER (DEPARTMENT)",
+          name: "IRNo",
+          label: "IRNUMBER",
           align: "left",
-          field: "department_Description",
+          field: "iRNo"
+        },
+        {
+          name: "dept_Desc",
+          label: "PRIMARY DEPARTMENT INVOLVED",
+          align: "left",
+          field: "dept_Desc"
         },
         {
           name: "subject",
-          label: "SUBJECT OF THE INCIDENT",
+          label: "REPORTABLE INCIDENT",
           align: "left",
-          field: "subjectName",
+          field: "subjectName"
+        },
+        {
+          name: "subjectSpecificExam",
+          label: "PARTICULAR INCIDENT",
+          align: "left",
+          field: "subjectSpecificExam"
+        },
+        {
+          name: "subjectDate",
+          label: "INCIDENT DATE",
+          align: "left",
+          field: "subjectDate"
+        },
+        {
+          name: "dateTimeCreated",
+          label: "DATE REPORTED",
+          align: "left",
+          field: "dateTimeCreated"
+        },
+        {
+          name: "dateTimeRCA",
+          label: "DATE OF RCA/CA",
+          align: "left",
+          field: "dateTimeRCA"
+        },
+        {
+          name: "actionCorrective1",
+          label: "ACTION 1 DETAILS",
+          align: "left",
+          field: "actionCorrective1"
+        },
+        {
+          name: "actionCorrectiveDate1",
+          label: "ACTION 1 DONE",
+          align: "left",
+          field: "actionCorrectiveDate1"
+        },
+        {
+          name: "actionCorrective2",
+          label: "ACTION 2 DETAILS",
+          align: "left",
+          field: "actionCorrective2"
+        },
+        {
+          name: "actionCorrectiveDate2",
+          label: "ACTION 2 DONE",
+          align: "left",
+          field: "actionCorrectiveDate2"
+        },
+        {
+          name: "actionCorrective3",
+          label: "ACTION 3 DETAILS",
+          align: "left",
+          field: "actionCorrective3"
+        },
+        {
+          name: "actionCorrectiveDate3",
+          label: "ACTION 3 DONE",
+          align: "left",
+          field: "actionCorrectiveDate3"
+        },
+        {
+          name: "actionCorrective4",
+          label: "ACTION 4 DETAILS",
+          align: "left",
+          field: "actionCorrective4"
+        },
+        {
+          name: "actionCorrectiveDate4",
+          label: "ACTION 4 DONE",
+          align: "left",
+          field: "actionCorrectiveDate4"
+        },
+        {
+          name: "actionCorrective5",
+          label: "ACTION 5 DETAILS",
+          align: "left",
+          field: "actionCorrective5"
+        },
+        {
+          name: "actionCorrectiveDate5",
+          label: "ACTION 5 DONE",
+          align: "left",
+          field: "actionCorrectiveDate5"
         },
       ],
-      disCountRep: [],
-      barLoading: false,
-      selectedSubject: null,
 
-      disCountPar: [],
-      disCountRepTaT: [],
-      disRCATaT: [],
-      disActionTaT: [],
-      disAveRCA: [],
-      disAveAction: []
+      disCountRep: [],
+      disCountClosureTaT: [],
+      disCountAgingTaT: [],
+      disCountDepartmentInvolved: []
     };
   },
 
   computed: {
     ...mapGetters({
-      getDash: "ApplyStore/getDash",
+      getCountInstatus: "ApplyStore/getCountInstatus",
+      getFilteredData: "ApplyStore/getFilteredData",
       getCountRep: "ApplyStore/getCountRep",
-      getCountPar: "ApplyStore/getCountPar",
-      getCountRepTaT: "ApplyStore/getCountRepTaT",
-      getCountRCATaT: "ApplyStore/getCountRCATaT",
-      getCountActionTaT: "ApplyStore/getCountActionTaT",
-      getCountAveRCA: "ApplyStore/getCountAveRCA",
-      getCountAveAction: "ApplyStore/getCountAveAction",
+      getCountClosureTaT: "ApplyStore/getCountClosureTaT",
+      getCountAgingTaT: "ApplyStore/getCountAgingTaT",
+      getCountDepartmentInvolved: "ApplyStore/getCountDepartmentInvolved",
     }),
 
-    filteredDisAll() {
-      const { disAllDash, searchContent } = this;
-      let filteredData = [...disAllDash];
-      if (searchContent && typeof searchContent === "string") {
-        const query = searchContent.toLowerCase();
-        filteredData = filteredData.filter((item) =>
-          Object.values(item).some(
-            (val) =>
-              typeof val === "string" && val.toLowerCase().includes(query)
-          )
-        );
-      }
-      return filteredData;
+    /* INCIDENT STATUS */
+    incidentStatusSeries() {
+      const data = Array.isArray(this.displayIncidentStatus)
+        ? this.displayIncidentStatus
+        : []
+
+      return [
+        {
+          name: 'WITHOUT RCA/CA',
+          data: data.map(item =>
+            Number(item['wITHOUT RCA/CA']) || 0
+          ),
+        },
+        {
+          name: 'WITH RCA/CA AS OF TO DATE',
+          data: data.map(item =>
+            Number(item['wITH RCA/CA AS OF TO DATE']) || 0
+          ),
+        },
+        {
+          name: 'RESOLVED AS OF TO DATE',
+          data: data.map(item =>
+            Number(item['rESOLVED AS OF TO DATE']) || 0
+          ),
+        },
+      ]
     },
 
-    chartOptions() {
-      if (!this.disCountRep.length) return {}
+    incidentStatusChartOptions() {
+      const data = Array.isArray(this.displayIncidentStatus)
+        ? this.displayIncidentStatus
+        : []
 
       return {
         chart: {
-          id: "incident-report-column",
-          type: "bar",
-          toolbar: { show: false },
-          animations: {
-            enabled: false // 🔥 para iwas lag
-          }
+          type: 'bar',
+          height: 350,
+          stacked: true,
+          toolbar: {
+            show: true,
+          },
+          zoom: {
+            enabled: true,
+          },
         },
 
         plotOptions: {
           bar: {
-            horizontal: false, // COLUMN MODE
-            columnWidth: "50%",
-            borderRadius: 6,
-            dataLabels: {
-              position: "top"
-            }
-          }
-        },
+            horizontal: false,
+            borderRadius: 10,
+            borderRadiusApplication: 'end',
 
-        dataLabels: {
-          enabled: true,
-          offsetY: -5,
-          style: {
-            fontSize: "12px",
-            colors: ["#333"]
+            dataLabels: {
+              total: {
+                enabled: true,
+                style: {
+                  fontSize: '13px',
+                  fontWeight: 900,
+                },
+              },
+            },
           },
-          formatter: val => val
         },
 
         xaxis: {
-          categories: this.disCountRep.map(item => item.subjectName),
-          title: {
-            text: "Incident Category"
-          },
-          labels: {
-            rotate: -55,
-            trim: true,
-            hideOverlappingLabels: true,
-            style: {
-              fontSize: "12px"
-            }
-          }
+          categories: data.map(item => item.mONTH),
         },
 
         yaxis: {
-          title: {
-            text: "Total Reports"
-          },
           min: 0,
-          forceNiceScale: true,
           labels: {
-            formatter: val => Math.floor(val)
-          }
-        },
-
-        tooltip: {
-          y: {
-            formatter: val => `${val} report(s)`
-          }
-        },
-
-        colors: ["#1976D2"],
-
-        grid: {
-          borderColor: "#f1f1f1",
-          strokeDashArray: 4,
-          padding: {
-            left: 10,
-            right: 10,
-            bottom: 10
-          }
-        },
-
-        responsive: [
-          {
-            breakpoint: 768,
-            options: {
-              plotOptions: {
-                bar: {
-                  columnWidth: "65%"
-                }
-              },
-              xaxis: {
-                labels: {
-                  rotate: -90
-                }
-              },
-              dataLabels: {
-                style: {
-                  fontSize: "10px"
-                }
-              }
-            }
-          }
-        ]
-      }
-    },
-
-    series() {
-      if (!this.disCountRep.length) return []
-
-      return [
-        {
-          name: "Total Reports",
-          data: this.disCountRep.map(item => item.totalCount)
-        }
-      ]
-    },
-
-    months() {
-      return [
-        "January","February","March","April","May","June",
-        "July","August","September","October","November","December"
-      ];
-    },
-
-    chartOptionsTAT() {
-      if (!this.disCountRepTaT.length) return {};
-
-      return {
-        chart: {
-          height: 350,
-          type: "line",
-          zoom: {
-            enabled: false,
+            formatter: val => Math.round(val),
           },
+        },
+
+        legend: {
+          position: 'top',
+          horizontalAlign: 'center',
+          offsetY: 0,
+          fontSize: '12px',
+          itemMargin: {
+            horizontal: 8,
+            vertical: 0,
+          },
+        },
+
+        fill: {
+          opacity: 1,
         },
 
         dataLabels: {
           enabled: false,
         },
-
-        stroke: {
-          curve: "straight",
-        },
-
-        title: {
-          text: "Reporting TAT by Month",
-          align: "left",
-        },
-
-        grid: {
-          row: {
-            colors: ["#f3f3f3", "transparent"],
-            opacity: 0.5,
-          },
-        },
-
-        xaxis: {
-          categories: this.months
-        },
-
-        yaxis: {
-          title: {
-            text: "Days",
-          },
-        },
-      };
+      }
     },
-
-    seriesRepTAT() {
-      if (!this.disCountRepTaT.length) return [];
-
-      return [
-        {
-          name: "Avg TAT (Days)",
-          data: this.disCountRepTaT.map((item) => item.avgTAT_Days),
-        },
-      ];
-    },
-
-    chartOptionRCSUBTaT() {
-      if (!this.disRCATaT.length && !this.disActionTaT.length) return {};
-
-      return {
-        chart: {
-          height: 350,
-          type: "line",
-          zoom: {
-            enabled: false
-          }
-        },
-
-        dataLabels: {
-          enabled: false
-        },
-
-        stroke: {
-          curve: "straight",
-          width: 3
-        },
-
-        colors: ["#1976D2", "#ffc412"],
-
-        title: {
-          text: "RCA / Corrective Action TAT by Month",
-          align: "left"
-        },
-
-        legend: {
-          position: "top"
-        },
-
-        markers: {
-          size: 5
-        },
-
-        grid: {
-          row: {
-            colors: ["#f3f3f3", "transparent"],
-            opacity: 0.5
-          }
-        },
-
-        xaxis: {
-          categories: this.months
-        },
-
-        yaxis: {
-          title: {
-            text: "Days"
-          }
-        }
-      };
-    },
-
-    seriesRepRCSUBTaT() {
-      if (!this.disRCATaT.length && !this.disActionTaT.length) return [];
-
-      return [
-        {
-          name: "RCA TAT",
-          data: this.disRCATaT.map(item => item.avg_TAT_Days)
-        },
-        {
-          name: "Corrective Action TAT",
-          data: this.disActionTaT.map(item => item.avg_TAT_Days)
-        }
-      ];
-    },
-
-    chartOptionAveRC() {
-      if (!this.disAveRCA.length && !this.disAveAction.length) return {};
-
-      return {
-        chart: {
-          height: 350,
-          type: "line",
-          zoom: {
-            enabled: false
-          }
-        },
-
-        dataLabels: {
-          enabled: false
-        },
-
-        stroke: {
-          curve: "straight",
-          width: 3
-        },
-
-        colors: ["#1976D2", "#ffc412"],
-
-        title: {
-          text: "Incident Report Resolution TAT",
-          align: "left"
-        },
-
-        legend: {
-          position: "top"
-        },
-
-        markers: {
-          size: 5
-        },
-
-        grid: {
-          row: {
-            colors: ["#f3f3f3", "transparent"],
-            opacity: 0.5
-          }
-        },
-
-        xaxis: {
-          categories: this.months
-        },
-
-        yaxis: {
-          title: {
-            text: "Days"
-          }
-        }
-      };
-    },
-
-    seriesAveRC() {
-      if (!this.disAveRCA.length && !this.disAveAction.length) return {};
-
-      return [
-        {
-          name: "RCA Resolution  TAT",
-          data: this.disAveRCA.map(item => item.averageImplementationDays)
-        },
-        {
-          name: "Corrective Action Resolution TAT",
-          data: this.disAveAction.map(item => item.averageImplementationDays)
-        }
-      ];
-    },
-  },
-
-  components: {PieGraph, LineGraph, BarGraph},
-
-  mounted() {
-    setTimeout(() => {
-      this.showTable = true;
-      this.disAllDash;
-      this.loading = false;
-    }, 2000); // Simulating 2 seconds of loading time
   },
 
   created() {
-    this.getDashboards();
+    this.getCountIncidentStats();
     this.getCountReportable();
-    this.getCountReporttat();
-    this.getRCATaT();
-    this.getACTIONTaT();
-    this.getAveRCA();
-    this.getAveACTION();
+    this.getCountClosure();
+    this.getCountAging();
+    this.getCountDepartmentInv();
   },
 
   methods: {
-    async getDashboards() {
+    FormatDate(dateValue) {
+      if (!dateValue) {
+        return '';
+      }
+
+      const date = new Date(dateValue);
+
+      if (isNaN(date.getTime())) {
+        return '';
+      }
+
+      const options = {
+        year: 'numeric',
+        month: 'long',
+        day: '2-digit'
+      };
+
+      return date
+        .toLocaleDateString('en-US', options)
+        .toUpperCase();
+    },
+
+    async getCountIncidentStats() {
       try {
-        await this.$store.dispatch("ApplyStore/disDashboard");
-        this.disAllDash = this.getDash;
+        await this.$store.dispatch(
+          "ApplyStore/displayCountIncidentStatus"
+        );
+
+        this.displayIncidentStatus = this.getCountInstatus;
+
       } catch (error) {
-        console.error("Error inserting data:", error);
+        console.error("Error getting insert:", error);
       }
     },
 
-    search() {},
-
-    async selectStatus(option) {
-      this.selectedStatus = option;
+    validateYear(val) {
+      this.yearError = /[^0-9]/.test(val);
     },
+
+    downloadIncidentContent() {
+      this.downloadIR = true;
+    },
+
+    async filterIncidentContent() {
+      try {
+
+        const payload = {
+          month: this.selectedMonth,
+          year: this.inputedYear,
+        };
+
+        console.log('Filter payload:', payload);
+
+        await this.$store.dispatch(
+          "ApplyStore/displayCAPAIncidentStatus",
+          payload
+        );
+
+        this.displayFilteredData = this.getFilteredData;
+
+      } catch (error) {
+        console.error(
+          'Error loading risk details:',
+          error
+        );
+      }
+    },
+
+    /* ================================
+      CSV EXPORT
+    ================================ */
+
+    wrapCsvValue(val, formatFn, row) {
+
+      let formatted =
+        formatFn !== void 0
+          ? formatFn(val, row)
+          : val;
+
+      formatted =
+        formatted === void 0 || formatted === null
+          ? ''
+          : String(formatted);
+
+      // Escape double quotes
+      formatted = formatted
+        .split('"')
+        .join('""');
+
+      return `"${formatted}"`;
+    },
+
+    exportTable() {
+
+      // Get current columns
+      const columns = this.disFilterColumns;
+
+      // Get current filtered rows
+      const rows = this.displayFilteredData;
+
+      // Create CSV content
+      const content = [
+
+        // COLUMN HEADERS
+        columns
+          .map(col =>
+            this.wrapCsvValue(col.label)
+          )
+          .join(','),
+
+        // ROW DATA
+        ...rows.map(row =>
+          columns
+            .map(col =>
+              this.wrapCsvValue(
+
+                typeof col.field === 'function'
+                  ? col.field(row)
+                  : row[
+                      col.field === void 0
+                        ? col.name
+                        : col.field
+                    ],
+
+                col.format,
+
+                row
+              )
+            )
+            .join(',')
+        )
+
+      ].join('\r\n');
+
+      // Export CSV using Quasar
+      const status = exportFile(
+        'incident_report.csv',
+        content,
+        'text/csv'
+      );
+
+      // Browser download error
+      if (status !== true) {
+
+        this.$q.notify({
+          message: 'Browser denied file download...',
+          color: 'negative',
+          icon: 'warning'
+        });
+
+      } else {
+
+        this.$q.notify({
+          message: 'Incident report exported successfully.',
+          color: 'positive',
+          icon: 'check_circle'
+        });
+
+      }
+    },
+
+    /* ================================
+      REPORTABLE INCIDENT COUNT
+    ================================ */
 
     async getCountReportable(){
       try {
         await this.$store.dispatch("ApplyStore/displayCountReport");
+        console.log("disCountRep:", this.getCountRep);
         this.disCountRep = this.getCountRep;
       } catch (error) {
         console.error("Error inserting data:", error);
       }
     },
 
-    async getCountParticular(code){
-      try{
-        const data = {
-          SubjectCode: code
-        }
-        const response = await this.$store.dispatch("ApplyStore/displayCountParticular",data);
-        this.disCountPar = this.getCountPar;
-      } catch (error) {
-          console.error("Error inserting data:", error);
-      }
-    },
 
-    async getCountReporttat(){
+    /* ================================
+      CLOSURE TAT COUNT
+    ================================ */
+
+    async getCountClosure(){
       try {
-        await this.$store.dispatch("ApplyStore/displayCountReportTAT");
-        this.disCountRepTaT = this.getCountRepTaT;
+        await this.$store.dispatch("ApplyStore/displayCountClosureTAT");
+        this.disCountClosureTaT = this.getCountClosureTaT;
       } catch (error) {
         console.error("Error inserting data:", error);
       }
     },
 
-    async getRCATaT(){
+    /* ================================
+      AGING TAT COUNT
+    ================================ */
+
+    async getCountAging(){
       try {
-        await this.$store.dispatch("ApplyStore/displayCountRCATAT");
-        this.disRCATaT = this.getCountRCATaT;
+        await this.$store.dispatch("ApplyStore/displayCountAgingTAT");
+        this.disCountAgingTaT = this.getCountAgingTaT;
       } catch (error) {
         console.error("Error inserting data:", error);
       }
     },
 
-    async getACTIONTaT(){
+    /* ================================
+      DEPARTMENT INVOLVED COUNT
+    ================================ */
+
+    async getCountDepartmentInv(){
       try {
-        await this.$store.dispatch("ApplyStore/displayCountACTIONTAT");
-        this.disActionTaT = this.getCountActionTaT;
+        await this.$store.dispatch("ApplyStore/displayCountDepartmentInvolved");
+        this.disCountDepartmentInvolved = this.getCountDepartmentInvolved;
       } catch (error) {
         console.error("Error inserting data:", error);
       }
     },
-
-    async getAveRCA(){
-      try {
-        await this.$store.dispatch("ApplyStore/displayAverageRCA");
-        this.disAveRCA = this.getCountAveRCA;
-      } catch (error) {
-        console.error("Error inserting data:", error);
-      }
-    },
-
-    async getAveACTION(){
-      try {
-        await this.$store.dispatch("ApplyStore/displayAverageAction");
-        this.disAveAction = this.getCountAveAction;
-      } catch (error) {
-        console.error("Error inserting data:", error);
-      }
-    }
   },
 };
 </script>
 
 <style>
-/* ///////////////////////////////////////QAHEADER////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+/* ////////////////////  HEADER  /////////////////// */
 
-.my-card {
-  border: 2px solid #f1f1f1;
-  border-radius: 20px;
-  background-color: #fff;
+.dashboard-header {
+  width: 100%;
+  border-radius: 8px;
+  background: #ffffff;
+  text-align: left;
 }
 
-/* .filtertab {
-  background-color: #0f4d91;
-  font-weight: bold;
-  border: 0.1em solid #f3f4f7;
-  box-shadow: 0 4px 8px rgba(243, 238, 238, 0.1);
-  font-style: Arial Black;
-} */
-/* .IRQHText {
-  font-weight: bold;
-  font-style: roboto;
-  font-family: Arial Black;
+.icon-wrapper {
+  width: 70px;
+  height: 70px;
   display: flex;
-  color: #ffc619;
-  font-size: 35px;
+  align-items: center;
   justify-content: center;
-} */
-
-/* ///////////////////////////////////////TABLE////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
-
-.table-with-border {
-  border-bottom: 2em solid hsl(220, 22%, 81%);
-  border-collapse: collapse;
-  margin-top: 25px;
+  border-radius: 8px;
+  background: rgba(2, 64, 137, 0.08);
 }
-.q-table-container {
-  border-radius: 5px;
-  overflow: hidden;
+
+.accent-line {
+  width: 60px;
+  height: 3px;
+  background: #024089;
+  border-radius: 2px;
 }
+
+/* //////   DASHBOARD  ////// */
+.dashboard-row {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.incident-status-panel {
+  flex: 0 0 calc(35% - 8px);
+}
+
+.reportable-incident-panel {
+  flex: 0 0 calc(65% - 8px);
+}
+
+.dashboard-panel {
+  width: 100%;
+  border: 2px solid #e0e0e0;
+  box-sizing: border-box;
+}
+
+/* ////////// Q-TABLE STYLES ////////// */
 .q-table td,
 .q-table th {
-  padding: 8px;
   border: 0.5px solid #ccc;
-  text-align: center;
 }
+
 .q-table th {
   background-color: #0f4d91;
   color: #fff;
 }
-.q-table tbody tr:nth-child(odd) {
-  background-color: #f4f4f4;
-  padding: 8px;
+
+/* //////   REPORTABLE   ////// */
+.dashboard-row {
+  display: flex;
+  gap: 16px;
+  width: 100%;
 }
-.q-table button {
-  height: 30px; /* Set your desired height */
-  width: 80px; /* Set your desired width */
-  border-radius: 5px;
-  margin: 0;
-  padding: 0;
+
+.reported-panel,
+.closure-panel,
+.aging-panel {
+  flex: 1;
+  min-width: 0;
 }
+
+.dashboard-panel {
+  width: 100%;
+  min-height: 200px;
+}
+
+
 </style>

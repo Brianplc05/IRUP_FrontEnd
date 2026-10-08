@@ -10,11 +10,10 @@
       <q-td>
         <q-btn
           flat
-          rounded
           push
           icon="description"
           class="bg-accent text-black shadow-3"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
           @click="viewIReport(props.row.iRNo)"
         >
           <q-tooltip class="bg-info text-white">
@@ -22,7 +21,7 @@
           </q-tooltip>
         </q-btn>
 
-         <q-dialog maximized v-model="IRDialog" persistent>
+        <q-dialog maximized v-model="IRDialog" persistent>
             <div class="HRVDia">
               <q-card class="contentFormHR">
                 <q-card-section class="q-mb-sm row items-center justify-between">
@@ -498,7 +497,7 @@
                 </q-card-section>
               </q-card>
             </div>
-          </q-dialog>
+        </q-dialog>
       </q-td>
     </template>
 

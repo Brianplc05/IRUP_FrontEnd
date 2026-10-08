@@ -13,7 +13,7 @@
 import VueApexCharts from "vue3-apexcharts"
 
 export default {
-  name: "PieGraph",
+  name: "PieDepartmentGraph",
 
   components:{
     apexchart: VueApexCharts
@@ -32,7 +32,7 @@ export default {
         return [1]   // placeholder
       }
 
-      return this.data.map(i => i.totalCount || 0)
+      return this.data.map(i => i.totalIR || 0)
     },
 
     chartOptions(){
@@ -46,7 +46,7 @@ export default {
         },
 
         labels: this.data && this.data.length
-          ? this.data.map(i => i.subjectName)
+          ? this.data.map(i => i.dept_Desc)
           : ["No Data Yet"],
 
         legend: {

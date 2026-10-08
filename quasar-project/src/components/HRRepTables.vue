@@ -3,13 +3,13 @@
     <template v-slot:body-cell-viewIR="props">
         <q-td>
           <q-btn
+            flat
             push
             @click="viewIReport(props.row.iRNo)"
             :ripple="{ center: true }"
-            color="accent"
             icon="description"
-            class="text-black text-bold text-center shadow-5"
-            style="border-radius: 20px; width: 125px"
+            class="text-black text-bold bg-accent text-center shadow-5"
+            style="border-radius: 10px; width: 125px"
           />
 
           <q-dialog maximized v-model="IRDialog" persistent>

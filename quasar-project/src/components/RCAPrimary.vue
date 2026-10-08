@@ -10,7 +10,7 @@
           :ripple="{ center: true }"
           color="accent"
           icon="description"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
           class="bg-accent text-black text-bold text-center shadow-5"
         >
           <q-tooltip class="bg-info text-white">
@@ -553,7 +553,7 @@
           @click="viewRCAForm(props.row.iRNo)"
           :ripple="{ center: true }"
           icon="list_alt"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
           class="bg-positive text-black text-bold text-center shadow-5"
         />
 
@@ -566,7 +566,7 @@
           @click = "viewRCADraft(props.row.iRNo)"
           :ripple="{ center: true }"
           icon="drafts"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
           class="bg-accent text-black text-center shadow-5"
         />
 
@@ -578,7 +578,7 @@
           v-if="['2', '3', '4', '5'].includes(props.row.rCA)"
           :ripple="{ center: true }"
           icon="list_alt"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
           class="bg-dark text-white text-bold text-center shadow-5"
         />
 
@@ -3681,7 +3681,7 @@
           push
           :ripple="{ center: true }"
           label="SUBMITTED"
-          style="border-radius: 20px; width: 195px"
+          style="border-radius: 10px; width: 195px"
           v-if="props.row.rCA === '2'"
           @click="viewRCAConfirmDetails(props.row.iRNo)"
           class="bg-orange text-black text-bold text-center shadow-5"
@@ -3705,7 +3705,7 @@
           push
           :ripple="{ center: true }"
           label="SUBMITTED FOR REVISED"
-          style="border-radius: 20px; width: 195px"
+          style="border-radius: 10px; width: 195px"
           v-if="props.row.rCA === '4'"
           @click="viewRCAConfirmDetails(props.row.iRNo)"
           class="bg-accent text-black text-bold text-center shadow-5"
@@ -3719,7 +3719,7 @@
           @click="viewRCAApprovedDetails(props.row.iRNo)"
           :ripple="{ center: true }"
           label="APPROVED"
-          style="border-radius: 20px; width: 195px"
+          style="border-radius: 10px; width: 195px"
           class="bg-positive text-black text-bold text-center shadow-5"
         />
 

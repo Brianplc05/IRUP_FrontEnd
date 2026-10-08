@@ -10,6 +10,8 @@ export function jwtDecode(token) {
   );
   const decodedToken = JSON.parse(base64);
 
+  console.log(decodedToken)
+
   // Extract relevant fields and structure the response
   const EmployeeCode = decodedToken.EmployeeCode;
   const FirstName = decodedToken.FirstName;

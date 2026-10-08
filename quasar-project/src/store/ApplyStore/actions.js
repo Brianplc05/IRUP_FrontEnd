@@ -130,22 +130,42 @@ export default {
   ////////////////////////////////////////////
 
   /////////////////// REPORT LIST /////////////////////////
-  async displayReportList({ commit }, data) {
+  async displayCountIncidentStatus({ commit }) {
     try {
       const token = localStorage.getItem("authToken");
-      const response = await axios.get(`${ApiUrl}/incident-report/display-report-list`, {
-        params: data,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      commit("GET_IRLIST", response.data);
+      const response = await axios.get(
+        `${ApiUrl}/incident-report/DisplayCountIncidentStatus`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      commit("GET_COUNTINSTATUS", response.data);
     } catch (error) {
       console.error("ERROR", error);
       throw error;
     }
   },
 
+  async displayCAPAIncidentStatus({ commit }, data) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.post(
+        `${ApiUrl}/incident-report/DisplayIncidentCaPaStatus`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      commit("GET_FILTERED_DATA", response.data);
+    } catch (error) {
+      console.error("ERROR", error);
+      throw error;
+    }
+  },
 
   async displayCountReport({ commit }) {
     try {
@@ -164,6 +184,66 @@ export default {
       throw error;
     }
   },
+
+  async displayCountClosureTAT({ commit }) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.get(
+        `${ApiUrl}/incident-report/DisplayCountClosureTAT`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      commit("GET_COUNT_CLOSURETAT", response.data);
+    } catch (error) {
+      console.error("ERROR", error);
+      throw error;
+    }
+  },
+
+  async displayCountAgingTAT({ commit }) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.get(
+        `${ApiUrl}/incident-report/DisplayCountAgingTAT`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      commit("GET_COUNT_AGINGTAT", response.data);
+    } catch (error) {
+      console.error("ERROR", error);
+      throw error;
+    }
+  },
+
+  async displayCountDepartmentInvolved({ commit }) {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.get(
+        `${ApiUrl}/incident-report/DisplayCountDepartmentInvolved`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      commit("GET_COUNT_DEPARTMENTINVOLVED", response.data);
+    } catch (error) {
+      console.error("ERROR", error);
+      throw error;
+    }
+  },
+
+
+
+
+
+/* CHECKING PART */
 
   async displayCountParticular({ commit }, data) {
     try {
@@ -768,7 +848,7 @@ export default {
     }
   },
 
-async disRCASaveDraftIrp({ commit }, data) {
+  async disRCASaveDraftIrp({ commit }, data) {
     try {
       const token = localStorage.getItem("authToken");
       const response = await axios.get(`${ApiUrl}/incident-report/DisplayRCAIRPDraftItem`, {

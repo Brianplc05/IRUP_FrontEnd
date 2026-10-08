@@ -1,95 +1,67 @@
 <template>
-  <div
-    id="q-app"
-    style="
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      position: relative;
-    "
-  >
-    <div class="q-pa-md row items-start" style="position: relative; z-index: 1">
-      <div class="logcards">
-        <div class="text-h3 text-secondary text-bold q-mb-sm text-center ">
-          WELCOME
+  <q-layout>
+    <q-page-container>
+      <q-page class="login-page row items-center justify-center">
+        <div class="row full-width" style="min-height: 100vh">
+          <div class="col-md-7 gt-sm flex flex-center">
+            <img src="../assets/Login-Admin.png" class="dashboard-image" />
+          </div>
+
+          <div class="col-12 col-md-5 flex flex-center q-pa-xl">
+            <div class="login-card">
+              <div class="text-center">
+                <div class="welcome-title">Welcome Back!</div>
+
+                <div class="welcome-subtitle">
+                  This site is for admin members to report every progress of information that has been obtained.
+                </div>
+              </div>
+
+              <q-form class="q-mt-md" @submit.prevent="login">
+                <q-input outlined v-model="EmployeeCode" label="Employee Number" class="q-mb-md">
+                  <template v-slot:prepend>
+                    <q-icon name="person" class="q-pa-sm" />
+                  </template>
+                </q-input>
+
+                <q-input
+                  outlined
+                  v-model="WebPassword"
+                  label="Password"
+                  :type="showPassword ? 'text' : 'password'"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="lock"></q-icon>
+                  </template>
+                  <template v-slot:append>
+                    <q-icon
+                      name="visibility"
+                      v-if="!showPassword"
+                      @click="showPassword = true"
+                    ></q-icon>
+                    <q-icon
+                      name="visibility_off"
+                      v-else
+                      @click="showPassword = false"
+                    ></q-icon>
+                  </template>
+                </q-input>
+
+                <q-btn
+                  class="login-btn full-width q-mt-lg"
+                  label="Log In"
+                  icon="login"
+                  unelevated
+                  type="submit"
+                />
+              </q-form>
+              <div class="version">Version 2.0 • © 2026 IRMS</div>
+            </div>
+          </div>
         </div>
-
-        <div class="text-dark q-mb-sm text-center" style="font-size: 16px; margin-top: 15px">
-          This site is for admin members to report every progress of
-          information that has been obtained.
-        </div>
-
-        <q-card-section>
-          <q-form class="q-gutter-xs q-mb-sm custom-border1" @submit.prevent="login">
-            <q-input
-              rounded
-              outlined
-              v-model.trim="EmployeeCode"
-              label="Employee Number"
-            >
-              <template v-slot:prepend>
-                <q-icon name="person"></q-icon>
-              </template>
-            </q-input>
-
-            <q-input
-              rounded
-              outlined
-              v-model="WebPassword"
-              label="Password"
-              :type="showPassword ? 'text' : 'password'"
-            >
-              <template v-slot:prepend>
-                <q-icon name="lock"></q-icon>
-              </template>
-              <template v-slot:append>
-                <q-icon
-                  name="visibility"
-                  v-if="!showPassword"
-                  @click="showPassword = true"
-                ></q-icon>
-                <q-icon
-                  name="visibility_off"
-                  v-else
-                  @click="showPassword = false"
-                ></q-icon>
-              </template>
-            </q-input>
-
-            <q-btn
-              label="LOGIN"
-              color="accent"
-              icon="login"
-              unelevated
-              rounded
-              type="submit"
-              class="full-width q-py-sm q-mt-md text-subtitle1 text-black text-bold"
-            />
-          </q-form>
-        </q-card-section>
-
-        <div class="text-center">
-          <img
-            src="../assets/FINALPOST.png"
-            class="custom-image"
-            style="margin-top: 10px; width: 35%; height: 40%"
-          />
-        </div>
-      </div>
-    </div>
-    <img
-      src="../assets/BUILDING.png"
-      style="
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
-      "
-    />
-  </div>
+      </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script>
@@ -156,45 +128,97 @@ export default {
 };
 </script>
 
-<style>
-.q-pa-md {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
+<style scoped>
+.login-page {
+  background: #f9fcfd;
 }
-.custom-image {
-  width: 180px;
-  height: 180px; /* To maintain aspect ratio */
-  margin-left: 2px;
-}
-.q-input {
-  margin-bottom: 10px; /* Adjust the value as needed */
-}
-.logcards {
+
+.login-card {
+  width: 100%;
+  max-width: 520px;
+  background: white;
+  border-radius: 10px;
+  padding: 45px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+  animation: fadeUp 0.5s;
   border-bottom: 1em solid #ffc619;
-  border-top: 1em solid #0f4d91;
-  background-color: #e8f0fe;
-  padding: 55px;
-  width: 450px; /* Optional: set a max-width for the card */
-  height: 550px;
-  border-radius: 10%;
+  border-top: 1em solid #003566;
 }
-.textwel {
-  font-weight: bold;
-  font-family: Arial Black;
-  display: flex;
-  color: #002b5c;
-  font-size: 45px;
-  justify-content: center;
+
+.logo {
+  width: 200px;
+  margin-bottom: 20px;
 }
-.textdash {
-  font-weight: normal;
-  display: flex;
-  color: #002b5c;
-  font-size: 15px;
-  justify-content: center;
-  margin-left: 5px;
-  margin-bottom: 8px;
+
+.system-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #06648b;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.welcome-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #002562;
+}
+
+.welcome-subtitle {
+  margin-top: 5px;
+  font-size: 1rem;
+  color: #6b7280;
+  line-height: 1.7;
+}
+
+.login-input .q-field__control {
+  height: 56px;
+  border-radius: 10px;
+}
+
+.login-input.q-field--focused .q-field__control {
+  box-shadow: 0 0 0 3px rgba(6, 100, 139, 0.15);
+}
+
+.login-btn {
+  height: 54px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  background: #f8a501;
+  color: white;
+  transition: 0.25s;
+  box-shadow: 0 10px 25px rgba(248, 165, 1, 0.35);
+}
+
+.login-btn:hover {
+  background: #f9cf11;
+  transform: translateY(-2px);
+}
+
+.dashboard-image {
+  max-width: 85%;
+  animation: fadeUp 0.8s;
+}
+
+.version {
+  margin-top: 40px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

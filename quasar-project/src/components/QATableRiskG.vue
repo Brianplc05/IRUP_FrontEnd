@@ -11,7 +11,7 @@
           color="accent"
           icon="description"
           class="bg-accent text-black text-bold text-center shadow-5"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
           ><q-tooltip class="bg-info text-white">
             View Report Details
           </q-tooltip>
@@ -528,7 +528,7 @@
             'bg-dark': props.row.primaryDept !== null,
           }"
           class="text-white text-center shadow-5"
-          style="border-radius: 20px; width: 195px"
+          style="border-radius: 10px; width: 195px"
         >
           <q-tooltip class="bg-info text-white">
             Identify the department that was involved.
@@ -673,7 +673,7 @@
           push
           :ripple="{ center: true }"
           label="In Progress"
-          style="border-radius: 20px; width: 195px"
+          style="border-radius: 10px; width: 195px"
           v-if="
             props.row.actionSubStatus === 1 && props.row.primaryDept !== null
           "
@@ -691,7 +691,7 @@
           :ripple="{ center: true }"
           label="Submitted for Review"
           @click="editReviewAction(props.row.iRNo)"
-          style="border-radius: 20px; width: 195px; background-color: #f1c40f"
+          style="border-radius: 10px; width: 195px; background-color: #f1c40f"
           v-if="
             props.row.actionSubStatus === 2 && props.row.primaryDept !== null
           "
@@ -704,7 +704,7 @@
           push
           :ripple="{ center: true }"
           label="Declined"
-          style="border-radius: 20px; width: 195px"
+          style="border-radius: 10px; width: 195px"
           :disable="props.row.actionSubStatus === 3 && props.row.primaryDept !== null"
           v-if="
             props.row.actionSubStatus === 3 && props.row.primaryDept !== null
@@ -723,7 +723,7 @@
           :ripple="{ center: true }"
           label="Returned for Review"
           @click="editRevisionAction(props.row.iRNo)"
-          style="border-radius: 20px; width: 195px; background-color: #f1c40f"
+          style="border-radius: 10px; width: 195px; background-color: #f1c40f"
           v-if="
             props.row.actionSubStatus === 4 && props.row.primaryDept !== null
           "
@@ -737,7 +737,7 @@
           :ripple="{ center: true }"
           label="Accepted"
           disable
-          style="border-radius: 20px; width: 195px"
+          style="border-radius: 10px; width: 195px"
           v-if="
             props.row.actionSubStatus === 5 && props.row.primaryDept !== null
           "
@@ -2014,7 +2014,7 @@
             props.row.combinedIRActionItems.split(', ').includes('1')
           "
           @click="viewActionItemsforVL(props.row.iRNo)"
-          style="border-radius: 20px; width: 195px"
+          style="border-radius: 10px; width: 195px"
           label="INCOMPLETE"
           class="bg-accent text-black text-bold text-center shadow-5"
         >
@@ -2034,7 +2034,7 @@
           "
           class="bg-dark text-white text-bold text-center shadow-5"
           label="COMPLETE"
-          style="border-radius: 20px; width: 195px"
+          style="border-radius: 10px; width: 195px"
         />
 
         <!-- //////////////////////////////////////ACTION ITEMS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
@@ -2779,9 +2779,10 @@
           :disable="props.row.qAStatus === true"
           v-if="props.row.qAStatus === true"
           class="bg-positive text-white text-bold text-center shadow-3"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
           >OPEN</q-btn
         >
+
         <q-btn
         flat
           rounded
@@ -2789,7 +2790,7 @@
           :disable="props.row.qAStatus === false"
           v-if="props.row.qAStatus === false"
           class="bg-negative text-white text-bold text-center shadow-3"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
           >CLOSED</q-btn
         >
       </q-td>

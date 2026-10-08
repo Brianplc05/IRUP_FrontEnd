@@ -10,7 +10,7 @@
           :ripple="{ center: true }"
           icon="description"
           class="buttonYellowDesign bg-accent text-black shadow-3"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
         >
           <q-tooltip class="bg-info text-white">
             View Report Details
@@ -647,7 +647,7 @@
           v-if="props.row.riskGrading === 0"
           @click="editRiskGrading(props.row.iRNo)"
           class="bg-positive text-black text-bold text-center"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
           icon="analytics"
         >
           <q-tooltip class="bg-info text-white">
@@ -782,7 +782,7 @@
           v-if="!loggedInUser.AreaCode"
           @click="updateRejectStatus(props.row.iRNo)"
           class="bg-red text-black text-bold text-center"
-          style="border-radius: 20px; width: 115px"
+          style="border-radius: 10px; width: 115px"
           icon="cancel_presentation"
         >
           <q-tooltip class="bg-info text-white">
@@ -898,10 +898,139 @@
             'bg-dark': props.row.primaryDept !== null,
           }"
           class="text-white text-center shadow-3"
-          style="border-radius: 20px; width: 195px"
-          ><q-tooltip class="bg-info text-white">
+          style="border-radius: 10px; width: 195px"
+          >
+          <q-tooltip class="bg-info text-white">
             Identify the department that was involved.
           </q-tooltip>
+
+          <q-dialog v-model="setRCAreceived" persistent>
+            <q-card class="QADeptIn">
+              <q-card-section class="q-mb-sm row justify-center">
+                <div
+                  class="text-secondary text-weight-bold text-center"
+                  style="font-size: 25px; color: #002b5c"
+                >
+                  DEPARTMENTS INVOLVED
+                </div>
+              </q-card-section>
+
+              <q-separator class="formseparatorBlue" />
+
+              <q-card-section>
+                <div>
+                  <q-select
+                    use-input
+                    rounded
+                    outlined
+                    clearable
+                    v-model="PrimaryDept"
+                    :options="disDept"
+                    @filter="FilterFn"
+                    label="Primary (Department/s)"
+                    emit-value
+                    map-options
+                    :option-value="(option) => option.deptCode"
+                    :option-label="(option) => option.dept_Desc"
+                  />
+                </div>
+              </q-card-section>
+
+              <q-item-section class="QADLay">
+                <div class="QADTestlist">
+                  Other Involved Departments
+                  <q-btn
+                    class="q-ml-auto"
+                    flat
+                    round
+                    dense
+                    icon="add"
+                    @click="addParty"
+                  />
+                </div>
+              </q-item-section>
+
+              <q-item-section>
+                <div
+                  v-for="(party, index) in parties"
+                  :key="index"
+                  style="
+                    margin-top: 8px;
+                    display: flex;
+                    align-items: center;
+                    margin-left: 15px;
+                  "
+                >
+                  <q-select
+                    use-input
+                    rounded
+                    outlined
+                    clearable
+                    v-model="party.DeptCodeInv"
+                    :options="disDept"
+                    label="Secondary (Department/s)"
+                    @filter="FilterFn"
+                    emit-value
+                    map-options
+                    :option-value="(option) => option.deptCode"
+                    :option-label="(option) => option.dept_Desc"
+                    style="margin-top: 10px; width: 80%"
+                  />
+
+                  <q-btn
+                    @click="removeParty(index)"
+                    rounded
+                    color="negative"
+                    icon="remove_circle"
+                    class="q-ml-md q-mt-sm"
+                    size="sm"
+                  />
+                </div>
+              </q-item-section>
+
+              <q-card-actions
+                align="center"
+                class="q-mt-md column items-center footer-actions"
+              >
+                <div class="row q-gutter-xxl; justify-center">
+                  <q-btn
+                    flat
+                    rounded
+                    push
+                    label="Cancel"
+                    class="buttonCancelDesign text-info"
+                    @click="onRCACancel"
+                  />
+
+                  <q-btn
+                    flat
+                    rounded
+                    push
+                    label="Save"
+                    class="buttonSaveDesign bg-accent text-black"
+                    @click="submitRCAEmail"
+                  />
+                </div>
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
+
+          <!-- ////////////////////////////////////////////////////////////////////////// LOADING /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+          <q-dialog v-model="rdPWait" persistent maximized>
+            <div
+              class="fullscreen flex flex-center column q-gutter-md"
+              style="background-color: rgba(0, 0, 0, 0.85)"
+            >
+              <q-spinner-ios size="150px" color="white" />
+
+              <div class="text-center text-subtitle1 text-white">
+                Notifying the Heads of Involved Departments
+                <br />
+                <span class="text-italic text-accent">Please wait...</span>
+              </div>
+            </div>
+          </q-dialog>
         </q-btn>
 
         <!-- <q-btn
@@ -910,134 +1039,6 @@
           @click="editCon(props.row.IRNo)"
           class="bg-accent text-black text-bold text-center"
         /> -->
-
-        <q-dialog v-model="setRCAreceived" persistent>
-          <q-card class="QADeptIn">
-            <q-card-section class="q-mb-sm row justify-center">
-              <div
-                class="text-secondary text-weight-bold text-center"
-                style="font-size: 25px; color: #002b5c"
-              >
-                DEPARTMENTS INVOLVED
-              </div>
-            </q-card-section>
-
-            <q-separator class="formseparatorBlue" />
-
-            <q-card-section>
-              <div>
-                <q-select
-                  use-input
-                  rounded
-                  outlined
-                  clearable
-                  v-model="PrimaryDept"
-                  :options="disDept"
-                  @filter="FilterFn"
-                  label="Primary (Department/s)"
-                  emit-value
-                  map-options
-                  :option-value="(option) => option.deptCode"
-                  :option-label="(option) => option.dept_Desc"
-                />
-              </div>
-            </q-card-section>
-
-            <q-item-section class="QADLay">
-              <div class="QADTestlist">
-                Other Involved Departments
-                <q-btn
-                  class="q-ml-auto"
-                  flat
-                  round
-                  dense
-                  icon="add"
-                  @click="addParty"
-                />
-              </div>
-            </q-item-section>
-
-            <q-item-section>
-              <div
-                v-for="(party, index) in parties"
-                :key="index"
-                style="
-                  margin-top: 8px;
-                  display: flex;
-                  align-items: center;
-                  margin-left: 15px;
-                "
-              >
-                <q-select
-                  use-input
-                  rounded
-                  outlined
-                  clearable
-                  v-model="party.DeptCodeInv"
-                  :options="disDept"
-                  label="Secondary (Department/s)"
-                  @filter="FilterFn"
-                  emit-value
-                  map-options
-                  :option-value="(option) => option.deptCode"
-                  :option-label="(option) => option.dept_Desc"
-                  style="margin-top: 10px; width: 80%"
-                />
-
-                <q-btn
-                  @click="removeParty(index)"
-                  rounded
-                  color="negative"
-                  icon="remove_circle"
-                  class="q-ml-md q-mt-sm"
-                  size="sm"
-                />
-              </div>
-            </q-item-section>
-
-            <q-card-actions
-              align="center"
-              class="q-mt-md column items-center footer-actions"
-            >
-              <div class="row q-gutter-xxl; justify-center">
-                <q-btn
-                  flat
-                  rounded
-                  push
-                  label="Cancel"
-                  class="buttonCancelDesign text-info"
-                  @click="onRCACancel"
-                />
-
-                <q-btn
-                  flat
-                  rounded
-                  push
-                  label="Save"
-                  class="buttonSaveDesign bg-accent text-black"
-                  @click="submitRCAEmail"
-                />
-              </div>
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
-
-        <!-- ////////////////////////////////////////////////////////////////////////// LOADING /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-
-        <q-dialog v-model="rdPWait" persistent maximized>
-          <div
-            class="fullscreen flex flex-center column q-gutter-md"
-            style="background-color: rgba(0, 0, 0, 0.85)"
-          >
-            <q-spinner-ios size="150px" color="white" />
-
-            <div class="text-center text-subtitle1 text-white">
-              Notifying the Heads of Involved Departments
-              <br />
-              <span class="text-italic text-accent">Please wait...</span>
-            </div>
-          </div>
-        </q-dialog>
       </td>
     </template>
 
@@ -1051,7 +1052,7 @@
           :disable="props.row.rCA === '1'"
           v-if="props.row.rCA === '1' && props.row.primaryDept !== null"
           icon="list_alt"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
           class="bg-dark text-white text-bold text-center shadow-5"
         />
 
@@ -1063,7 +1064,7 @@
           :ripple="{ center: true }"
           v-if="['2', '3', '4'].includes(props.row.rCA)"
           icon="list_alt"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
           class="bg-positive text-white text-bold text-center shadow-5"
         />
 
@@ -1075,7 +1076,7 @@
           :ripple="{ center: true }"
           v-if="props.row.rCA === '5'"
           icon="list_alt"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
           class="bg-dark text-white text-bold text-center shadow-5"
         />
 
@@ -2043,7 +2044,7 @@
           push
           :ripple="{ center: true }"
           label="In Progress"
-          style="border-radius: 20px; width: 195px"
+          style="border-radius: 10px; width: 195px"
           v-if="props.row.rCA === '1' && props.row.primaryDept !== null"
           class="bg-orange text-black text-bold text-center shadow-5"
         >
@@ -2059,7 +2060,7 @@
           :ripple="{ center: true }"
           label="For Review"
           @click="editRevisionConclusion(props.row.iRNo)"
-          style="border-radius: 20px; width: 195px; background-color: #f1c40f"
+          style="border-radius: 10px; width: 195px; background-color: #f1c40f"
           v-if="props.row.rCA === '2' && props.row.primaryDept !== null"
           class="text-black text-bold text-center shadow-5"
         />
@@ -2071,7 +2072,7 @@
           :ripple="{ center: true }"
           label="Declined"
           :disable="props.row.rCA === '3' && props.row.primaryDept !== null"
-          style="border-radius: 20px; width: 195px"
+          style="border-radius: 10px; width: 195px"
           v-if="props.row.rCA === '3' && props.row.primaryDept !== null"
           class="bg-negative text-black text-bold text-center shadow-5"
         >
@@ -2086,7 +2087,7 @@
           push
           :ripple="{ center: true }"
           label="Returned for Review"
-          style="border-radius: 20px; width: 195px; background-color: #f1c40f"
+          style="border-radius: 10px; width: 195px; background-color: #f1c40f"
           @click="editReviewConclusion(props.row.iRNo)"
           v-if="props.row.rCA === '4' && props.row.primaryDept !== null"
           class="text-black text-bold text-center shadow-5"
@@ -2099,7 +2100,7 @@
           :ripple="{ center: true }"
           label="Accepted"
           disable
-          style="border-radius: 20px; width: 195px"
+          style="border-radius: 10px; width: 195px"
           v-if="props.row.rCA === '5' && props.row.primaryDept !== null"
           class="bg-dark text-white text-bold text-center shadow-5"
         />
@@ -8219,7 +8220,7 @@
             props.row.combinedActionItems.split(', ').includes('1')
           "
           @click="viewActionDetails(props.row.iRNo)"
-          style="border-radius: 20px; width: 195px"
+          style="border-radius: 10px; width: 195px"
           label="INCOMPLETE"
           class="bg-accent text-black text-bold text-center shadow-3"
         >
@@ -8239,7 +8240,7 @@
           "
           class="bg-dark text-white text-bold text-center"
           label="COMPLETE"
-          style="border-radius: 20px; width: 195px"
+          style="border-radius: 10px; width: 195px"
         />
 
         <!-- //////////////////////////////////////ACTION ITEMS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
@@ -9255,7 +9256,7 @@
           :disable="props.row.qAStatus === true"
           v-if="props.row.qAStatus === true"
           class="bg-positive text-white text-bold text-center"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
           >OPEN</q-btn
         >
 
@@ -9266,7 +9267,7 @@
           :disable="props.row.qAStatus === false"
           v-if="props.row.qAStatus === false"
           class="bg-negative text-white text-bold text-center"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
           >CLOSED</q-btn
         >
       </q-td>

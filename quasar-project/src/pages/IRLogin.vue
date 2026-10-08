@@ -1,95 +1,121 @@
 <template>
-  <div id="q-app" style="min-height: 100vh; position: relative">
-    <div class="q-pa-md row items-start" style="position: relative; z-index: 1">
-      <div class="logcard">
-        <div style="display: flex; justify-content: space-between">
-          <div style="height: 550px; width: 650px">
-            <img src="../assets/FINALPOST.png" class="imgs" />
+  <q-layout>
+    <q-page-container>
+      <q-page class="login-page">
+
+        <!-- BACKGROUND -->
+        <img
+          src="../assets/BUILDING.png"
+          class="background-image"
+        />
+
+        <!-- CONTENT -->
+        <div class="row full-width login-container">
+
+          <!-- LEFT SIDE -->
+          <div class="col-6 flex flex-center left-panel">
+            <img
+              src="../assets/FINALPOST.png"
+              class="imgs"
+            />
           </div>
 
-          <div class="signin">
-            <div class="text-h3 text-secondary text-bold q-mb-sm text-center ">
-                LOGIN
-            </div>
+          <!-- RIGHT SIDE -->
+          <div class="col-6 col-md-6 col-sm-12 col-xs-12 right-panel">
+            <q-card-section class="login-card">
 
-            <div class="text-dark q-mb-sm text-center" style="font-size: 16px">
-                To stay connected with us, please log in using your personal
-                information to create an Incident Report.
-            </div>
+              <div class="login-content">
 
-            <q-card-section>
-              <q-form class="q-gutter-xs q-mb-sm custom-border1" @submit.prevent="login">
-                <q-input
-                  rounded
-                  outlined
-                  v-model.trim="EmployeeCode"
-                  label="Employee Number"
+                <!-- LOGIN TITLE -->
+                <div class="text-h3 text-secondary text-bold text-center login-title">
+                  LOGIN
+                </div>
+
+                <!-- DESCRIPTION -->
+                <div class="text-dark text-center login-description">
+                  To stay connected with us, please log in using your personal
+                  information to create an Incident Report.
+                </div>
+
+                <!-- LOGIN FORM -->
+                <q-form
+                  class="login-form"
+                  @submit.prevent="login"
                 >
-                  <template v-slot:prepend>
-                    <q-icon name="person"></q-icon>
-                  </template>
-                </q-input>
 
-                <q-input
-                  rounded
-                  outlined
-                  v-model="WebPassword"
-                  label="Password"
-                  :type="showPassword ? 'text' : 'password'"
-                >
-                  <template v-slot:prepend>
-                    <q-icon name="lock"></q-icon>
-                  </template>
+                  <!-- EMPLOYEE NUMBER -->
+                  <q-input
+                    outlined
+                    v-model.trim="EmployeeCode"
+                    label="Employee Number"
+                    class="login-input"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="person" />
+                    </template>
+                  </q-input>
 
-                  <template v-slot:append>
-                    <q-icon
-                      name="visibility"
-                      v-if="!showPassword"
-                      @click="showPassword = true"
-                    ></q-icon>
-                    <q-icon
-                      name="visibility_off"
-                      v-else
-                      @click="showPassword = false"
-                    ></q-icon>
-                  </template>
-                </q-input>
+                  <!-- PASSWORD -->
+                  <q-input
+                    outlined
+                    v-model="WebPassword"
+                    label="Password"
+                    :type="showPassword ? 'text' : 'password'"
+                    class="login-input"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="lock" />
+                    </template>
 
-                <q-btn
-                  label="LOGIN"
-                  color="accent"
-                  icon="login"
-                  unelevated
-                  rounded
-                  type="submit"
-                  class="full-width q-py-sm q-mt-md text-subtitle1 text-black text-bold"
-                />
-              </q-form>
+                    <template v-slot:append>
+                      <q-icon
+                        v-if="!showPassword"
+                        name="visibility"
+                        class="cursor-pointer"
+                        @click="showPassword = true"
+                      />
+
+                      <q-icon
+                        v-else
+                        name="visibility_off"
+                        class="cursor-pointer"
+                        @click="showPassword = false"
+                      />
+                    </template>
+                  </q-input>
+
+                  <!-- LOGIN BUTTON -->
+                  <q-btn
+                    label="LOGIN"
+                    color="accent"
+                    icon="login"
+                    unelevated
+                    rounded
+                    type="submit"
+                    class="full-width login-button text-subtitle1 text-black text-bold"
+                  />
+
+                </q-form>
+
+                <!-- UERM LOGO -->
+                <div class="uerm-logo-wrapper">
+                  <img
+                    src="../assets/UERM Logos.png"
+                    alt="UERM Logo"
+                    class="uerm-logo"
+                  />
+                </div>
+
+              </div>
+
             </q-card-section>
-
-            <div class="text-center">
-                <img
-                  src="../assets/UERM Logos.png"
-                  class="q-ma-s"
-                  style="margin-top: 5px; width: 30%; height: 45%"
-                />
-            </div>
           </div>
+
         </div>
-      </div>
-    </div>
-    <img
-      src="../assets/BUILDING.png"
-      style="
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
-      "
-    />
-  </div>
+
+      </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script>
@@ -154,79 +180,249 @@ export default {
 };
 </script>
 
-<style>
-.q-pa-md {
+<style scoped>
+
+.login-page {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.login-container {
+  position: relative;
+  min-height: 100vh;
+  z-index: 1;
+}
+
+.left-panel {
+  min-height: 100vh;
+  border: 1px solid #003566;
+  padding: 40px;
+}
+
+
+/* FINAL POST IMAGE */
+
+.imgs {
+  width: 650px;
+  height: 350px;
+  max-width: 90%;
+  object-fit: contain;
+}
+
+/* =========================================================
+  RIGHT LOGIN PANEL
+========================================================= */
+
+.right-panel {
+  min-height: 100vh;
+  max-width: 550px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #ffffff 0%, #f2f2f2 100%);
+  border-top: 13px solid #003566;
+  border-bottom: 13px solid #ffc412;
+  box-shadow: 0 12px 35px rgba(0, 53, 102, 0.12);
+}
+
+
+/* =========================================================
+  LOGIN CARD
+========================================================= */
+
+.login-card {
+  width: 100%;
+  max-width: 500px;
+  padding: 45px 40px;
+  background: linear-gradient(135deg, #ffffff 0%, #f2f2f2 100%);
+  border-radius: 18px;
+}
+
+
+/* =========================================================
+  LOGIN CONTENT
+========================================================== */
+
+.login-content {
+  width: 100%;
+}
+
+
+/* =========================================================
+   LOGIN TITLE
+   ========================================================= */
+
+.login-title {
+  margin-bottom: 12px;
+  color: #003566;
+  letter-spacing: 1px;
+}
+
+
+/* =========================================================
+   DESCRIPTION
+   ========================================================= */
+
+.login-description {
+  max-width: 400px;
+  margin: 0 auto 30px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #555;
+}
+
+
+/* =========================================================
+   LOGIN FORM
+   ========================================================= */
+
+.login-form {
+  width: 100%;
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+.login-input {
+  margin-bottom: 16px;
+}
+
+
+/* =========================================================
+   LOGIN BUTTON
+   ========================================================= */
+
+.login-button {
+  min-height: 50px;
+
+  margin-top: 12px;
+
+  border-radius: 10px;
+
+  letter-spacing: 0.5px;
+}
+
+
+/* =========================================================
+   UERM LOGO
+   ========================================================= */
+
+.uerm-logo-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+
+  margin-top: 35px;
 }
-.q-input {
-  margin-bottom: 10px; /* Adjust the value as needed */
+
+
+.uerm-logo {
+  width: 150px;
+  max-width: 60%;
+  height: auto;
+
+  object-fit: contain;
 }
-.logcard {
-  padding: 1em;
-  width: 1250px; /* Optional: set a max-width for the card */
-  height: 580px;
-  margin-top: 95px;
-  background-color: transparent;
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1024px) {
+
+  .login-card {
+    padding: 40px 30px;
+  }
+
+  .login-title {
+    font-size: 2.5rem;
+  }
+
 }
-.signin {
-  border-bottom: 1em solid #ffc619;
-  border-top: 1em solid #0f4d91;
-  background-color: #e8f0fe;
-  padding: 70px;
-  width: 500px; /* Optional: set a max-width for the card */
-  border-radius: 10%;
-  height: 550px;
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .right-panel {
+    min-height: 100vh;
+    max-width: 100%;
+
+    padding: 20px;
+  }
+
+  .login-card {
+    padding: 30px 22px;
+
+    border-radius: 14px;
+  }
+
+  .login-title {
+    font-size: 2rem;
+  }
+
+  .login-description {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .uerm-logo {
+    width: 130px;
+  }
+
 }
-.btnlogin {
-  justify-content: center;
-  width: 90%;
-  margin-top: 5px;
-  margin-left: 25px;
-  height: 50px;
-  font-weight: bold;
-  font-size: 18px;
+
+@media (max-width: 1023px) {
+
+  .left-panel {
+    display: none !important;
+  }
+
+  .right-panel {
+    width: 100%;
+  }
+
+  .login-content {
+    max-width: 500px;
+  }
+
 }
-.textLogin {
-  font-weight: bold;
-  font-family: Arial Black;
-  display: flex;
-  color: #0f4d91;
-  font-size: 53px;
-  justify-content: center;
+
+@media (max-width: 600px) {
+
+  .right-panel {
+    padding: 30px 20px !important;
+  }
+
+  .text-h3 {
+    font-size: 2rem;
+  }
+
+  .login-description {
+    font-size: 14px;
+  }
+
+  .uerm-logo {
+    width: 40%;
+  }
+
 }
-.textwel {
-  font-weight: bold;
-  font-family: Arial Black;
-  display: flex;
-  color: #002b5c;
-  font-size: 45px;
-  justify-content: center;
-}
-.texthead {
-  font-weight: normal;
-  display: flex;
-  color: #0f4d91;
-  font-size: 15px;
-  justify-content: center;
-  margin-left: 5px;
-  margin-bottom: 15px;
-}
-.textdash {
-  font-weight: normal;
-  display: flex;
-  color: #002b5c;
-  font-size: 15px;
-  justify-content: center;
-  margin-left: 5px;
-  margin-bottom: 8px;
-}
-.imgs {
-  height: 330px;
-  width: 600px;
-  margin-top: 100px;
-  margin-left: 30px;
-}
+
 </style>

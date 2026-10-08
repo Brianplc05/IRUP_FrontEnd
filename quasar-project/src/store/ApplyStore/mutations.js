@@ -65,9 +65,34 @@ export default {
     state.getCountSubs = getCountSubs;
   },
 
+  GET_COUNTINSTATUS(state, getCountInstatus){
+    state.getCountInstatus = getCountInstatus;
+  },
+
+  GET_FILTERED_DATA(state, getFilteredData){
+    state.getFilteredData = getFilteredData;
+  },
+
   GET_COUNTREP(state, getCountRep){
     state.getCountRep = getCountRep;
   },
+
+  GET_COUNT_CLOSURETAT(state, getCountClosureTaT){
+    state.getCountClosureTaT = getCountClosureTaT;
+  },
+
+  GET_COUNT_AGINGTAT(state, getCountAgingTaT){
+    state.getCountAgingTaT = getCountAgingTaT;
+  },
+
+  GET_COUNT_DEPARTMENTINVOLVED(state, getCountDepartmentInvolved){
+    state.getCountDepartmentInvolved = getCountDepartmentInvolved;
+  },
+
+
+
+
+  /* CHECKING PART */
 
   GET_COUNTPAR(state, getCountPar){
     state.getCountPar = getCountPar;

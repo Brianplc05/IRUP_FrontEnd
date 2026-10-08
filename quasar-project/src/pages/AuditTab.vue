@@ -1,39 +1,93 @@
 <template>
   <div id="q-app" style="position: relative; z-index: 1">
     <div style="height: 100%; width: 100%" class="q-pa-lg">
-
       <!-- HEADER -->
-      <div
-        class="row items-center justify-between q-mb-md bg-white q-pa-sm rounded-borders shadow-1"
-        style="border-radius: 10px"
+      <q-card
+        class="dashboard-header"
+        style="border: 2px solid #e0e0e0;"
       >
-        <div>
-          <div class="text-primary text-weight-bold" style="font-size: 30px">
-            INCIDENT REPORT DETAILS
+        <q-card-section class="row items-center no-wrap">
+          <div class="row items-center no-wrap">
+            <div class="icon-wrapper">
+              <q-icon
+                name="dashboard"
+                size="35px"
+                color="primary"
+              />
+            </div>
+
+            <div class="q-ml-md text-left">
+              <div class="text-h5 text-weight-medium text-primary text-uppercase">
+                REPORT MODULE
+              </div>
+
+              <div class="text-grey-7 q-mt-xs">
+                Welcome to the Incident Reporting & Unified Platform (IRUP) Report Module!
+              </div>
+
+              <div class="accent-line q-mt-sm"></div>
+            </div>
           </div>
-          <div style="font-size: 18px; color: #333333">
-            Comprehensive information and documentation regarding the reported incident.
-          </div>
-        </div>
-      </div>
+        </q-card-section>
+      </q-card>
+
+      <q-card-section
+        v-if="loading"
+        class="fixed-full flex flex-center column q-gutter-md"
+        style="background-color: rgba(255, 255, 255, 0.7); z-index: 9999"
+      >
+        <q-spinner-ball size="150px" color="primary" />
+        <div class="text-subtitle1 text-primary">Please wait...</div>
+      </q-card-section>
 
       <!-- MAIN CARD -->
-      <q-card-section
-        class="row q-mb-sm bg-white q-pa-md rounded-borders shadow-1"
-        style="border-radius: 10px"
+      <q-card
+        class="dashboard-header q-mt-md q-pa-sm"
+        style="border: 2px solid #e0e0e0;"
       >
-        <q-card-section class="column fit full-width">
+        <q-card-section style="border: 2px solid #e0e0e0;">
+          <div class="filter-section ">
+            <div class="report-section">
+              <div class="text-h5 text-weight-medium text-primary text-uppercase">
+                INCIDENT REPORT HISTORY
+              </div>
 
-          <!-- FILTERS -->
-          <div class="row items-center justify-between q-mb-md">
-            <div>
+              <div class="text-grey-7 text-weight-medium">
+                Total Incident Report :
+                  <q-badge
+                    class="q-pa-sm text-bold"
+                    outline
+                    color="primary"
+                    style="font-size: 15px;"
+                  >
+                    {{ totalReport }}
+                  </q-badge>
+              </div>
+            </div>
 
-              <!-- FILTER AREA -->
+            <q-space />
+
+            <div class="filter-section ">
+              <q-input
+                v-model="searchQuery"
+                label="SEARCH"
+                dense
+                outlined
+                class="search-input"
+              >
+                <template v-slot:append>
+                  <q-icon
+                    name="search"
+                    color="info"
+                  />
+                </template>
+              </q-input>
+
               <q-btn-dropdown
-                rounded
+                color="secondary"
                 :label="selectedArea?.division || 'FILTER AREA'"
-                style="width: 25ch"
-                class="bg-info text-white q-mr-sm"
+                split
+                class="filter-btn"
               >
                 <q-list>
                   <q-item
@@ -42,17 +96,18 @@
                     clickable
                     @click="selectArea(option)"
                   >
-                    <q-item-section>{{ option.division }}</q-item-section>
+                    <q-item-section>
+                      {{ option.division }}
+                    </q-item-section>
                   </q-item>
                 </q-list>
               </q-btn-dropdown>
 
-              <!-- FILTER STATUS -->
               <q-btn-dropdown
-                rounded
-                label="FILTER STATUS"
-                style="width: 25ch"
-                class="bg-info text-white"
+                color="secondary"
+                :label="selectedStatus?.label || 'FILTER STATUS'"
+                split
+                class="filter-btn"
               >
                 <q-list>
                   <q-item
@@ -61,72 +116,44 @@
                     clickable
                     @click="selectStatus(option)"
                   >
-                    <q-item-section>{{ option.label }}</q-item-section>
+                    <q-item-section>
+                      {{ option.label }}
+                    </q-item-section>
                   </q-item>
                 </q-list>
               </q-btn-dropdown>
-
             </div>
-
-            <!-- SEARCH -->
-            <q-input
-              v-model="searchQuery"
-              label="SEARCH"
-              dense
-              outlined
-              rounded
-            >
-              <template v-slot:append>
-                <q-icon name="search" color="info" />
-              </template>
-            </q-input>
           </div>
 
-          <!-- TABLE CARD -->
-          <q-card-section
-            class="bg-white q-pa-sm rounded-borders shadow-1 q-mb-md"
-            style="border-radius: 10px"
-          >
-
-            <div class="q-pb-md q-pt-md q-pl-sm">
-              <div class="text-weight-bold" style="font-size: 18px;">
-                Total Incident Report : <q-badge class="q-pa-sm text-bold" outline color="primary" style="font-size: 18px;"> {{ totalReport }} </q-badge>
-              </div>
-            </div>
-
-            <div class="q-table-scroll-wrapper">
-              <!-- LOADING -->
-              <div
-                v-if="loading"
-                class="fixed-full flex flex-center column q-gutter-md"
-                style="background-color: rgba(255, 255, 255, 0.7); z-index: 9999"
-              >
-                <q-spinner-ball size="150px" color="primary" />
-                <div class="text-subtitle1 text-primary">Please wait...</div>
-              </div>
-
-              <AuditTables
-                v-show="showTable"
-                :items="filteredDisAll"
-                :columns="disColumns"
-                :rows-per-page-options="[10]"
-                :loading="loading"
-                flat
-                bordered
-                class="my-custom-scroll"
-              />
-            </div>
-
-          </q-card-section>
+          <div class="q-mt-md" style="border: 2px solid #e0e0e0; border-radius: 10px;">
+            <AuditTables
+              v-show="showTable"
+              :items="filteredDisAll"
+              :columns="disColumns"
+              :rows-per-page-options="[10]"
+              :loading="loading"
+              flat
+              bordered
+              class="my-custom-scroll"
+              style="border-radius: 10px;"
+            />
+          </div>
         </q-card-section>
-      </q-card-section>
+      </q-card>
     </div>
   </div>
 
   <!-- BACKGROUND -->
   <img
-    src="../assets/OMBRE-GRAY.jpg"
-    style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:0;"
+    src="../assets/BGCORE.png"
+    style="
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    "
   />
 </template>
 
@@ -184,7 +211,6 @@ export default {
     ...mapGetters({
       getForm: "ApplyStore/getForm",
       division: "ApplyStore/division",
-      qaStats: "ApplyStore/getQaStats"
     }),
 
     filteredDisAll() {
@@ -237,7 +263,7 @@ export default {
 
     // 🔹 Auto fetch every 60 seconds
     this.interval = setInterval(() => {
-      this.getForm();
+      this.getInc();
     }, 60000);
   },
 
@@ -280,6 +306,75 @@ export default {
 </script>
 
 <style>
+
+/* ////////////////////  HEADER  /////////////////// */
+
+.dashboard-header {
+  width: 100%;
+  border-radius: 8px;
+  background: #ffffff;
+  text-align: left;
+}
+
+.icon-wrapper {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(2, 64, 137, 0.08);
+}
+
+.accent-line {
+  width: 60px;
+  height: 3px;
+  background: #024089;
+  border-radius: 2px;
+}
+
+/* //////////////////// FILTER & SEARCH /////////////////// */
+
+.filter-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.report-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.report-total {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+}
+
+.filter-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  width: 600px;
+  border-radius: 10px;
+}
+
+.filter-btn {
+  width: 180px;
+  border-radius: 10px;
+}
+
+/* //////////////////// TABLE /////////////////// */
 .q-table td,
 .q-table th {
   padding: 8px;

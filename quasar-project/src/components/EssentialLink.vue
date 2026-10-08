@@ -47,7 +47,7 @@ export default defineComponent({
     },
     labelSize: {
       type: String,
-      default: "16px",  // NEW: text size
+      default: "15px",  // NEW: text size
     },
     isSelected: {
       type: Boolean,
@@ -59,17 +59,16 @@ export default defineComponent({
 
 <style scoped>
 .my-sidebar-item {
-  border-radius: 12px;
-  margin: 4px 8px;
-  padding: 8px 12px;
+  border-radius: 5px;
+  color: #003566;
   transition: background 0.2s, color 0.2s;
 }
 
 .my-active-item {
-  background: #f1f5f9;
+  background: #ffc412;
   color: #003566;
-  border-left: 8px solid #ffc412;
-  border-radius: 12px;
+  border: 3px solid #ffc412;
+  border-radius: 10px;
   font-weight: bold;
 }
 

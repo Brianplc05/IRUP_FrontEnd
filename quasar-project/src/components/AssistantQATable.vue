@@ -10,7 +10,7 @@
           :ripple="{ center: true }"
           icon="description"
           class="bg-accent text-black text-bold text-center shadow-5"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
         />
 
         <q-dialog maximized v-model="IRDialog" persistent>

@@ -100,7 +100,15 @@ export default {
   getRisk: [],
   getRiskChild: [],
   getUser: [],
+  getCountInstatus: [],
+  getFilteredData: [],
   getCountRep : [],
+  getCountClosureTaT: [],
+  getCountAgingTaT: [],
+  getCountDepartmentInvolved: [],
+
+
+
   getCountPar: [],
   getCountRepTaT: [],
   getCountRCATaT: [],

@@ -1,1758 +1,1806 @@
 <template>
   <div id="q-app" style="position: relative; z-index: 1">
     <div style="height: 100%; width: 100%" class="q-pa-lg">
-      <div
+      <q-card
+        class="dashboard-header"
+        style="border: 2px solid #e0e0e0;"
         v-if="loggedInUser.AreaCode === null"
-        class="row items-center justify-between q-mb-md bg-white q-pa-sm rounded-borders shadow-1"
-        style="border-radius: 10px"
       >
-        <div>
-          <div class="text-primary text-weight-bold" style="font-size: 30px">
-            <!-- QUALITY ASSURANCE MODULE -->
-            QUALITY ASSURANCE MODULE
-          </div>
-          <div style="font-size: 18px; color: #333333">
-            Incident Report Details
-          </div>
-        </div>
-
-        <div class="row items-center q-gutter-sm">
-          <q-btn
-            flat
-            rounded
-            push
-            @click="reportableContent"
-            :ripple="{ center: true }"
-            icon="add_card"
-            label="INCIDENT & RISK REGISTRY"
-            class="bg-accent text-black text-bold text-center shadow-3"
-            style="width: 280px; border-radius: 20px"
-          />
-
-          <q-dialog maximized v-model="FullContent" persistent>
-            <div class="ReportDialog">
-              <q-card class="contentFormReport">
-                <q-card-section
-                  class="q-mb-sm row items-center justify-between"
-                >
-                  <div
-                    class="text-secondary text-weight-bold"
-                    style="font-size: 25px; color: #002b5c"
-                  >
-                    INCIDENT & RISK REGISTRY
-                  </div>
-
-                  <q-btn
-                    flat
-                    icon="close"
-                    style="
-                      color: #003566;
-                      background-color: rgba(22, 110, 204, 0.1);
-                    "
-                    @click="FullContent = false"
-                    v-close-popup
-                  >
-                    <q-tooltip class="bg-info text-white">
-                      Close Form
-                    </q-tooltip>
-                  </q-btn>
-                </q-card-section>
-
-                <q-separator class="formseparatorBlue" />
-
-                <q-card-section>
-                  <q-toolbar class="bg-white q-pa-sx q-pt-md">
-                    <q-tabs
-                      v-model="reporttab"
-                      shrink
-                      stretch
-                      inline-label
-                      class="bg-white q-mb-md"
-                      style="width: fit-content; margin: auto"
-                      indicator-color="transparent"
-                    >
-                      <q-tab
-                        stack
-                        :class="['Reporttab-equal', getTabClass('repIncident')]"
-                        name="repIncident"
-                        label="REPORTABLE INCIDENT"
-                        icon="analytics"
-                        style="width: 350px"
-                        class="q-mx-sm"
-                      />
-                      <q-tab
-                        stack
-                        :class="['Reporttab-equal', getTabClass('repChild')]"
-                        name="repChild"
-                        label="PARTICULAR INCIDENT"
-                        icon="assignment"
-                        style="width: 350px"
-                        class="q-mx-sm"
-                      />
-                      <q-tab
-                        stack
-                        :class="['Reporttab-equal', getTabClass('repUniverse')]"
-                        name="repUniverse"
-                        label="RISK UNIVERSE"
-                        icon="assignment"
-                        style="width: 350px"
-                        class="q-mx-sm"
-                      />
-                    </q-tabs>
-                    <q-space />
-                  </q-toolbar>
-
-                  <q-tab-panels v-model="reporttab" animated class="q-mt-md">
-                    <q-tab-panel
-                      name="repIncident"
-                      style="border: 2px solid #e0e0e0"
-                    >
-                      <div class="row items-center justify-between q-mb-md">
-
-                        <q-space />
-
-                        <q-input
-                          v-model="searchReportable"
-                          label="SEARCH "
-                          dense
-                          outlined
-                          rounded
-                        >
-                          <template v-slot:append>
-                            <q-icon name="search" color="info" />
-                          </template>
-                        </q-input>
-
-                        <q-btn
-                          flat
-                          rounded
-                          push
-                          icon="add_card"
-                          label="Add Reportable Incident"
-                          class="buttonYellowDesign bg-accent text-black shadow-2 q-ml-md"
-                          style="
-                            border-radius: 20px;
-                            width: 295px;
-                            text-transform: none;
-                          "
-                          @click="subjectIncident"
-                          :ripple="{ center: true }"
-                        />
-
-                        <q-dialog persistent v-model="SubIncident">
-                          <q-card class="QAReportable">
-                            <q-card-section
-                              class="q-mb-sm row items-center justify-center"
-                            >
-                              <div
-                                class="text-secondary text-weight-bold"
-                                style="font-size: 25px; color: #002b5c"
-                              >
-                                ADD REPORTABLE INCIDENT
-                              </div>
-                            </q-card-section>
-
-                            <q-separator class="formseparatorBlue" />
-
-                            <q-card-section class="q-gutter-md q-ma-sx">
-                              <q-input
-                                rounded
-                                outlined
-                                v-model="SubjectName"
-                                label-slot
-                              >
-                                <template v-slot:label
-                                  >REPORTABLE INCIDENT NAME
-                                  <span class="text-red">*</span></template
-                                >
-                              </q-input>
-
-                              <q-input
-                                rounded
-                                outlined
-                                type="textarea"
-                                v-model="SubjectReptDescription"
-                                label-slot
-                              >
-                                <template v-slot:label
-                                  >REPORTABLE INCIDENT DEFINITION
-                                  <span class="text-red">*</span></template
-                                >
-                              </q-input>
-
-                              <div class="row q-gutter-xxl; justify-center">
-                                <q-btn
-                                  flat
-                                  rounded
-                                  push
-                                  label="CANCEL"
-                                  class="buttonCancelDesign text-info"
-                                  @click="onCancelRisk"
-                                />
-
-                                <q-btn
-                                  flat
-                                  rounded
-                                  push
-                                  label="SAVE"
-                                  class="buttonSaveDesign bg-accent text-black"
-                                  @click="submitRisk"
-                                />
-                              </div>
-                            </q-card-section>
-                          </q-card>
-                        </q-dialog>
-
-                        <q-dialog v-model="waiting" persistent maximized>
-                          <div
-                            class="fullscreen flex flex-center column q-gutter-md"
-                            style="background-color: rgba(0, 0, 0, 0.85)"
-                          >
-                            <q-spinner-ios size="150px" color="white" />
-
-                            <div class="text-center text-subtitle1 text-white">
-                              Doing something.
-                              <br />
-                              <span class="text-italic text-accent"
-                                >Please wait...</span
-                              >
-                            </div>
-                          </div>
-                        </q-dialog>
-                      </div>
-
-                      <div>
-                        <q-scroll-area style="height: 670px;">
-                          <q-markup-table class="custom-q-table">
-                            <thead>
-                              <tr>
-                                <th
-                                  v-for="column in disSubColumns"
-                                  :key="column.name"
-                                  class="custom-header"
-                                >
-                                  {{ column.label }}
-                                </th>
-                              </tr>
-                            </thead>
-
-                            <tbody>
-                              <tr v-for="row in filteredDisSub" :key="row.id">
-                                <td
-                                  v-for="column in disSubColumns"
-                                  :key="column.name"
-                                  class="custom-cell"
-                                >
-                                  {{ row[column.field] }}
-                                </td>
-                              </tr>
-                            </tbody>
-                          </q-markup-table>
-                        </q-scroll-area>
-                      </div>
-                    </q-tab-panel>
-
-                    <q-tab-panel
-                      name="repChild"
-                      style="border: 2px solid #e0e0e0"
-                    >
-                      <div class="row items-center justify-between q-mb-md">
-                        <q-space></q-space>
-
-                        <q-input
-                          v-model="searchRiskChild"
-                          label="SEARCH "
-                          dense
-                          outlined
-                          rounded
-                        >
-                          <template v-slot:append>
-                            <q-icon name="search" color="info" />
-                          </template>
-                        </q-input>
-
-                        <q-btn
-                          flat
-                          rounded
-                          push
-                          icon="add_card"
-                          label="Add Reportable Children"
-                          class="buttonYellowDesign bg-accent text-black shadow-2 q-ml-md"
-                          style="
-                            border-radius: 20px;
-                            width: 295px;
-                            text-transform: none;
-                          "
-                          @click="incidentChildren"
-                          :ripple="{ center: true }"
-                        />
-
-                        <q-dialog persistent v-model="ChilIncident">
-                          <q-card class="QAReportableChi">
-                            <q-card-section
-                              class="q-mb-sm row items-center justify-center"
-                            >
-                              <div
-                                class="text-secondary text-weight-bold"
-                                style="font-size: 25px; color: #002b5c"
-                              >
-                                ADD PARTICULAR INCIDENT
-                              </div>
-                            </q-card-section>
-
-                            <q-separator class="formseparatorBlue" />
-
-                            <q-card-section class="q-gutter-md q-ma-sx">
-                              <q-select
-                                rounded
-                                outlined
-                                use-input
-                                clearable
-                                v-model="SubjectCode"
-                                :options="disAllSubject"
-                                label="REPORTABLE INCIDENT"
-                                emit-value
-                                map-options
-                                :option-value="(option) => option"
-                                :option-label="(option) => option.subjectName"
-                              />
-
-                              <q-input
-                                autogrow
-                                rounded
-                                outlined
-                                v-model="SubjectSpecificExam"
-                                label-slot
-                              >
-                                <template v-slot:label
-                                  >PARTICULAR INCIDENT NAME
-                                  <span class="text-red">*</span></template
-                                >
-                              </q-input>
-
-                              <!-- RISK DOMAIN -->
-                              <q-select
-                                rounded
-                                outlined
-                                use-input
-                                clearable
-                                v-model="SubjectRiskCode"
-                                label-slot
-                                :options="disAllDomain"
-                                emit-value
-                                map-options
-                                :option-value="(option) => option"
-                                :option-label="(option) => option.riskDomain"
-                                @update:model-value="filterSubDomain"
-                              >
-                                <template v-slot:label>
-                                  RISK DOMAIN <span class="text-red">*</span>
-                                </template>
-                              </q-select>
-
-                              <!-- RISK SUB-DOMAIN -->
-                              <q-select
-                                rounded
-                                outlined
-                                use-input
-                                clearable
-                                v-model="SubjectRiskSubCode"
-                                label-slot
-                                :options="filteredSubDomains"
-                                emit-value
-                                map-options
-                                :option-value="(option) => option"
-                                :option-label="(option) => option.risk"
-                              >
-                                <template v-slot:label>
-                                  RISK SUB-DOMAIN <span class="text-red">*</span>
-                                </template>
-                              </q-select>
-
-                              <div class="row q-gutter-xxl; justify-center">
-                                <q-btn
-                                  flat
-                                  rounded
-                                  push
-                                  label="CANCEL"
-                                  class="buttonCancelDesign text-info"
-                                  @click="onCancelRiskChil"
-                                />
-
-                                <q-btn
-                                  flat
-                                  rounded
-                                  push
-                                  label="SAVE"
-                                  class="buttonSaveDesign bg-accent text-black"
-                                  @click="submitRiskChild()"
-                                />
-                              </div>
-                            </q-card-section>
-                          </q-card>
-                        </q-dialog>
-                      </div>
-
-                      <div>
-                        <q-scroll-area style="height: 670px;">
-                          <q-markup-table class="custom-q-table">
-                            <thead>
-                              <tr>
-                                <th
-                                  v-for="column in disRiskChildColumns"
-                                  :key="column.name"
-                                  class="custom-header"
-                                >
-                                  {{ column.label }}
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr v-for="row in filteredDisRiskChild" :key="row.id">
-                                <td
-                                  v-for="column in disRiskChildColumns"
-                                  :key="column.name"
-                                  class="custom-cell"
-                                >
-                                  {{ row[column.field] }}
-                                </td>
-                              </tr>
-                            </tbody>
-                          </q-markup-table>
-                        </q-scroll-area>
-                      </div>
-                    </q-tab-panel>
-
-                    <q-tab-panel
-                      name="repUniverse"
-                      style="border: 2px solid #e0e0e0"
-                    >
-                      <div class="row items-center justify-between q-mb-md">
-                        <q-space></q-space>
-
-                        <q-input
-                          v-model="searchRiskUni"
-                          label="SEARCH "
-                          dense
-                          outlined
-                          rounded
-                        >
-                          <template v-slot:append>
-                            <q-icon name="search" color="info" />
-                          </template>
-                        </q-input>
-
-                        <q-btn
-                          flat
-                          rounded
-                          push
-                          icon="add_card"
-                          label="Add Risk Domain"
-                          class="buttonYellowDesign bg-accent text-black shadow-1 q-ml-md"
-                          style="
-                            border-radius: 20px;
-                            width: 195px;
-                            text-transform: none;
-                          "
-                          @click="incidentRiskUni()"
-                          :ripple="{ center: true }"
-                        />
-
-                        <q-dialog persistent v-model="UniIncident">
-                          <q-card class="QARiskDomain">
-                            <q-card-section
-                              class="q-mb-sm row items-center justify-center"
-                            >
-                              <div
-                                class="text-secondary text-weight-bold"
-                                style="font-size: 25px; color: #002b5c"
-                              >
-                                ADD RISK DOMAIN
-                              </div>
-                            </q-card-section>
-
-                            <q-separator class="formseparatorBlue" />
-
-                            <q-card-section class="q-gutter-md q-ma-sx">
-                              <q-input
-                                rounded
-                                outlined
-                                v-model="RiskDomain"
-                                label-slot
-                              >
-                                <template v-slot:label
-                                  >RISK DOMIAN NAME
-                                  <span class="text-red">*</span></template
-                                >
-                              </q-input>
-
-                              <div class="row q-gutter-xxl; justify-center">
-                                <q-btn
-                                  flat
-                                  rounded
-                                  push
-                                  label="CANCEL"
-                                  class="buttonCancelDesign text-info"
-                                  @click="onCancelRisUni"
-                                />
-
-                                <q-btn
-                                  flat
-                                  rounded
-                                  push
-                                  label="SAVE"
-                                  class="buttonSaveDesign bg-accent text-black"
-                                  @click="submitRiskUni()"
-                                />
-                              </div>
-                            </q-card-section>
-                          </q-card>
-                        </q-dialog>
-
-                        <q-dialog v-model="itemWaitDomain" persistent maximized>
-                          <div
-                            class="fullscreen flex flex-center column q-gutter-md"
-                            style="background-color: rgba(0, 0, 0, 0.85)"
-                          >
-                            <q-spinner-ios size="150px" color="white" />
-
-                            <div class="text-center text-subtitle1 text-white">
-                              Performing the required action.
-                              <br />
-                              <span class="text-italic text-accent">Please wait...</span>
-                            </div>
-                          </div>
-                        </q-dialog>
-
-                        <q-btn
-                          flat
-                          rounded
-                          push
-                          icon="add_card"
-                          label="Add Risk Sub-Domain"
-                          class="buttonYellowDesign bg-accent text-black shadow-1 q-ml-sm"
-                          style="
-                            border-radius: 20px;
-                            width: 235px;
-                            text-transform: none;
-                          "
-                          @click="incidentRiskSub()"
-                          :ripple="{ center: true }"
-                        />
-
-                        <q-dialog persistent v-model="RiskSubIncident">
-                          <q-card class="QARiskSubDomain">
-                            <q-card-section
-                              class="q-mb-sm row items-center justify-center"
-                            >
-                              <div
-                                class="text-secondary text-weight-bold"
-                                style="font-size: 25px; color: #002b5c"
-                              >
-                                ADD RISK SUB-DOMAIN
-                              </div>
-                            </q-card-section>
-
-                            <q-separator class="formseparatorBlue" />
-
-                              <q-card-section class="q-gutter-md q-ma-sx">
-                                <q-select
-                                  rounded
-                                  outlined
-                                  use-input
-                                  clearable
-                                  v-model="DomainRisk"
-                                  label-slot
-                                  :options="disAllDomain"
-                                  emit-value
-                                  map-options
-                                  :option-value="(option) => option"
-                                  :option-label="(option) => option.riskDomain"
-                                >
-                                  <template v-slot:label>
-                                    DOMAIN NAME
-                                    <span class="text-red">*</span>
-                                  </template>
-                                </q-select>
-
-                                <q-input
-                                  rounded
-                                  outlined
-                                  v-model="RiskSub"
-                                  label-slot
-                                >
-                                  <template v-slot:label
-                                    >SUB-DOMAIN NAME
-                                    <span class="text-red">*</span></template
-                                  >
-                                </q-input>
-
-                                <q-input
-                                  rounded
-                                  outlined
-                                  type="textarea"
-                                  v-model="RiskSubDescription"
-                                  label-slot
-                                >
-                                  <template v-slot:label
-                                    >SUB-DOMAIN DEFINITION
-                                    <span class="text-red">*</span></template
-                                  >
-                                </q-input>
-                              </q-card-section>
-
-                              <div class="row q-gutter-xxl; justify-center">
-                                <q-btn
-                                  flat
-                                  rounded
-                                  push
-                                  label="CANCEL"
-                                  class="buttonCancelDesign text-info"
-                                  @click="onCancelRiskSub"
-                                />
-
-                                <q-btn
-                                  flat
-                                  rounded
-                                  push
-                                  label="SAVE"
-                                  class="buttonSaveDesign bg-accent text-black"
-                                  @click="submitRiskSub"
-                                />
-                              </div>
-                          </q-card>
-                        </q-dialog>
-                      </div>
-
-                      <div>
-                        <q-scroll-area style="height: 670px;">
-                          <q-markup-table class="custom-q-table">
-                          <thead>
-                            <tr>
-                              <th
-                                v-for="column in disColumnRiskUni"
-                                :key="column.name"
-                                class="custom-header"
-                              >
-                                {{ column.label }}
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr v-for="row in filteredDisRiskUni" :key="row.id">
-                              <td
-                                v-for="column in disColumnRiskUni"
-                                :key="column.name"
-                                class="custom-cell"
-                              >
-                                {{ row[column.field] }}
-                              </td>
-                            </tr>
-                          </tbody>
-                          </q-markup-table>
-                        </q-scroll-area>
-                      </div>
-                    </q-tab-panel>
-                  </q-tab-panels>
-                </q-card-section>
-              </q-card>
+        <q-card-section class="row items-center no-wrap">
+          <!-- LEFT SIDE -->
+          <div class="row items-center no-wrap">
+            <div class="icon-wrapper">
+              <q-icon
+                name="dashboard"
+                size="35px"
+                color="primary"
+              />
             </div>
-          </q-dialog>
 
-          <q-btn
-            flat
-            rounded
-            push
-            @click="departmentContent"
-            :ripple="{ center: true }"
-            icon="diversity_3"
-            label="ACCESS MANAGEMENT"
-            class="bg-accent text-black text-bold text-center shadow-3"
-            style="width: 280px; border-radius: 20px"
-          />
+            <div class="q-ml-md text-left">
+              <div class="text-h5 text-weight-medium text-primary text-uppercase">
+                QUALITY ASSURANCE MODULE
+              </div>
 
-          <q-dialog maximized v-model="FullDepartmentContent" persistent>
-            <div class="ReportDialog">
-              <q-card class="contentFormReport">
-                <q-card-section
-                  class="q-mb-sm row items-center justify-between"
-                >
-                  <div
-                    class="text-secondary text-weight-bold"
-                    style="font-size: 25px; color: #002b5c"
-                  >
-                    ACCESS MANAGEMENT
-                  </div>
+              <div class="text-grey-7 q-mt-xs">
+                Welcome to the Incident Reporting & Unified Platform (IRUP) Quality Assurance!
+              </div>
 
-                  <q-btn
-                    flat
-                    icon="close"
-                    style="
-                      color: #003566;
-                      background-color: rgba(22, 110, 204, 0.1);
-                    "
-                    @click="FullContent = false"
-                    v-close-popup
-                  >
-                    <q-tooltip class="bg-info text-white">
-                      Close Form
-                    </q-tooltip>
-                  </q-btn>
-                </q-card-section>
-
-                <q-separator class="formseparatorBlue" />
-
-                <q-card-section>
-                  <q-toolbar class="bg-white q-pa-sx q-pt-md">
-                    <q-tabs
-                      v-model="depttab"
-                      shrink
-                      stretch
-                      inline-label
-                      class="bg-white q-mb-md"
-                      style="width: fit-content; margin: auto"
-                      indicator-color="transparent"
-                    >
-                      <q-tab
-                        stack
-                        :class="['Depttab-equal', getTabDeptClass('deptHead')]"
-                        name="deptHead"
-                        label="DEPARTMENTS HEADS"
-                        icon="group"
-                        style="width: 350px"
-                        class="q-mx-sm"
-                      />
-
-                      <q-tab
-                        stack
-                        :class="['Depttab-equal', getTabDeptClass('deptArea')]"
-                        name="deptArea"
-                        label="AREA ASSIGNMENT"
-                        icon="groups"
-                        style="width: 350px"
-                        class="q-mx-sm"
-                      />
-
-                      <q-tab
-                        stack
-                        :class="['Depttab-equal', getTabDeptClass('deptRequest')]"
-                        name="deptRequest"
-                        label="REQUEST ACCESS"
-                        icon="diversity_3"
-                        style="width: 350px"
-                        class="q-mx-sm"
-                      />
-                    </q-tabs>
-                    <q-space />
-                  </q-toolbar>
-
-                  <q-tab-panels v-model="depttab" animated class="q-mt-md">
-                    <q-tab-panel
-                      name="deptHead"
-                      style="border: 2px solid #e0e0e0"
-                    >
-                      <div class="row items-center justify-between q-mb-md">
-                        <q-space />
-
-                        <q-input
-                          v-model="searchDeptHead"
-                          label="SEARCH "
-                          dense
-                          outlined
-                          rounded
-                          class="q-ml-md"
-                        >
-                          <template v-slot:append>
-                            <q-icon name="search" color="info" />
-                          </template>
-                        </q-input>
-
-                        <q-btn
-                          flat
-                          rounded
-                          push
-                          @click="AddDepartmentContent"
-                          :ripple="{ center: true }"
-                          icon="add"
-                          label="ADD DEPARTMENT HEADS"
-                          class="bg-accent text-black text-bold text-center q-ma-sm shadow-2"
-                          style="width: 250px; border-radius: 20px"
-                        />
-
-                        <q-dialog v-model="AddDepartment" persistent>
-                          <q-card class="QADepartment">
-                            <q-card-section
-                              class="q-mb-sm row items-center justify-center"
-                            >
-                              <div
-                                class="text-secondary text-weight-bold"
-                                style="font-size: 25px; color: #002b5c"
-                              >
-                                ADD DEPARTMENT
-                              </div>
-                            </q-card-section>
-
-                            <q-separator class="formseparatorBlue" />
-
-                            <q-card-section class="q-gutter-md q-ma-sx">
-                              <q-select
-                                rounded
-                                outlined
-                                use-input
-                                clearable
-                                v-model="DeptName"
-                                :options="disAllDeptList"
-                                label="DEPARTMENT NAME"
-                                @filter="FilterDeptFn"
-                                emit-value
-                                map-options
-                                :option-value="(option) => option"
-                                :option-label="(option) => option.dESCRIPTION"
-                              />
-
-                              <q-select
-                                rounded
-                                outlined
-                                use-input
-                                clearable
-                                v-model="EmployeeDeptCode"
-                                :options="disEmployeeName"
-                                label="EMPLOYEE NAME"
-                                @filter="filterEmpFn"
-                                emit-value
-                                map-options
-                                :option-value="(option) => option"
-                                :option-label="(option) => option.fullName"
-                              />
-
-                            </q-card-section>
-
-                            <div class="row q-gutter-xxl; justify-center">
-                                <q-btn
-                                  flat
-                                  rounded
-                                  push
-                                  label="CANCEL"
-                                  class="buttonCancelDesign text-info"
-                                  @click="onCancelAddDept"
-                                />
-
-                                <q-btn
-                                  flat
-                                  rounded
-                                  push
-                                  label="SAVE"
-                                  class="buttonSaveDesign bg-accent text-black"
-                                  @click="submitAddDept()"
-                                />
-                            </div>
-                          </q-card>
-                        </q-dialog>
-
-                        <q-dialog v-model="itemLoading" persistent maximized>
-                          <div
-                            class="fullscreen flex flex-center column q-gutter-md"
-                            style="background-color: rgba(0, 0, 0, 0.85)"
-                          >
-                            <q-spinner-ios size="150px" color="white" />
-
-                            <div class="text-center text-subtitle1 text-white">
-                              Performing the required action.
-                              <br />
-                              <span class="text-italic text-accent">Please wait...</span>
-                            </div>
-                          </div>
-                        </q-dialog>
-                      </div>
-
-                      <div>
-                        <q-scroll-area style="height: 670px;">
-                          <q-markup-table class="custom-q-table">
-                            <thead>
-                              <tr>
-                                <th
-                                  v-for="column in disColumnHead"
-                                  :key="column.name"
-                                  class="custom-header"
-                                >
-                                  {{ column.label }}
-                                </th>
-                              </tr>
-                            </thead>
-
-                            <tbody>
-                              <tr v-for="row in filteredDisAllHead" :key="row.id">
-                                <td
-                                  v-for="column in disColumnHead"
-                                  :key="column.name"
-                                  class="custom-cell"
-                                >
-                                  <template v-if="column.field === 'id'">
-                                    <q-btn
-                                      flat
-                                      rounded
-                                      push
-                                      @click="editDeptHead(row)"
-                                      :ripple="{ center: true }"
-                                      icon="edit_document"
-                                      class="buttonYellowDesign bg-accent text-black shadow-3"
-                                      style="border-radius: 20px; width: 70px"
-                                    >
-                                      <q-tooltip class="bg-info text-white">
-                                        Edit Head Details
-                                      </q-tooltip>
-                                    </q-btn>
-
-                                    <q-dialog v-model="EditDepartment" persistent>
-                                      <q-card class="QADepartment">
-                                        <q-card-section class="q-mb-sm row items-center justify-center">
-                                          <div
-                                            class="text-secondary text-weight-bold"
-                                            style="font-size: 25px; color: #002b5c"
-                                          >
-                                            EDIT DEPARTMENT
-                                          </div>
-                                        </q-card-section>
-
-                                        <q-separator class="formseparatorBlue" />
-
-                                        <q-card-section style="display: none;">
-                                          {{ selectedDeptId }}
-                                        </q-card-section>
-
-                                        <q-card-section class="q-gutter-md q-ma-sx">
-                                          <q-input
-                                            rounded
-                                            outlined
-                                            v-model="currentDeptDetails"
-                                            label="DEPARTMENT NAME"
-                                            disable
-                                          />
-
-                                          <q-select
-                                            rounded
-                                            outlined
-                                            use-input
-                                            clearable
-                                            v-model="EmployeeDeptCode"
-                                            :options="disEmployeeName"
-                                            @filter="filterEmpFn"
-                                            label="EMPLOYEE NAME"
-                                            emit-value
-                                            map-options
-                                            :option-value="(option) => option"
-                                            :option-label="(option) => option.fullName"
-                                          />
-                                        </q-card-section>
-
-                                        <div class="row q-gutter-xxl justify-center">
-                                          <q-btn
-                                            flat
-                                            rounded
-                                            push
-                                            label="CANCEL"
-                                            @click="onCancelEditDept"
-                                            class="buttonCancelDesign text-info"
-                                          />
-
-                                          <q-btn
-                                            flat
-                                            rounded
-                                            push
-                                            label="SAVE"
-                                            class="buttonSaveDesign bg-accent text-black"
-                                            @click="submitEditDept()"
-                                          />
-                                        </div>
-                                      </q-card>
-                                    </q-dialog>
-                                  </template>
-
-                                  <template v-else>
-                                    {{ row[column.field] }}
-                                  </template>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </q-markup-table>
-                        </q-scroll-area>
-                      </div>
-                    </q-tab-panel>
-
-                    <q-tab-panel
-                      name="deptArea"
-                      style="border: 2px solid #e0e0e0"
-                    >
-                      <div class="row items-center justify-between q-mb-md">
-                        <q-space />
-
-                        <q-input
-                          v-model="searchArea"
-                          label="SEARCH "
-                          dense
-                          outlined
-                          rounded
-                          class="q-ml-md"
-                        >
-                          <template v-slot:append>
-                            <q-icon name="search" color="info" />
-                          </template>
-                        </q-input>
-
-                        <q-btn
-                          flat
-                          rounded
-                          push
-                          @click="AddAreaAssignee"
-                          :ripple="{ center: true }"
-                          icon="add"
-                          label="ADD AREA ASSIGNEE"
-                          class="bg-accent text-black text-bold text-center q-ma-sm shadow-2"
-                          style="width: 230px; border-radius: 20px"
-                        />
-
-                        <q-dialog v-model="AddAreaAss" persistent>
-                          <q-card class="QADepartment">
-                            <q-card-section
-                              class="q-mb-sm row items-center justify-center"
-                            >
-                              <div
-                                class="text-secondary text-weight-bold"
-                                style="font-size: 25px; color: #002b5c"
-                              >
-                                ADD AREA ASSIGNEE
-                              </div>
-                            </q-card-section>
-
-                            <q-separator class="formseparatorBlue" />
-
-                            <q-card-section class="q-gutter-md q-ma-sx">
-                              <q-select
-                                rounded
-                                outlined
-                                use-input
-                                clearable
-                                v-model="DivisionAreaCode"
-                                :options="disAllDiv"
-                                label="AREA"
-                                emit-value
-                                map-options
-                                :option-value="(option) => option"
-                                :option-label="(option) => option.division"
-                              />
-
-                              <q-select
-                                rounded
-                                outlined
-                                use-input
-                                clearable
-                                v-model="EmployeeAreaCode"
-                                :options="disEmployeeName"
-                                label="EMPLOYEE NAME"
-                                @filter="filterEmpFn"
-                                emit-value
-                                map-options
-                                :option-value="(option) => option"
-                                :option-label="(option) => option.fullName"
-                              />
-                            </q-card-section>
-
-                            <div class="row q-gutter-xxl; justify-center">
-                                <q-btn
-                                  flat
-                                  rounded
-                                  push
-                                  label="CANCEL"
-                                  class="buttonCancelDesign text-info"
-                                  @click="onCancelAddArea"
-                                />
-
-                                <q-btn
-                                  flat
-                                  rounded
-                                  push
-                                  label="SAVE"
-                                  class="buttonSaveDesign bg-accent text-black"
-                                  @click="submitAddArea()"
-                                />
-                            </div>
-                          </q-card>
-                        </q-dialog>
-
-                        <q-dialog v-model="itemAreaLoading" persistent maximized>
-                          <div
-                            class="fullscreen flex flex-center column q-gutter-md"
-                            style="background-color: rgba(0, 0, 0, 0.85)"
-                          >
-                            <q-spinner-ios size="150px" color="white" />
-
-                            <div class="text-center text-subtitle1 text-white">
-                              Performing the required action.
-                              <br />
-                              <span class="text-italic text-accent">Please wait...</span>
-                            </div>
-                          </div>
-                        </q-dialog>
-                      </div>
-
-                      <div>
-                        <q-markup-table class="custom-q-table">
-                          <thead>
-                            <tr>
-                              <th
-                                v-for="column in disColumnArea"
-                                :key="column.name"
-                                class="custom-header"
-                              >
-                                {{ column.label }}
-                              </th>
-                            </tr>
-                          </thead>
-
-                          <tbody>
-                              <tr v-for="row in filterDisArea" :key="row.id">
-                                <td
-                                  v-for="column in disColumnArea"
-                                  :key="column.name"
-                                  class="custom-cell"
-                                >
-                                  <template v-if="column.field === 'action'">
-                                    <q-btn
-                                      flat
-                                      rounded
-                                      push
-                                      @click="removeAreaAssignee(row.id)"
-                                      :ripple="{ center: true }"
-                                      icon="delete"
-                                      class="buttonRedDesign bg-red text-black shadow-3"
-                                      style="border-radius: 20px; width: 70px"
-                                    >
-                                      <q-tooltip class="bg-info text-white">
-                                        Edit Area Details
-                                      </q-tooltip>
-                                    </q-btn>
-
-                                    <q-dialog v-model="RemoveAssignee" persistent>
-                                      <q-card class="QAArea">
-                                        <q-card-section
-                                          class="q-mb-sm row items-center justify-center"
-                                        >
-                                          <div
-                                            class="text-secondary text-weight-bold"
-                                            style="font-size: 25px; color: #002b5c"
-                                          >
-                                            REMOVE AREA ASSIGNEE
-                                          </div>
-                                        </q-card-section>
-
-                                        <q-separator class="formseparatorBlue" />
-
-                                        <q-card-section>
-                                          <div class="text-dark text-subtitle1 q-mb-sx text-center">
-                                            Would you like to remove the area assignee?
-                                          </div>
-                                        </q-card-section>
-
-                                        <div class="row q-gutter-xxl; justify-center">
-                                            <q-btn
-                                              flat
-                                              rounded
-                                              push
-                                              label="No"
-                                              class="buttonCancelDesign text-info"
-                                              @click="onCancelRemoveArea"
-                                            />
-
-                                            <q-btn
-                                              flat
-                                              rounded
-                                              push
-                                              label="Yes"
-                                              class="buttonSaveDesign bg-accent text-black"
-                                              @click="submitRemoveArea()"
-                                            />
-                                        </div>
-
-                                      </q-card>
-                                    </q-dialog>
-                                  </template>
-
-                                  <template v-else>
-                                    {{ row[column.field] }}
-                                  </template>
-                                </td>
-                              </tr>
-                          </tbody>
-                        </q-markup-table>
-                      </div>
-                    </q-tab-panel>
-
-                    <q-tab-panel
-                      name="deptRequest"
-                      style="border: 2px solid #e0e0e0"
-                    >
-                      <div class="row items-center justify-between q-mb-md">
-                        <q-space />
-
-                        <q-input
-                          v-model="searchRequest"
-                          label="SEARCH "
-                          dense
-                          outlined
-                          rounded
-                          class="q-ml-md"
-                        >
-                          <template v-slot:append>
-                            <q-icon name="search" color="info" />
-                          </template>
-                        </q-input>
-
-                        <q-btn
-                          flat
-                          rounded
-                          push
-                          @click="AddRequestAccess"
-                          :ripple="{ center: true }"
-                          icon="add"
-                          label="ADD REQUEST ACCESS"
-                          class="bg-accent text-black text-bold text-center q-ma-sm shadow-2"
-                          style="width: 250px; border-radius: 20px"
-                        />
-
-                        <q-dialog v-model="AddReqAccess" persistent>
-                          <q-card class="QADepartment">
-                            <q-card-section
-                              class="q-mb-sm row items-center justify-center"
-                            >
-                              <div
-                                class="text-secondary text-weight-bold"
-                                style="font-size: 25px; color: #002b5c"
-                              >
-                                ADD REQUEST ACCESS
-                              </div>
-                            </q-card-section>
-
-                            <q-separator class="formseparatorBlue" />
-
-                            <q-card-section class="q-gutter-md q-ma-sx">
-                              <q-select
-                                rounded
-                                outlined
-                                use-input
-                                clearable
-                                v-model="RequestDeptCode"
-                                :options="disAllHead"
-                                label="DEPARTMENT NAME"
-                                @filter="FilterRequestFn"
-                                emit-value
-                                map-options
-                                :option-value="(option) => option"
-                                :option-label="(option) => option.dept_Desc"
-                              />
-
-                              <q-select
-                                rounded
-                                outlined
-                                use-input
-                                clearable
-                                v-model="RequestEmployeeCode"
-                                :options="disEmployeeName"
-                                label="EMPLOYEE NAME"
-                                @filter="filterEmpFn"
-                                emit-value
-                                map-options
-                                :option-value="(option) => option"
-                                :option-label="(option) => option.fullName"
-                              />
-                            </q-card-section>
-
-                            <div class="row q-gutter-xxl; justify-center">
-                                <q-btn
-                                  flat
-                                  rounded
-                                  push
-                                  label="CANCEL"
-                                  class="buttonCancelDesign text-info"
-                                  @click="onCancelAddRequest"
-                                />
-
-                                <q-btn
-                                  flat
-                                  rounded
-                                  push
-                                  label="SAVE"
-                                  class="buttonSaveDesign bg-accent text-black"
-                                  @click="submitAddRequest()"
-                                />
-                            </div>
-                          </q-card>
-                        </q-dialog>
-
-                        <q-dialog v-model="itemLoadingReqAccess" persistent maximized>
-                          <div
-                            class="fullscreen flex flex-center column q-gutter-md"
-                            style="background-color: rgba(0, 0, 0, 0.85)"
-                          >
-                            <q-spinner-ios size="150px" color="white" />
-
-                            <div class="text-center text-subtitle1 text-white">
-                              Performing the required action.
-                              <br />
-                              <span class="text-italic text-accent">Please wait...</span>
-                            </div>
-                          </div>
-                        </q-dialog>
-                      </div>
-
-                      <div>
-                        <q-markup-table class="custom-q-table">
-                          <thead>
-                            <tr>
-                              <th
-                                v-for="column in disColumnRequestAccess"
-                                :key="column.name"
-                                class="custom-header"
-                              >
-                                {{ column.label }}
-                              </th>
-                            </tr>
-                          </thead>
-
-                          <tbody>
-                              <tr v-for="row in filterRequestAccess" :key="row.id">
-                                <td
-                                  v-for="column in disColumnRequestAccess"
-                                  :key="column.name"
-                                  class="custom-cell"
-                                >
-                                  <template v-if="column.field === 'action'">
-                                    <q-btn
-                                      flat
-                                      rounded
-                                      push
-                                      @click="removeAccess(row.id)"
-                                      :ripple="{ center: true }"
-                                      icon="delete"
-                                      class="buttonRedDesign bg-red text-black shadow-3"
-                                      style="border-radius: 20px; width: 70px"
-                                    >
-                                      <q-tooltip class="bg-info text-white">
-                                        Remove Request
-                                      </q-tooltip>
-                                    </q-btn>
-
-                                    <q-dialog v-model="RemoveRequestAccess" persistent>
-                                      <q-card class="QAArea">
-                                        <q-card-section
-                                          class="q-mb-sm row items-center justify-center"
-                                        >
-                                          <div
-                                            class="text-secondary text-weight-bold"
-                                            style="font-size: 25px; color: #002b5c"
-                                          >
-                                            REMOVE REQUEST ACCESS
-                                          </div>
-                                        </q-card-section>
-
-                                        <q-separator class="formseparatorBlue" />
-
-                                        <q-card-section>
-                                          <div class="text-dark text-subtitle1 q-mb-sx text-center">
-                                            Do you want to remove the requested access?
-                                          </div>
-                                        </q-card-section>
-
-                                        <div class="row q-gutter-xxl; justify-center">
-                                            <q-btn
-                                              flat
-                                              rounded
-                                              push
-                                              label="No"
-                                              class="buttonCancelDesign text-info"
-                                              @click="onCancelRemoveAccess"
-                                            />
-
-                                            <q-btn
-                                              flat
-                                              rounded
-                                              push
-                                              label="Yes"
-                                              class="buttonSaveDesign bg-accent text-black"
-                                              @click="submitRemoveAccess()"
-                                            />
-                                        </div>
-
-                                      </q-card>
-                                    </q-dialog>
-                                  </template>
-
-                                  <template v-else>
-                                    {{ row[column.field] }}
-                                  </template>
-                                </td>
-                              </tr>
-                          </tbody>
-                        </q-markup-table>
-                      </div>
-                    </q-tab-panel>
-                  </q-tab-panels>
-                </q-card-section>
-              </q-card>
+              <div class="accent-line q-mt-sm"></div>
             </div>
-          </q-dialog>
-        </div>
-      </div>
+          </div>
 
-      <div
+
+          <!-- RIGHT SIDE BUTTONS -->
+          <div class="row items-center q-gutter-sm q-ml-auto">
+            <q-btn
+              flat
+              rounded
+              push
+              @click="reportableContent"
+              :ripple="{ center: true }"
+              icon="add_card"
+              label="REPORTABLE INCIDENT"
+              class="q-pa-sm bg-accent"
+              color="black"
+              style="width: 250px; border-radius: 10px"
+            >
+              <q-dialog maximized v-model="FullContent" persistent>
+                <div class="ReportDialog">
+                  <q-card class="contentFormReport">
+                    <q-card-section
+                      class="q-mb-sm row items-center justify-between"
+                    >
+                      <div
+                        class="text-secondary text-weight-bold"
+                        style="font-size: 25px; color: #002b5c"
+                      >
+                        INCIDENT & RISK REGISTRY
+                      </div>
+
+                      <q-btn
+                        flat
+                        icon="close"
+                        style="
+                          color: #003566;
+                          background-color: rgba(22, 110, 204, 0.1);
+                        "
+                        @click="FullContent = false"
+                        v-close-popup
+                      >
+                        <q-tooltip class="bg-info text-white">
+                          Close Form
+                        </q-tooltip>
+                      </q-btn>
+                    </q-card-section>
+
+                    <q-separator class="formseparatorBlue" />
+
+                    <q-card-section>
+                      <q-toolbar class="bg-white q-pa-sx q-pt-md">
+                        <q-tabs
+                          v-model="reporttab"
+                          shrink
+                          stretch
+                          inline-label
+                          class="bg-white q-mb-md"
+                          style="width: fit-content; margin: auto"
+                          indicator-color="transparent"
+                        >
+                          <q-tab
+                            stack
+                            :class="['Reporttab-equal', getTabClass('repIncident')]"
+                            name="repIncident"
+                            label="REPORTABLE INCIDENT"
+                            icon="analytics"
+                            style="width: 350px"
+                            class="q-mx-sm"
+                          />
+                          <q-tab
+                            stack
+                            :class="['Reporttab-equal', getTabClass('repChild')]"
+                            name="repChild"
+                            label="PARTICULAR INCIDENT"
+                            icon="assignment"
+                            style="width: 350px"
+                            class="q-mx-sm"
+                          />
+                          <q-tab
+                            stack
+                            :class="['Reporttab-equal', getTabClass('repUniverse')]"
+                            name="repUniverse"
+                            label="RISK UNIVERSE"
+                            icon="assignment"
+                            style="width: 350px"
+                            class="q-mx-sm"
+                          />
+                        </q-tabs>
+                        <q-space />
+                      </q-toolbar>
+
+                      <q-tab-panels v-model="reporttab" animated class="q-mt-md">
+                        <q-tab-panel
+                          name="repIncident"
+                          style="border: 2px solid #e0e0e0"
+                        >
+                          <div class="row items-center justify-between q-mb-md">
+
+                            <q-space />
+
+                            <q-input
+                              v-model="searchReportable"
+                              label="SEARCH "
+                              dense
+                              outlined
+                              rounded
+                            >
+                              <template v-slot:append>
+                                <q-icon name="search" color="info" />
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              flat
+                              rounded
+                              push
+                              icon="add_card"
+                              label="Add Reportable Incident"
+                              class="buttonYellowDesign bg-accent text-black shadow-2 q-ml-md"
+                              style="
+                                border-radius: 20px;
+                                width: 295px;
+                                text-transform: none;
+                              "
+                              @click="subjectIncident"
+                              :ripple="{ center: true }"
+                            />
+
+                            <q-dialog persistent v-model="SubIncident">
+                              <q-card class="QAReportable">
+                                <q-card-section
+                                  class="q-mb-sm row items-center justify-center"
+                                >
+                                  <div
+                                    class="text-secondary text-weight-bold"
+                                    style="font-size: 25px; color: #002b5c"
+                                  >
+                                    ADD REPORTABLE INCIDENT
+                                  </div>
+                                </q-card-section>
+
+                                <q-separator class="formseparatorBlue" />
+
+                                <q-card-section class="q-gutter-md q-ma-sx">
+                                  <q-input
+                                    rounded
+                                    outlined
+                                    v-model="SubjectName"
+                                    label-slot
+                                  >
+                                    <template v-slot:label
+                                      >REPORTABLE INCIDENT NAME
+                                      <span class="text-red">*</span></template
+                                    >
+                                  </q-input>
+
+                                  <q-input
+                                    rounded
+                                    outlined
+                                    type="textarea"
+                                    v-model="SubjectReptDescription"
+                                    label-slot
+                                  >
+                                    <template v-slot:label
+                                      >REPORTABLE INCIDENT DEFINITION
+                                      <span class="text-red">*</span></template
+                                    >
+                                  </q-input>
+
+                                  <div class="row q-gutter-xxl; justify-center">
+                                    <q-btn
+                                      flat
+                                      rounded
+                                      push
+                                      label="CANCEL"
+                                      class="buttonCancelDesign text-info"
+                                      @click="onCancelRisk"
+                                    />
+
+                                    <q-btn
+                                      flat
+                                      rounded
+                                      push
+                                      label="SAVE"
+                                      class="buttonSaveDesign bg-accent text-black"
+                                      @click="submitRisk"
+                                    />
+                                  </div>
+                                </q-card-section>
+                              </q-card>
+                            </q-dialog>
+
+                            <q-dialog v-model="waiting" persistent maximized>
+                              <div
+                                class="fullscreen flex flex-center column q-gutter-md"
+                                style="background-color: rgba(0, 0, 0, 0.85)"
+                              >
+                                <q-spinner-ios size="150px" color="white" />
+
+                                <div class="text-center text-subtitle1 text-white">
+                                  Doing something.
+                                  <br />
+                                  <span class="text-italic text-accent"
+                                    >Please wait...</span
+                                  >
+                                </div>
+                              </div>
+                            </q-dialog>
+                          </div>
+
+                          <div>
+                            <q-scroll-area style="height: 670px;">
+                              <q-markup-table class="custom-q-table">
+                                <thead>
+                                  <tr>
+                                    <th
+                                      v-for="column in disSubColumns"
+                                      :key="column.name"
+                                      class="custom-header"
+                                    >
+                                      {{ column.label }}
+                                    </th>
+                                  </tr>
+                                </thead>
+
+                                <tbody>
+                                  <tr v-for="row in filteredDisSub" :key="row.id">
+                                    <td
+                                      v-for="column in disSubColumns"
+                                      :key="column.name"
+                                      class="custom-cell"
+                                    >
+                                      {{ row[column.field] }}
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </q-markup-table>
+                            </q-scroll-area>
+                          </div>
+                        </q-tab-panel>
+
+                        <q-tab-panel
+                          name="repChild"
+                          style="border: 2px solid #e0e0e0"
+                        >
+                          <div class="row items-center justify-between q-mb-md">
+                            <q-space></q-space>
+
+                            <q-input
+                              v-model="searchRiskChild"
+                              label="SEARCH "
+                              dense
+                              outlined
+                              rounded
+                            >
+                              <template v-slot:append>
+                                <q-icon name="search" color="info" />
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              flat
+                              rounded
+                              push
+                              icon="add_card"
+                              label="Add Reportable Children"
+                              class="buttonYellowDesign bg-accent text-black shadow-2 q-ml-md"
+                              style="
+                                border-radius: 20px;
+                                width: 295px;
+                                text-transform: none;
+                              "
+                              @click="incidentChildren"
+                              :ripple="{ center: true }"
+                            />
+
+                            <q-dialog persistent v-model="ChilIncident">
+                              <q-card class="QAReportableChi">
+                                <q-card-section
+                                  class="q-mb-sm row items-center justify-center"
+                                >
+                                  <div
+                                    class="text-secondary text-weight-bold"
+                                    style="font-size: 25px; color: #002b5c"
+                                  >
+                                    ADD PARTICULAR INCIDENT
+                                  </div>
+                                </q-card-section>
+
+                                <q-separator class="formseparatorBlue" />
+
+                                <q-card-section class="q-gutter-md q-ma-sx">
+                                  <q-select
+                                    rounded
+                                    outlined
+                                    use-input
+                                    clearable
+                                    v-model="SubjectCode"
+                                    :options="disAllSubject"
+                                    label="REPORTABLE INCIDENT"
+                                    emit-value
+                                    map-options
+                                    :option-value="(option) => option"
+                                    :option-label="(option) => option.subjectName"
+                                  />
+
+                                  <q-input
+                                    autogrow
+                                    rounded
+                                    outlined
+                                    v-model="SubjectSpecificExam"
+                                    label-slot
+                                  >
+                                    <template v-slot:label
+                                      >PARTICULAR INCIDENT NAME
+                                      <span class="text-red">*</span></template
+                                    >
+                                  </q-input>
+
+                                  <!-- RISK DOMAIN -->
+                                  <q-select
+                                    rounded
+                                    outlined
+                                    use-input
+                                    clearable
+                                    v-model="SubjectRiskCode"
+                                    label-slot
+                                    :options="disAllDomain"
+                                    emit-value
+                                    map-options
+                                    :option-value="(option) => option"
+                                    :option-label="(option) => option.riskDomain"
+                                    @update:model-value="filterSubDomain"
+                                  >
+                                    <template v-slot:label>
+                                      RISK DOMAIN <span class="text-red">*</span>
+                                    </template>
+                                  </q-select>
+
+                                  <!-- RISK SUB-DOMAIN -->
+                                  <q-select
+                                    rounded
+                                    outlined
+                                    use-input
+                                    clearable
+                                    v-model="SubjectRiskSubCode"
+                                    label-slot
+                                    :options="filteredSubDomains"
+                                    emit-value
+                                    map-options
+                                    :option-value="(option) => option"
+                                    :option-label="(option) => option.risk"
+                                  >
+                                    <template v-slot:label>
+                                      RISK SUB-DOMAIN <span class="text-red">*</span>
+                                    </template>
+                                  </q-select>
+
+                                  <div class="row q-gutter-xxl; justify-center">
+                                    <q-btn
+                                      flat
+                                      rounded
+                                      push
+                                      label="CANCEL"
+                                      class="buttonCancelDesign text-info"
+                                      @click="onCancelRiskChil"
+                                    />
+
+                                    <q-btn
+                                      flat
+                                      rounded
+                                      push
+                                      label="SAVE"
+                                      class="buttonSaveDesign bg-accent text-black"
+                                      @click="submitRiskChild()"
+                                    />
+                                  </div>
+                                </q-card-section>
+                              </q-card>
+                            </q-dialog>
+                          </div>
+
+                          <div>
+                            <q-scroll-area style="height: 670px;">
+                              <q-markup-table class="custom-q-table">
+                                <thead>
+                                  <tr>
+                                    <th
+                                      v-for="column in disRiskChildColumns"
+                                      :key="column.name"
+                                      class="custom-header"
+                                    >
+                                      {{ column.label }}
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr v-for="row in filteredDisRiskChild" :key="row.id">
+                                    <td
+                                      v-for="column in disRiskChildColumns"
+                                      :key="column.name"
+                                      class="custom-cell"
+                                    >
+                                      {{ row[column.field] }}
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </q-markup-table>
+                            </q-scroll-area>
+                          </div>
+                        </q-tab-panel>
+
+                        <q-tab-panel
+                          name="repUniverse"
+                          style="border: 2px solid #e0e0e0"
+                        >
+                          <div class="row items-center justify-between q-mb-md">
+                            <q-space></q-space>
+
+                            <q-input
+                              v-model="searchRiskUni"
+                              label="SEARCH "
+                              dense
+                              outlined
+                              rounded
+                            >
+                              <template v-slot:append>
+                                <q-icon name="search" color="info" />
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              flat
+                              rounded
+                              push
+                              icon="add_card"
+                              label="Add Risk Domain"
+                              class="buttonYellowDesign bg-accent text-black shadow-1 q-ml-md"
+                              style="
+                                border-radius: 20px;
+                                width: 195px;
+                                text-transform: none;
+                              "
+                              @click="incidentRiskUni()"
+                              :ripple="{ center: true }"
+                            />
+
+                            <q-dialog persistent v-model="UniIncident">
+                              <q-card class="QARiskDomain">
+                                <q-card-section
+                                  class="q-mb-sm row items-center justify-center"
+                                >
+                                  <div
+                                    class="text-secondary text-weight-bold"
+                                    style="font-size: 25px; color: #002b5c"
+                                  >
+                                    ADD RISK DOMAIN
+                                  </div>
+                                </q-card-section>
+
+                                <q-separator class="formseparatorBlue" />
+
+                                <q-card-section class="q-gutter-md q-ma-sx">
+                                  <q-input
+                                    rounded
+                                    outlined
+                                    v-model="RiskDomain"
+                                    label-slot
+                                  >
+                                    <template v-slot:label
+                                      >RISK DOMIAN NAME
+                                      <span class="text-red">*</span></template
+                                    >
+                                  </q-input>
+
+                                  <div class="row q-gutter-xxl; justify-center">
+                                    <q-btn
+                                      flat
+                                      rounded
+                                      push
+                                      label="CANCEL"
+                                      class="buttonCancelDesign text-info"
+                                      @click="onCancelRisUni"
+                                    />
+
+                                    <q-btn
+                                      flat
+                                      rounded
+                                      push
+                                      label="SAVE"
+                                      class="buttonSaveDesign bg-accent text-black"
+                                      @click="submitRiskUni()"
+                                    />
+                                  </div>
+                                </q-card-section>
+                              </q-card>
+                            </q-dialog>
+
+                            <q-dialog v-model="itemWaitDomain" persistent maximized>
+                              <div
+                                class="fullscreen flex flex-center column q-gutter-md"
+                                style="background-color: rgba(0, 0, 0, 0.85)"
+                              >
+                                <q-spinner-ios size="150px" color="white" />
+
+                                <div class="text-center text-subtitle1 text-white">
+                                  Performing the required action.
+                                  <br />
+                                  <span class="text-italic text-accent">Please wait...</span>
+                                </div>
+                              </div>
+                            </q-dialog>
+
+                            <q-btn
+                              flat
+                              rounded
+                              push
+                              icon="add_card"
+                              label="Add Risk Sub-Domain"
+                              class="buttonYellowDesign bg-accent text-black shadow-1 q-ml-sm"
+                              style="
+                                border-radius: 20px;
+                                width: 235px;
+                                text-transform: none;
+                              "
+                              @click="incidentRiskSub()"
+                              :ripple="{ center: true }"
+                            />
+
+                            <q-dialog persistent v-model="RiskSubIncident">
+                              <q-card class="QARiskSubDomain">
+                                <q-card-section
+                                  class="q-mb-sm row items-center justify-center"
+                                >
+                                  <div
+                                    class="text-secondary text-weight-bold"
+                                    style="font-size: 25px; color: #002b5c"
+                                  >
+                                    ADD RISK SUB-DOMAIN
+                                  </div>
+                                </q-card-section>
+
+                                <q-separator class="formseparatorBlue" />
+
+                                  <q-card-section class="q-gutter-md q-ma-sx">
+                                    <q-select
+                                      rounded
+                                      outlined
+                                      use-input
+                                      clearable
+                                      v-model="DomainRisk"
+                                      label-slot
+                                      :options="disAllDomain"
+                                      emit-value
+                                      map-options
+                                      :option-value="(option) => option"
+                                      :option-label="(option) => option.riskDomain"
+                                    >
+                                      <template v-slot:label>
+                                        DOMAIN NAME
+                                        <span class="text-red">*</span>
+                                      </template>
+                                    </q-select>
+
+                                    <q-input
+                                      rounded
+                                      outlined
+                                      v-model="RiskSub"
+                                      label-slot
+                                    >
+                                      <template v-slot:label
+                                        >SUB-DOMAIN NAME
+                                        <span class="text-red">*</span></template
+                                      >
+                                    </q-input>
+
+                                    <q-input
+                                      rounded
+                                      outlined
+                                      type="textarea"
+                                      v-model="RiskSubDescription"
+                                      label-slot
+                                    >
+                                      <template v-slot:label
+                                        >SUB-DOMAIN DEFINITION
+                                        <span class="text-red">*</span></template
+                                      >
+                                    </q-input>
+                                  </q-card-section>
+
+                                  <div class="row q-gutter-xxl; justify-center">
+                                    <q-btn
+                                      flat
+                                      rounded
+                                      push
+                                      label="CANCEL"
+                                      class="buttonCancelDesign text-info"
+                                      @click="onCancelRiskSub"
+                                    />
+
+                                    <q-btn
+                                      flat
+                                      rounded
+                                      push
+                                      label="SAVE"
+                                      class="buttonSaveDesign bg-accent text-black"
+                                      @click="submitRiskSub"
+                                    />
+                                  </div>
+                              </q-card>
+                            </q-dialog>
+                          </div>
+
+                          <div>
+                            <q-scroll-area style="height: 670px;">
+                              <q-markup-table class="custom-q-table">
+                              <thead>
+                                <tr>
+                                  <th
+                                    v-for="column in disColumnRiskUni"
+                                    :key="column.name"
+                                    class="custom-header"
+                                  >
+                                    {{ column.label }}
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr v-for="row in filteredDisRiskUni" :key="row.id">
+                                  <td
+                                    v-for="column in disColumnRiskUni"
+                                    :key="column.name"
+                                    class="custom-cell"
+                                  >
+                                    {{ row[column.field] }}
+                                  </td>
+                                </tr>
+                              </tbody>
+                              </q-markup-table>
+                            </q-scroll-area>
+                          </div>
+                        </q-tab-panel>
+                      </q-tab-panels>
+                    </q-card-section>
+                  </q-card>
+                </div>
+              </q-dialog>
+            </q-btn>
+
+            <q-btn
+              flat
+              rounded
+              push
+              @click="departmentContent"
+              :ripple="{ center: true }"
+              icon="diversity_3"
+              label="ACCESS MANAGEMENT"
+              class="q-pa-sm bg-accent"
+              color="black"
+              style="width: 250px; border-radius: 10px"
+            >
+              <q-dialog maximized v-model="FullDepartmentContent" persistent>
+                <div class="ReportDialog">
+                  <q-card class="contentFormReport">
+                    <q-card-section
+                      class="q-mb-sm row items-center justify-between"
+                    >
+                      <div
+                        class="text-secondary text-weight-bold"
+                        style="font-size: 25px; color: #002b5c"
+                      >
+                        ACCESS MANAGEMENT
+                      </div>
+
+                      <q-btn
+                        flat
+                        icon="close"
+                        style="
+                          color: #003566;
+                          background-color: rgba(22, 110, 204, 0.1);
+                        "
+                        @click="FullContent = false"
+                        v-close-popup
+                      >
+                        <q-tooltip class="bg-info text-white">
+                          Close Form
+                        </q-tooltip>
+                      </q-btn>
+                    </q-card-section>
+
+                    <q-separator class="formseparatorBlue" />
+
+                    <q-card-section>
+                      <q-toolbar class="bg-white q-pa-sx q-pt-md">
+                        <q-tabs
+                          v-model="depttab"
+                          shrink
+                          stretch
+                          inline-label
+                          class="bg-white q-mb-md"
+                          style="width: fit-content; margin: auto"
+                          indicator-color="transparent"
+                        >
+                          <q-tab
+                            stack
+                            :class="['Depttab-equal', getTabDeptClass('deptHead')]"
+                            name="deptHead"
+                            label="DEPARTMENTS HEADS"
+                            icon="group"
+                            style="width: 350px"
+                            class="q-mx-sm"
+                          />
+
+                          <q-tab
+                            stack
+                            :class="['Depttab-equal', getTabDeptClass('deptArea')]"
+                            name="deptArea"
+                            label="AREA ASSIGNMENT"
+                            icon="groups"
+                            style="width: 350px"
+                            class="q-mx-sm"
+                          />
+
+                          <q-tab
+                            stack
+                            :class="['Depttab-equal', getTabDeptClass('deptRequest')]"
+                            name="deptRequest"
+                            label="REQUEST ACCESS"
+                            icon="diversity_3"
+                            style="width: 350px"
+                            class="q-mx-sm"
+                          />
+                        </q-tabs>
+                        <q-space />
+                      </q-toolbar>
+
+                      <q-tab-panels v-model="depttab" animated class="q-mt-md">
+                        <q-tab-panel
+                          name="deptHead"
+                          style="border: 2px solid #e0e0e0"
+                        >
+                          <div class="row items-center justify-between q-mb-md">
+                            <q-space />
+
+                            <q-input
+                              v-model="searchDeptHead"
+                              label="SEARCH "
+                              dense
+                              outlined
+                              rounded
+                              class="q-ml-md"
+                            >
+                              <template v-slot:append>
+                                <q-icon name="search" color="info" />
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              flat
+                              rounded
+                              push
+                              @click="AddDepartmentContent"
+                              :ripple="{ center: true }"
+                              icon="add"
+                              label="ADD DEPARTMENT HEADS"
+                              class="bg-accent text-black text-bold text-center q-ma-sm shadow-2"
+                              style="width: 250px; border-radius: 20px"
+                            />
+
+                            <q-dialog v-model="AddDepartment" persistent>
+                              <q-card class="QADepartment">
+                                <q-card-section
+                                  class="q-mb-sm row items-center justify-center"
+                                >
+                                  <div
+                                    class="text-secondary text-weight-bold"
+                                    style="font-size: 25px; color: #002b5c"
+                                  >
+                                    ADD DEPARTMENT
+                                  </div>
+                                </q-card-section>
+
+                                <q-separator class="formseparatorBlue" />
+
+                                <q-card-section class="q-gutter-md q-ma-sx">
+                                  <q-select
+                                    rounded
+                                    outlined
+                                    use-input
+                                    clearable
+                                    v-model="DeptName"
+                                    :options="disAllDeptList"
+                                    label="DEPARTMENT NAME"
+                                    @filter="FilterDeptFn"
+                                    emit-value
+                                    map-options
+                                    :option-value="(option) => option"
+                                    :option-label="(option) => option.dESCRIPTION"
+                                  />
+
+                                  <q-select
+                                    rounded
+                                    outlined
+                                    use-input
+                                    clearable
+                                    v-model="EmployeeDeptCode"
+                                    :options="disEmployeeName"
+                                    label="EMPLOYEE NAME"
+                                    @filter="filterEmpFn"
+                                    emit-value
+                                    map-options
+                                    :option-value="(option) => option"
+                                    :option-label="(option) => option.fullName"
+                                  />
+
+                                </q-card-section>
+
+                                <div class="row q-gutter-xxl; justify-center">
+                                    <q-btn
+                                      flat
+                                      rounded
+                                      push
+                                      label="CANCEL"
+                                      class="buttonCancelDesign text-info"
+                                      @click="onCancelAddDept"
+                                    />
+
+                                    <q-btn
+                                      flat
+                                      rounded
+                                      push
+                                      label="SAVE"
+                                      class="buttonSaveDesign bg-accent text-black"
+                                      @click="submitAddDept()"
+                                    />
+                                </div>
+                              </q-card>
+                            </q-dialog>
+
+                            <q-dialog v-model="itemLoading" persistent maximized>
+                              <div
+                                class="fullscreen flex flex-center column q-gutter-md"
+                                style="background-color: rgba(0, 0, 0, 0.85)"
+                              >
+                                <q-spinner-ios size="150px" color="white" />
+
+                                <div class="text-center text-subtitle1 text-white">
+                                  Performing the required action.
+                                  <br />
+                                  <span class="text-italic text-accent">Please wait...</span>
+                                </div>
+                              </div>
+                            </q-dialog>
+                          </div>
+
+                          <div>
+                            <q-scroll-area style="height: 670px;">
+                              <q-markup-table class="custom-q-table">
+                                <thead>
+                                  <tr>
+                                    <th
+                                      v-for="column in disColumnHead"
+                                      :key="column.name"
+                                      class="custom-header"
+                                    >
+                                      {{ column.label }}
+                                    </th>
+                                  </tr>
+                                </thead>
+
+                                <tbody>
+                                  <tr v-for="row in filteredDisAllHead" :key="row.id">
+                                    <td
+                                      v-for="column in disColumnHead"
+                                      :key="column.name"
+                                      class="custom-cell"
+                                    >
+                                      <template v-if="column.field === 'id'">
+                                        <q-btn
+                                          flat
+                                          rounded
+                                          push
+                                          @click="editDeptHead(row)"
+                                          :ripple="{ center: true }"
+                                          icon="edit_document"
+                                          class="buttonYellowDesign bg-accent text-black shadow-3"
+                                          style="border-radius: 20px; width: 70px"
+                                        >
+                                          <q-tooltip class="bg-info text-white">
+                                            Edit Head Details
+                                          </q-tooltip>
+                                        </q-btn>
+
+                                        <q-dialog v-model="EditDepartment" persistent>
+                                          <q-card class="QADepartment">
+                                            <q-card-section class="q-mb-sm row items-center justify-center">
+                                              <div
+                                                class="text-secondary text-weight-bold"
+                                                style="font-size: 25px; color: #002b5c"
+                                              >
+                                                EDIT DEPARTMENT
+                                              </div>
+                                            </q-card-section>
+
+                                            <q-separator class="formseparatorBlue" />
+
+                                            <q-card-section style="display: none;">
+                                              {{ selectedDeptId }}
+                                            </q-card-section>
+
+                                            <q-card-section class="q-gutter-md q-ma-sx">
+                                              <q-input
+                                                rounded
+                                                outlined
+                                                v-model="currentDeptDetails"
+                                                label="DEPARTMENT NAME"
+                                                disable
+                                              />
+
+                                              <q-select
+                                                rounded
+                                                outlined
+                                                use-input
+                                                clearable
+                                                v-model="EmployeeDeptCode"
+                                                :options="disEmployeeName"
+                                                @filter="filterEmpFn"
+                                                label="EMPLOYEE NAME"
+                                                emit-value
+                                                map-options
+                                                :option-value="(option) => option"
+                                                :option-label="(option) => option.fullName"
+                                              />
+                                            </q-card-section>
+
+                                            <div class="row q-gutter-xxl justify-center">
+                                              <q-btn
+                                                flat
+                                                rounded
+                                                push
+                                                label="CANCEL"
+                                                @click="onCancelEditDept"
+                                                class="buttonCancelDesign text-info"
+                                              />
+
+                                              <q-btn
+                                                flat
+                                                rounded
+                                                push
+                                                label="SAVE"
+                                                class="buttonSaveDesign bg-accent text-black"
+                                                @click="submitEditDept()"
+                                              />
+                                            </div>
+                                          </q-card>
+                                        </q-dialog>
+                                      </template>
+
+                                      <template v-else>
+                                        {{ row[column.field] }}
+                                      </template>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </q-markup-table>
+                            </q-scroll-area>
+                          </div>
+                        </q-tab-panel>
+
+                        <q-tab-panel
+                          name="deptArea"
+                          style="border: 2px solid #e0e0e0"
+                        >
+                          <div class="row items-center justify-between q-mb-md">
+                            <q-space />
+
+                            <q-input
+                              v-model="searchArea"
+                              label="SEARCH "
+                              dense
+                              outlined
+                              rounded
+                              class="q-ml-md"
+                            >
+                              <template v-slot:append>
+                                <q-icon name="search" color="info" />
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              flat
+                              rounded
+                              push
+                              @click="AddAreaAssignee"
+                              :ripple="{ center: true }"
+                              icon="add"
+                              label="ADD AREA ASSIGNEE"
+                              class="bg-accent text-black text-bold text-center q-ma-sm shadow-2"
+                              style="width: 230px; border-radius: 20px"
+                            />
+
+                            <q-dialog v-model="AddAreaAss" persistent>
+                              <q-card class="QADepartment">
+                                <q-card-section
+                                  class="q-mb-sm row items-center justify-center"
+                                >
+                                  <div
+                                    class="text-secondary text-weight-bold"
+                                    style="font-size: 25px; color: #002b5c"
+                                  >
+                                    ADD AREA ASSIGNEE
+                                  </div>
+                                </q-card-section>
+
+                                <q-separator class="formseparatorBlue" />
+
+                                <q-card-section class="q-gutter-md q-ma-sx">
+                                  <q-select
+                                    rounded
+                                    outlined
+                                    use-input
+                                    clearable
+                                    v-model="DivisionAreaCode"
+                                    :options="disAllDiv"
+                                    label="AREA"
+                                    emit-value
+                                    map-options
+                                    :option-value="(option) => option"
+                                    :option-label="(option) => option.division"
+                                  />
+
+                                  <q-select
+                                    rounded
+                                    outlined
+                                    use-input
+                                    clearable
+                                    v-model="EmployeeAreaCode"
+                                    :options="disEmployeeName"
+                                    label="EMPLOYEE NAME"
+                                    @filter="filterEmpFn"
+                                    emit-value
+                                    map-options
+                                    :option-value="(option) => option"
+                                    :option-label="(option) => option.fullName"
+                                  />
+                                </q-card-section>
+
+                                <div class="row q-gutter-xxl; justify-center">
+                                    <q-btn
+                                      flat
+                                      rounded
+                                      push
+                                      label="CANCEL"
+                                      class="buttonCancelDesign text-info"
+                                      @click="onCancelAddArea"
+                                    />
+
+                                    <q-btn
+                                      flat
+                                      rounded
+                                      push
+                                      label="SAVE"
+                                      class="buttonSaveDesign bg-accent text-black"
+                                      @click="submitAddArea()"
+                                    />
+                                </div>
+                              </q-card>
+                            </q-dialog>
+
+                            <q-dialog v-model="itemAreaLoading" persistent maximized>
+                              <div
+                                class="fullscreen flex flex-center column q-gutter-md"
+                                style="background-color: rgba(0, 0, 0, 0.85)"
+                              >
+                                <q-spinner-ios size="150px" color="white" />
+
+                                <div class="text-center text-subtitle1 text-white">
+                                  Performing the required action.
+                                  <br />
+                                  <span class="text-italic text-accent">Please wait...</span>
+                                </div>
+                              </div>
+                            </q-dialog>
+                          </div>
+
+                          <div>
+                            <q-markup-table class="custom-q-table">
+                              <thead>
+                                <tr>
+                                  <th
+                                    v-for="column in disColumnArea"
+                                    :key="column.name"
+                                    class="custom-header"
+                                  >
+                                    {{ column.label }}
+                                  </th>
+                                </tr>
+                              </thead>
+
+                              <tbody>
+                                  <tr v-for="row in filterDisArea" :key="row.id">
+                                    <td
+                                      v-for="column in disColumnArea"
+                                      :key="column.name"
+                                      class="custom-cell"
+                                    >
+                                      <template v-if="column.field === 'action'">
+                                        <q-btn
+                                          flat
+                                          rounded
+                                          push
+                                          @click="removeAreaAssignee(row.id)"
+                                          :ripple="{ center: true }"
+                                          icon="delete"
+                                          class="buttonRedDesign bg-red text-black shadow-3"
+                                          style="border-radius: 20px; width: 70px"
+                                        >
+                                          <q-tooltip class="bg-info text-white">
+                                            Edit Area Details
+                                          </q-tooltip>
+                                        </q-btn>
+
+                                        <q-dialog v-model="RemoveAssignee" persistent>
+                                          <q-card class="QAArea">
+                                            <q-card-section
+                                              class="q-mb-sm row items-center justify-center"
+                                            >
+                                              <div
+                                                class="text-secondary text-weight-bold"
+                                                style="font-size: 25px; color: #002b5c"
+                                              >
+                                                REMOVE AREA ASSIGNEE
+                                              </div>
+                                            </q-card-section>
+
+                                            <q-separator class="formseparatorBlue" />
+
+                                            <q-card-section>
+                                              <div class="text-dark text-subtitle1 q-mb-sx text-center">
+                                                Would you like to remove the area assignee?
+                                              </div>
+                                            </q-card-section>
+
+                                            <div class="row q-gutter-xxl; justify-center">
+                                                <q-btn
+                                                  flat
+                                                  rounded
+                                                  push
+                                                  label="No"
+                                                  class="buttonCancelDesign text-info"
+                                                  @click="onCancelRemoveArea"
+                                                />
+
+                                                <q-btn
+                                                  flat
+                                                  rounded
+                                                  push
+                                                  label="Yes"
+                                                  class="buttonSaveDesign bg-accent text-black"
+                                                  @click="submitRemoveArea()"
+                                                />
+                                            </div>
+
+                                          </q-card>
+                                        </q-dialog>
+                                      </template>
+
+                                      <template v-else>
+                                        {{ row[column.field] }}
+                                      </template>
+                                    </td>
+                                  </tr>
+                              </tbody>
+                            </q-markup-table>
+                          </div>
+                        </q-tab-panel>
+
+                        <q-tab-panel
+                          name="deptRequest"
+                          style="border: 2px solid #e0e0e0"
+                        >
+                          <div class="row items-center justify-between q-mb-md">
+                            <q-space />
+
+                            <q-input
+                              v-model="searchRequest"
+                              label="SEARCH "
+                              dense
+                              outlined
+                              rounded
+                              class="q-ml-md"
+                            >
+                              <template v-slot:append>
+                                <q-icon name="search" color="info" />
+                              </template>
+                            </q-input>
+
+                            <q-btn
+                              flat
+                              rounded
+                              push
+                              @click="AddRequestAccess"
+                              :ripple="{ center: true }"
+                              icon="add"
+                              label="ADD REQUEST ACCESS"
+                              class="bg-accent text-black text-bold text-center q-ma-sm shadow-2"
+                              style="width: 250px; border-radius: 20px"
+                            />
+
+                            <q-dialog v-model="AddReqAccess" persistent>
+                              <q-card class="QADepartment">
+                                <q-card-section
+                                  class="q-mb-sm row items-center justify-center"
+                                >
+                                  <div
+                                    class="text-secondary text-weight-bold"
+                                    style="font-size: 25px; color: #002b5c"
+                                  >
+                                    ADD REQUEST ACCESS
+                                  </div>
+                                </q-card-section>
+
+                                <q-separator class="formseparatorBlue" />
+
+                                <q-card-section class="q-gutter-md q-ma-sx">
+                                  <q-select
+                                    rounded
+                                    outlined
+                                    use-input
+                                    clearable
+                                    v-model="RequestDeptCode"
+                                    :options="disAllHead"
+                                    label="DEPARTMENT NAME"
+                                    @filter="FilterRequestFn"
+                                    emit-value
+                                    map-options
+                                    :option-value="(option) => option"
+                                    :option-label="(option) => option.dept_Desc"
+                                  />
+
+                                  <q-select
+                                    rounded
+                                    outlined
+                                    use-input
+                                    clearable
+                                    v-model="RequestEmployeeCode"
+                                    :options="disEmployeeName"
+                                    label="EMPLOYEE NAME"
+                                    @filter="filterEmpFn"
+                                    emit-value
+                                    map-options
+                                    :option-value="(option) => option"
+                                    :option-label="(option) => option.fullName"
+                                  />
+                                </q-card-section>
+
+                                <div class="row q-gutter-xxl; justify-center">
+                                    <q-btn
+                                      flat
+                                      rounded
+                                      push
+                                      label="CANCEL"
+                                      class="buttonCancelDesign text-info"
+                                      @click="onCancelAddRequest"
+                                    />
+
+                                    <q-btn
+                                      flat
+                                      rounded
+                                      push
+                                      label="SAVE"
+                                      class="buttonSaveDesign bg-accent text-black"
+                                      @click="submitAddRequest()"
+                                    />
+                                </div>
+                              </q-card>
+                            </q-dialog>
+
+                            <q-dialog v-model="itemLoadingReqAccess" persistent maximized>
+                              <div
+                                class="fullscreen flex flex-center column q-gutter-md"
+                                style="background-color: rgba(0, 0, 0, 0.85)"
+                              >
+                                <q-spinner-ios size="150px" color="white" />
+
+                                <div class="text-center text-subtitle1 text-white">
+                                  Performing the required action.
+                                  <br />
+                                  <span class="text-italic text-accent">Please wait...</span>
+                                </div>
+                              </div>
+                            </q-dialog>
+                          </div>
+
+                          <div>
+                            <q-markup-table class="custom-q-table">
+                              <thead>
+                                <tr>
+                                  <th
+                                    v-for="column in disColumnRequestAccess"
+                                    :key="column.name"
+                                    class="custom-header"
+                                  >
+                                    {{ column.label }}
+                                  </th>
+                                </tr>
+                              </thead>
+
+                              <tbody>
+                                  <tr v-for="row in filterRequestAccess" :key="row.id">
+                                    <td
+                                      v-for="column in disColumnRequestAccess"
+                                      :key="column.name"
+                                      class="custom-cell"
+                                    >
+                                      <template v-if="column.field === 'action'">
+                                        <q-btn
+                                          flat
+                                          rounded
+                                          push
+                                          @click="removeAccess(row.id)"
+                                          :ripple="{ center: true }"
+                                          icon="delete"
+                                          class="buttonRedDesign bg-red text-black shadow-3"
+                                          style="border-radius: 20px; width: 70px"
+                                        >
+                                          <q-tooltip class="bg-info text-white">
+                                            Remove Request
+                                          </q-tooltip>
+                                        </q-btn>
+
+                                        <q-dialog v-model="RemoveRequestAccess" persistent>
+                                          <q-card class="QAArea">
+                                            <q-card-section
+                                              class="q-mb-sm row items-center justify-center"
+                                            >
+                                              <div
+                                                class="text-secondary text-weight-bold"
+                                                style="font-size: 25px; color: #002b5c"
+                                              >
+                                                REMOVE REQUEST ACCESS
+                                              </div>
+                                            </q-card-section>
+
+                                            <q-separator class="formseparatorBlue" />
+
+                                            <q-card-section>
+                                              <div class="text-dark text-subtitle1 q-mb-sx text-center">
+                                                Do you want to remove the requested access?
+                                              </div>
+                                            </q-card-section>
+
+                                            <div class="row q-gutter-xxl; justify-center">
+                                                <q-btn
+                                                  flat
+                                                  rounded
+                                                  push
+                                                  label="No"
+                                                  class="buttonCancelDesign text-info"
+                                                  @click="onCancelRemoveAccess"
+                                                />
+
+                                                <q-btn
+                                                  flat
+                                                  rounded
+                                                  push
+                                                  label="Yes"
+                                                  class="buttonSaveDesign bg-accent text-black"
+                                                  @click="submitRemoveAccess()"
+                                                />
+                                            </div>
+
+                                          </q-card>
+                                        </q-dialog>
+                                      </template>
+
+                                      <template v-else>
+                                        {{ row[column.field] }}
+                                      </template>
+                                    </td>
+                                  </tr>
+                              </tbody>
+                            </q-markup-table>
+                          </div>
+                        </q-tab-panel>
+                      </q-tab-panels>
+                    </q-card-section>
+                  </q-card>
+                </div>
+              </q-dialog>
+            </q-btn>
+          </div>
+        </q-card-section>
+      </q-card>
+
+      <q-card
+        class="dashboard-header"
+        style="border: 2px solid #e0e0e0;"
         v-if="loggedInUser.AreaCode !== null"
-        class="row items-center justify-between q-mb-md bg-white q-pa-sm rounded-borders shadow-1"
-        style="border-radius: 10px"
       >
-        <div>
-          <div class="text-primary text-weight-bold" style="font-size: 30px">
-            <!-- QUALITY ASSURANCE MODULE -->
-            AREA ASSIGNEE MODULE
-          </div>
-          <div style="font-size: 18px; color: #333333">
-            Incident Report Details
-          </div>
-        </div>
-      </div>
+        <q-card-section class="row items-center no-wrap">
+          <div class="row items-center no-wrap">
+            <div class="icon-wrapper">
+              <q-icon
+                name="dashboard"
+                size="35px"
+                color="primary"
+              />
+            </div>
 
-      <div
+            <div class="q-ml-md text-left">
+              <div class="text-h5 text-weight-medium text-primary text-uppercase">
+                AREA ASSIGNEE MODULE
+              </div>
+
+              <div class="text-grey-7 q-mt-xs">
+                Welcome to the Incident Reporting & Unified Platform (IRUP) Area Assignee!
+              </div>
+
+              <div class="accent-line q-mt-sm"></div>
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+
+      <q-card-section
         v-if="loading"
         class="fixed-full flex flex-center column q-gutter-md"
         style="background-color: rgba(255, 255, 255, 0.7); z-index: 9999"
       >
         <q-spinner-ball size="150px" color="primary" />
         <div class="text-subtitle1 text-primary">Please wait...</div>
-      </div>
-
-      <q-card-section
-        class="bg-white q-pa-sm rounded-borders shadow-1"
-        style="border-radius: 10px"
-      >
-
-        <div class="q-pb-md q-pt-md q-pl-xs">
-          <div
-            class="text-primary text-weight-bold"
-            style="font-size: 22px"
-          >
-            INCIDENT REPORT HISTORY
-          </div>
-
-          <div
-            style="font-size: 18px; color: #333333"
-            class="text-weight-bold"
-          >
-            Total Incident Report : <q-badge class="q-pa-sm text-bold" outline color="primary" style="font-size: 18px;"> {{ totalReport }} </q-badge>
-          </div>
-        </div>
-
-        <div class="row items-center justify-between q-col-gutter-md">
-          <!-- LEFT SIDE -->
-          <div class="col-12 col-md-auto row q-gutter-sm justify-end">
-            <q-btn-dropdown
-              v-if="loggedInUser.AreaCode === null"
-              rounded
-              :label="selectedArea?.division || 'FILTER AREA'"
-              menu-anchor="top right"
-              style="width: 25ch"
-              class="bg-info text-white"
-            >
-              <q-list>
-                <q-item
-                  v-for="option in areaOptions"
-                  :key="option.divisionCode"
-                  clickable
-                  @click="selectArea(option)"
-                >
-                  <q-item-section>
-                    {{ option.division }}
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-btn-dropdown>
-
-            <q-btn-dropdown
-              rounded
-              label="FILTER STATUS"
-              menu-anchor="top right"
-              style="width: 25ch"
-              class="bg-info text-white"
-            >
-              <q-list>
-                <q-item
-                  v-for="option in qaStats"
-                  :key="option.value"
-                  clickable
-                  @click="selectStatus(option)"
-                >
-                  <q-item-section>{{ option.label }}</q-item-section>
-                </q-item>
-              </q-list>
-            </q-btn-dropdown>
-          </div>
-
-          <!-- RIGHT SIDE -->
-          <div class="col-12 col-md-4">
-            <q-input
-              v-model="searchQuery"
-              label="SEARCH"
-              dense
-              outlined
-              rounded
-            >
-              <template v-slot:append>
-                <q-icon name="search" color="info" />
-              </template>
-            </q-input>
-          </div>
-
-        </div>
-
-        <div class="q-table-scroll-wrapper q-ma-md">
-          <QATables
-            v-show="showTable"
-            :items="riskGradingItem"
-            :columns="disColumnsRiskGrading"
-            :getInc="getInc"
-            :getQAForm="getQAForm"
-            :disDept="disDept"
-            :rcaStats="rcaStats"
-            :qaStats="qaStats"
-            :lostStatus="lostStatus"
-            :loading="loading"
-            :rows-per-page-options="[5]"
-            flat
-            bordered
-            class="my-custom-scroll"
-          />
-        </div>
       </q-card-section>
 
-      <q-card-section
-        class="bg-white q-pa-sm rounded-borders shadow-1 q-mt-md"
-        style="border-radius: 10px"
+      <q-card
+        class="dashboard-header q-mt-md q-pa-sm"
+        style="border: 2px solid #e0e0e0;"
       >
-        <q-toolbar class="bg-white q-pa-xs q-mt-md">
-          <div>
-            <div
-              class="text-primary text-weight-bold"
-              style="font-size: 22px"
-            >
-              RISK GRADING
+        <q-card-section style="border: 2px solid #e0e0e0;">
+          <!-- HEADER / FILTERS -->
+          <div class="filter-row" >
+              <!-- LEFT -->
+            <div class="report-section">
+              <div class="text-h5 text-weight-medium text-primary text-uppercase">
+                INCIDENT REPORT HISTORY
+              </div>
+
+              <div class="text-grey-7 text-weight-medium">
+                Total Incident Report :
+                  <q-badge
+                    class="q-pa-sm text-bold"
+                    outline
+                    color="primary"
+                    style="font-size: 15px;"
+                  >
+                    {{ totalReport }}
+                  </q-badge>
+              </div>
             </div>
 
-            <div style="font-size: 18px; color: #333333">
-              Incident Report Dashboard
+            <q-space />
+
+            <!-- RIGHT -->
+            <div class="filter-section ">
+            <!-- SEARCH -->
+                <q-input
+                  v-model="searchQuery"
+                  label="SEARCH"
+                  dense
+                  outlined
+                  class="search-input"
+                >
+                  <template v-slot:append>
+                    <q-icon
+                      name="search"
+                      color="info"
+                    />
+                  </template>
+                </q-input>
+
+                <!-- FILTER AREA -->
+                <q-btn-dropdown
+                  v-if="loggedInUser.AreaCode === null"
+                  color="secondary"
+                  :label="selectedArea?.division || 'FILTER AREA'"
+                  split
+                  class="filter-btn"
+                >
+                  <q-list>
+                    <q-item
+                      v-for="option in areaOptions"
+                      :key="option.divisionCode"
+                      clickable
+                      @click="selectArea(option)"
+                    >
+                      <q-item-section>
+                        {{ option.division }}
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-btn-dropdown>
+
+                <!-- FILTER STATUS -->
+                <q-btn-dropdown
+                  v-if="loggedInUser.AreaCode === null"
+                  color="secondary"
+                  :label="selectedStatus?.label || 'FILTER STATUS'"
+                  split
+                  class="filter-btn"
+                >
+                  <q-list>
+                    <q-item
+                      v-for="option in qaStats"
+                      :key="option.value"
+                      clickable
+                      @click="selectStatus(option)"
+                    >
+                      <q-item-section>
+                        {{ option.label }}
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-btn-dropdown>
             </div>
           </div>
 
-                <q-space></q-space>
+          <!-- TABLE -->
+          <div class="q-table-scroll-wrapper q-mt-md">
+            <QATables
+              v-show="showTable"
+              :items="riskGradingItem"
+              :columns="disColumnsRiskGrading"
+              :getInc="getInc"
+              :getQAForm="getQAForm"
+              :disDept="disDept"
+              :rcaStats="rcaStats"
+              :qaStats="qaStats"
+              :lostStatus="lostStatus"
+              :loading="loading"
+              :rows-per-page-options="[5]"
+              flat
+              bordered
+              class="my-custom-scroll"
+              style="border-radius: 10px;"
+            />
+          </div>
+        </q-card-section>
+      </q-card>
 
-                <!-- Tabs -->
-                <q-tabs
-                  v-model="Riskgrandingtab"
-                  shrink
-                  stretch
-                  inline-label
-                  class="bg-grey-1 q-mb-md text-dark q-pa-xs shadow-2"
-                  style="border-radius: 30px; width: fit-content; margin: auto"
-                  active-color="black"
-                  indicator-color="transparent"
-                >
-                  <q-tab
-                    name="veryLow"
-                    label="Very Low Risk"
-                    :class="['tab-equal', getRiskTabClass('veryLow')]"
-                    @click="viewRiskGradingDetails(1)"
-                  >
-                    <q-badge color="primary" floating>{{
-                      veryLowRiskItemsCount
-                    }}</q-badge>
-                  </q-tab>
+      <q-card
+        class="dashboard-header q-mt-md q-pa-sm"
+        style="border: 2px solid #e0e0e0;"
+      >
+        <q-card-section style="border: 2px solid #e0e0e0;">
+          <q-toolbar class="bg-white" >
+            <div class="text-left">
+              <div class="text-h5 text-weight-medium text-primary text-uppercase">
+                RISK GRADING
+              </div>
 
-                  <q-tab
-                    name="low"
-                    label="Low Risk"
-                    :class="['tab-equal', getRiskTabClass('low')]"
-                    @click="viewRiskGradingDetails(2)"
-                  >
-                    <q-badge color="primary" floating>{{
-                      lowRiskItemsCount
-                    }}</q-badge>
-                  </q-tab>
+              <div class="text-grey-7 q-mt-xs">
+                Determines the severity and priority of identified risks.
+              </div>
+            </div>
 
-                  <q-tab
-                    name="moderate"
-                    label="Moderate Risk"
-                    :class="['tab-equal', getRiskTabClass('moderate')]"
-                    @click="viewRiskGradingDetails(3)"
-                  >
-                    <q-badge color="primary" floating>{{
-                      moderateRiskItemsCount
-                    }}</q-badge>
-                  </q-tab>
+            <q-space/>
 
-                  <q-tab
-                    name="high"
-                    label="High Risk"
-                    :class="['tab-equal', getRiskTabClass('high')]"
-                    @click="viewRiskGradingDetails(4)"
-                  >
-                    <q-badge color="primary" floating>{{
-                      highRiskItemsCount
-                    }}</q-badge>
-                  </q-tab>
+            <q-tabs
+              v-model="Riskgrandingtab"
+              shrink
+              stretch
+              inline-label
+              class="bg-grey-1 q-mb-md text-dark q-pa-xs shadow-2"
+              style="border-radius: 30px; width: fit-content; margin: auto"
+              active-color="black"
+              indicator-color="transparent"
+            >
+              <q-tab
+                name="veryLow"
+                label="Very Low Risk"
+                :class="['tab-equal', getRiskTabClass('veryLow')]"
+                @click="viewRiskGradingDetails(1)"
+              >
+                <q-badge color="primary" class="q-ma-sm">
+                  {{ veryLowRiskItemsCount }}
+                </q-badge>
+              </q-tab>
 
-                  <q-tab
-                    name="veryHigh"
-                    label="Very High Risk"
-                    :class="['tab-equal', getRiskTabClass('veryHigh')]"
-                    @click="viewRiskGradingDetails(5)"
-                  >
-                    <q-badge color="primary" floating>{{
-                      veryHighRiskItemsCount
-                    }}</q-badge>
-                  </q-tab>
-                </q-tabs>
-              </q-toolbar>
+              <q-tab
+                name="low"
+                label="Low Risk"
+                :class="['tab-equal', getRiskTabClass('low')]"
+                @click="viewRiskGradingDetails(2)"
+              >
+                <q-badge color="primary" class="q-ma-sm">
+                  {{ lowRiskItemsCount }}
+                </q-badge>
+              </q-tab>
 
-        <q-tab-panels v-model="Riskgrandingtab" animated class="q-mt-xs">
-                <q-tab-panel name="veryLow">
-                  <q-card-section
-                    v-if="isLoadingRiskGrade"
-                    class="column flex-center q-pa-xl"
-                    style="height: 600px"
-                  >
-                    <q-spinner size="90px" color="primary" />
-                    <div class="q-mt-md text-primary text-weight-medium">
-                      Loading Details...
-                    </div>
-                  </q-card-section>
+              <q-tab
+                name="moderate"
+                label="Moderate Risk"
+                :class="['tab-equal', getRiskTabClass('moderate')]"
+                @click="viewRiskGradingDetails(3)"
+              >
+                <q-badge color="primary" class="q-ma-sm">
+                  {{ moderateRiskItemsCount }}
+                </q-badge>
+              </q-tab>
 
-                  <QATablesRisk
-                    v-show="showTable"
-                    :items="veryLowRiskItems"
-                    :columns="disColumnsVLRisk"
-                    :getInc="getInc"
-                    :rcaStats="rcaStats"
-                    :loading="loading"
-                    :rows-per-page-options="[15]"
-                    v-else
-                  />
-                </q-tab-panel>
+              <q-tab
+                name="high"
+                label="High Risk"
+                :class="['tab-equal', getRiskTabClass('high')]"
+                @click="viewRiskGradingDetails(4)"
+              >
+                <q-badge color="primary" class="q-ma-sm">
+                  {{ highRiskItemsCount }}
+                </q-badge>
+              </q-tab>
 
-                <q-tab-panel name="low">
-                  <q-card-section
-                    v-if="isLoadingRiskGrade"
-                    class="column flex-center q-pa-xl"
-                    style="height: 600px"
-                  >
-                    <q-spinner size="90px" color="primary" />
-                    <div class="q-mt-md text-primary text-weight-medium">
-                      Loading Details...
-                    </div>
-                  </q-card-section>
+              <q-tab
+                name="veryHigh"
+                label="Very High Risk"
+                :class="['tab-equal', getRiskTabClass('veryHigh')]"
+                @click="viewRiskGradingDetails(5)"
+              >
+                <q-badge color="primary" class="q-ma-sm">
+                  {{ veryHighRiskItemsCount }}
+                </q-badge>
+              </q-tab>
+            </q-tabs>
+          </q-toolbar>
 
-                  <QATablesRisk
-                    v-show="showTable"
-                    :items="lowRiskItems"
-                    :columns="disColumnsVLRisk"
-                    :getInc="getInc"
-                    :rcaStats="rcaStats"
-                    :loading="loading"
-                    :rows-per-page-options="[15]"
-                    v-else
-                  />
-                </q-tab-panel>
+          <q-tab-panels v-model="Riskgrandingtab" animated class="q-mt-md">
+            <q-tab-panel name="veryLow">
+              <q-card-section
+                v-if="isLoadingRiskGrade"
+                class="column flex-center q-pa-xl"
+                style="height: 600px"
+              >
+                <q-spinner size="90px" color="primary" />
+                <div class="q-mt-md text-primary text-weight-medium">
+                  Loading Details...
+                </div>
+              </q-card-section>
 
-                <q-tab-panel name="moderate">
-                  <q-card-section
-                    v-if="isLoadingRiskGrade"
-                    class="column flex-center q-pa-xl"
-                    style="height: 600px"
-                  >
-                    <q-spinner size="90px" color="primary" />
-                    <div class="q-mt-md text-primary text-weight-medium">
-                      Loading Details...
-                    </div>
-                  </q-card-section>
+              <QATablesRisk
+                v-show="showTable"
+                :items="veryLowRiskItems"
+                :columns="disColumnsVLRisk"
+                :getInc="getInc"
+                :rcaStats="rcaStats"
+                :loading="loading"
+                :rows-per-page-options="[15]"
+                style="border-radius: 10px;"
+                v-else
+              />
+            </q-tab-panel>
 
-                  <QATables
-                    v-show="showTable"
-                    :items="moderateRiskItems"
-                    :columns="disColumns"
-                    :getInc="getInc"
-                    :getQAForm="getQAForm"
-                    :disDept="disDept"
-                    :rcaStats="rcaStats"
-                    :qaStats="qaStats"
-                    :lostStatus="lostStatus"
-                    :loading="loading"
-                    :rows-per-page-options="[15]"
-                    v-else
-                  />
-                </q-tab-panel>
+            <q-tab-panel name="low">
+              <q-card-section
+                v-if="isLoadingRiskGrade"
+                class="column flex-center q-pa-xl"
+                style="height: 600px"
+              >
+                <q-spinner size="90px" color="primary" />
+                <div class="q-mt-md text-primary text-weight-medium">
+                  Loading Details...
+                </div>
+              </q-card-section>
 
-                <q-tab-panel name="high">
-                  <q-card-section
-                    v-if="isLoadingRiskGrade"
-                    class="column flex-center q-pa-xl"
-                    style="height: 600px"
-                  >
-                    <q-spinner size="90px" color="primary" />
-                    <div class="q-mt-md text-primary text-weight-medium">
-                      Loading Details...
-                    </div>
-                  </q-card-section>
+              <QATablesRisk
+                v-show="showTable"
+                :items="lowRiskItems"
+                :columns="disColumnsVLRisk"
+                :getInc="getInc"
+                :rcaStats="rcaStats"
+                :loading="loading"
+                :rows-per-page-options="[15]"
+                style="border-radius: 10px;"
+                v-else
+              />
+            </q-tab-panel>
 
-                  <QATables
-                    v-show="showTable"
-                    :items="highRiskItems"
-                    :columns="disColumns"
-                    :getInc="getInc"
-                    :getQAForm="getQAForm"
-                    :disDept="disDept"
-                    :rcaStats="rcaStats"
-                    :qaStats="qaStats"
-                    :lostStatus="lostStatus"
-                    :loading="loading"
-                    :rows-per-page-options="[15]"
-                    v-else
-                  />
-                </q-tab-panel>
+            <q-tab-panel name="moderate">
+              <q-card-section
+                v-if="isLoadingRiskGrade"
+                class="column flex-center q-pa-xl"
+                style="height: 600px"
+              >
+                <q-spinner size="90px" color="primary" />
+                <div class="q-mt-md text-primary text-weight-medium">
+                  Loading Details...
+                </div>
+              </q-card-section>
 
-                <q-tab-panel name="veryHigh">
-                  <q-card-section
-                    v-if="isLoadingRiskGrade"
-                    class="column flex-center q-pa-xl"
-                    style="height: 600px"
-                  >
-                    <q-spinner size="90px" color="primary" />
-                    <div class="q-mt-md text-primary text-weight-medium">
-                      Loading Details...
-                    </div>
-                  </q-card-section>
+              <QATables
+                v-show="showTable"
+                :items="moderateRiskItems"
+                :columns="disColumns"
+                :getInc="getInc"
+                :getQAForm="getQAForm"
+                :disDept="disDept"
+                :rcaStats="rcaStats"
+                :qaStats="qaStats"
+                :lostStatus="lostStatus"
+                :loading="loading"
+                :rows-per-page-options="[15]"
+                style="border-radius: 10px;"
+                v-else
+              />
+            </q-tab-panel>
 
-                  <QATables
-                    v-show="showTable"
-                    :items="veryHighRiskItems"
-                    :columns="disColumns"
-                    :getInc="getInc"
-                    :getQAForm="getQAForm"
-                    :disDept="disDept"
-                    :rcaStats="rcaStats"
-                    :qaStats="qaStats"
-                    :lostStatus="lostStatus"
-                    :loading="loading"
-                    :rows-per-page-options="[15]"
-                    v-else
-                  />
-                </q-tab-panel>
-        </q-tab-panels>
-      </q-card-section>
+            <q-tab-panel name="high">
+              <q-card-section
+                v-if="isLoadingRiskGrade"
+                class="column flex-center q-pa-xl"
+                style="height: 600px"
+              >
+                <q-spinner size="90px" color="primary" />
+                <div class="q-mt-md text-primary text-weight-medium">
+                  Loading Details...
+                </div>
+              </q-card-section>
+
+              <QATables
+                v-show="showTable"
+                :items="highRiskItems"
+                :columns="disColumns"
+                :getInc="getInc"
+                :getQAForm="getQAForm"
+                :disDept="disDept"
+                :rcaStats="rcaStats"
+                :qaStats="qaStats"
+                :lostStatus="lostStatus"
+                :loading="loading"
+                :rows-per-page-options="[15]"
+                style="border-radius: 10px;"
+                v-else
+              />
+            </q-tab-panel>
+
+            <q-tab-panel name="veryHigh">
+              <q-card-section
+                v-if="isLoadingRiskGrade"
+                class="column flex-center q-pa-xl"
+                style="height: 600px"
+              >
+                <q-spinner size="90px" color="primary" />
+                <div class="q-mt-md text-primary text-weight-medium">
+                  Loading Details...
+                </div>
+              </q-card-section>
+
+              <QATables
+                v-show="showTable"
+                :items="veryHighRiskItems"
+                :columns="disColumns"
+                :getInc="getInc"
+                :getQAForm="getQAForm"
+                :disDept="disDept"
+                :rcaStats="rcaStats"
+                :qaStats="qaStats"
+                :lostStatus="lostStatus"
+                :loading="loading"
+                :rows-per-page-options="[15]"
+                style="border-radius: 10px;"
+                v-else
+              />
+            </q-tab-panel>
+          </q-tab-panels>
+        </q-card-section>
+      </q-card>
     </div>
   </div>
 
@@ -3153,8 +3201,74 @@ export default {
 </script>
 
 <style>
-/* ///////////////////////////////////////QAHEADER////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+/* ////////////////////  HEADER  /////////////////// */
 
+.dashboard-header {
+  width: 100%;
+  border-radius: 8px;
+  background: #ffffff;
+  text-align: left;
+}
+
+.icon-wrapper {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(2, 64, 137, 0.08);
+}
+
+.accent-line {
+  width: 60px;
+  height: 3px;
+  background: #024089;
+  border-radius: 2px;
+}
+
+/* //////////////////// FILTER & SEARCH /////////////////// */
+
+.filter-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.report-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.report-total {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+}
+
+.filter-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  width: 600px;
+  border-radius: 10px;
+}
+
+.filter-btn {
+  width: 180px;
+  border-radius: 10px;
+}
+
+/* ///////////////////////////////////////QAHEADER//////////////////////////////////// */
 .my-card {
   height: 500px;
   width: 100%;
@@ -3855,80 +3969,80 @@ export default {
   border-right: 0.5px solid #ececec;
   border-top: 0.5px solid #ececec;
   border-bottom: none; /* or border-bottom: 0; */
-  border-top-right-radius: 20px;
-  border-top-left-radius: 20px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
   background-color: #ececec;
   color: black;
   font-size: larger;
   font-weight: bold;
   font-style: roboto;
   margin-top: 20px;
-  width: 5%;
+  width: 10%;
   margin-right: 10px;
 }
 .disVeryLow {
   font-size: larger;
   border: 0.5px solid #c5e0b4;
-  border-top-right-radius: 20px;
-  border-top-left-radius: 20px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
   background-color: #c5e0b4;
   color: black;
   font-weight: bold;
   font-style: roboto;
   margin-top: 10px;
-  width: 5%;
+  width: 10%;
   margin-right: 10px;
 }
 .disLow {
   font-size: larger;
   border: 0.5px solid #94d047;
-  border-top-right-radius: 20px;
-  border-top-left-radius: 20px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
   background-color: #94d047;
   color: black;
   font-weight: bold;
   font-style: roboto;
   margin-top: 10px;
-  width: 5%;
+  width: 10%;
   margin-right: 10px;
 }
 .disModerate {
   font-size: larger;
   border: 0.5px solid #fafb05;
-  border-top-right-radius: 20px;
-  border-top-left-radius: 20px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
   background-color: #fafb05;
   color: black;
   font-weight: bold;
   font-style: roboto;
   margin-top: 10px;
-  width: 5%;
+  width: 10%;
   margin-right: 10px;
 }
 .disVeryHigh {
   font-size: larger;
   border: 0.5px solid #fac200;
-  border-top-right-radius: 20px;
-  border-top-left-radius: 20px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
   background-color: #fac200;
   color: black;
   font-weight: bold;
   font-style: roboto;
   margin-top: 10px;
-  width: 5%;
+  width: 10%;
   margin-right: 10px;
 }
 .disHigh {
   font-size: larger;
   border: 0.5px solid #ec3c39;
-  border-top-right-radius: 20px;
-  border-top-left-radius: 20px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
   background-color: #ec3c39;
   color: black;
   font-weight: bold;
   font-style: roboto;
   margin-top: 10px;
-  width: 5%;
+  width: 10%;
   margin-right: 10px;
 }
 
@@ -4027,14 +4141,14 @@ export default {
 .tab-item.q-tab--active {
   background-color: #ffc107; /* gold background when active */
   color: #002b5c; /* navy text/icons when active */
-  border-radius: 15px 15px 0 0; /* rounded top for active */
+  border-radius: 10px 10px 0 0; /* rounded top for active */
 }
 
 .tab-equal {
-  width: 150px;
+  width: 180px;
   text-align: center;
   justify-content: center;
-  border-radius: 30px;
+  border-radius: 10px;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -4075,7 +4189,7 @@ export default {
   border: 2px solid #f0f2f5;
   margin-left: auto;
   margin-right: auto;
-  border-radius: 25px;
+  border-radius: 10px;
   padding: 20px;
   background-color: #ffffff;
   width: 1200px;

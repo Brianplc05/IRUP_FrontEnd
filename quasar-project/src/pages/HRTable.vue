@@ -1,136 +1,189 @@
 <template>
   <div id="q-app" style="position: relative; z-index: 1">
     <div style="height: 100%; width: 100%" class="q-pa-lg">
-      <div
-        class="row items-center justify-between q-mb-md bg-white q-pa-sm rounded-borders shadow-1"
-        style="border-radius: 10px"
+      <q-card
+        class="dashboard-header"
+        style="border: 2px solid #e0e0e0;"
       >
-        <div>
-          <div class="text-primary text-weight-bold" style="font-size: 30px">
-            HUMAN RESOURCES MODULE
-          </div>
-          <div style="font-size: 18px; color: #333333">
-            Incident Report Details
-          </div>
-        </div>
-      </div>
-
-      <q-card-section
-        class="bg-white q-pa-lg rounded-borders shadow-1 q-mb-md"
-      >
-        <div
-          v-if="loading"
-          class="fixed-full flex flex-center column q-gutter-md"
-          style="background-color: rgba(255, 255, 255, 0.7); z-index: 9999"
-        >
-          <q-spinner-ball size="150px" color="primary" />
-          <div class="text-subtitle1 text-primary">Please wait...</div>
-        </div>
-
-        <q-toolbar class="bg-secondary text-white shadow-2 rounded-borders">
-          <q-btn flat label="All Items" class="text-h6"/>
-          <q-space />
-
-          <q-tabs v-model="hrTab" shrink stretch>
-            <q-tab name="reportable" label="Reportable Incident" />
-            <q-tab name="hrReferral" label="Human Resources (HR) Referral" />
-          </q-tabs>
-        </q-toolbar>
-
-        <q-tab-panels
-          v-model="hrTab"
-          animated
-          class="q-mt-sm tab-panels-bordered rounded-borders bg-warning shadow-4"
-        >
-          <q-tab-panel name="reportable">
-            <div class="row items-center justify-between q-mb-md">
-              <q-btn-dropdown
-                rounded
-                :label="selectedAreaValue?.division || 'FILTER AREA'"
-                menu-anchor="top right"
-                style="width: 25ch"
-                class="bg-info text-white q-mr-sm"
-              >
-                <q-list>
-                  <q-item
-                    v-for="option in areaValueOptions"
-                    :key="option.divisionCode"
-                    clickable
-                    @click="selectArea(option)"
-                  >
-
-                    <q-item-section>{{ option.division  }}</q-item-section>
-                  </q-item>
-                </q-list>
-              </q-btn-dropdown>
-
-              <q-input v-model="searchRepQuery" label="SEARCH " dense outlined rounded>
-                  <template v-slot:append>
-                    <q-icon name="search" color="info" />
-                  </template>
-              </q-input>
-            </div>
-
-              <hrRepComponentsTable
-                v-show="showTable"
-                :items="filteredRepDisAll"
-                :pagination="{ rowsPerPage: 8 }"
-                :columns="disRepColumns"
-                style="border-collapse: collapse"
-                :loading="loading"
+        <q-card-section class="row items-center no-wrap">
+          <div class="row items-center no-wrap">
+            <div class="icon-wrapper">
+              <q-icon
+                name="dashboard"
+                size="35px"
+                color="primary"
               />
-          </q-tab-panel>
-
-          <q-tab-panel name="hrReferral">
-            <div class="row items-center justify-between q-mb-md">
-              <q-btn-dropdown
-                rounded
-                :label="selectedAreaValue?.division || 'FILTER AREA'"
-                menu-anchor="top right"
-                style="width: 25ch"
-                class="bg-info text-white q-mr-sm"
-              >
-                <q-list>
-                  <q-item
-                    v-for="option in areaValueOptions"
-                    :key="option.divisionCode"
-                    clickable
-                    @click="selectArea(option)"
-                  >
-
-                    <q-item-section>{{ option.division  }}</q-item-section>
-                  </q-item>
-                </q-list>
-              </q-btn-dropdown>
-
-              <q-input v-model="searchRefQuery" label="SEARCH " dense outlined rounded>
-                  <template v-slot:append>
-                    <q-icon name="search" color="info" />
-                  </template>
-              </q-input>
             </div>
 
-            <hrRefComponentsTable
-              v-show="showTable"
-              :items="filteredRefDisAll"
-              :pagination="{ rowsPerPage: 8 }"
-              :columns="disRefColumns"
-              :hrStats="hrStats"
-              :getInc="getInc"
-              :disCod="disCod"
-              :disSpeOF="disSpeOF"
-              :Occurrences="Occurrences"
-              :Penalty="Penalty"
-              style="border-collapse: collapse"
-              :loading="loading"
-            />
-          </q-tab-panel>
-        </q-tab-panels>
-      </q-card-section>
+            <div class="q-ml-md text-left">
+              <div class="text-h5 text-weight-medium text-primary text-uppercase">
+                HUMAN RESOURCES MODULE
+              </div>
+
+              <div class="text-grey-7 q-mt-xs">
+                Welcome to the Incident Reporting & Unified Platform (IRUP) Human Resources!
+              </div>
+
+              <div class="accent-line q-mt-sm"></div>
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+
+      <q-card
+        class="dashboard-header q-mt-md q-pa-sm"
+        flat
+        bordered
+      >
+          <q-card-section
+              v-if="loading"
+              class="fixed-full flex flex-center column q-gutter-md"
+              style="background-color: rgba(255, 255, 255, 0.7); z-index: 9999"
+          >
+              <q-spinner-ball size="150px" color="primary" />
+              <div class="text-subtitle1 text-primary">Please wait...</div>
+          </q-card-section>
+
+          <q-card-section style="border: 2px solid #e0e0e0;">
+            <q-toolbar
+              class="bg-grey-1"
+              style="border: 2px solid #f0f2f5; border-radius: 10px;"
+            >
+              <q-tabs
+                v-model="hrTab"
+                shrink
+                stretch
+                class="bg-grey-1 text-dark q-pa-xs"
+                active-color="black"
+                indicator-color="transparent"
+              >
+                <q-tab
+                  name="reportable"
+                  stack
+                  style="width: 350px"
+                  :class="{ 'active-tab': hrTab === 'reportable' }"
+                >
+                  <template v-slot:default>
+                    <div class="column items-center q-mr-md">
+                      <div>Reportable Incident</div>
+                    </div>
+                  </template>
+                </q-tab>
+
+                <q-tab
+                  name="hrReferral"
+                  stack
+                  style="width: 350px"
+                  :class="{ 'active-tab': hrTab === 'hrReferral' }"
+                >
+                  <template v-slot:default>
+                    <div class="column items-center q-pa-sm q-mr-md">
+                      <div>Human Resources (HR) Referral</div>
+                    </div>
+                  </template>
+                </q-tab>
+              </q-tabs>
+            </q-toolbar>
+
+            <q-tab-panels v-model="hrTab" animated class="tab-panels-bordered" >
+              <q-tab-panel name="reportable">
+                <q-card-section
+                  class="row items-center justify-end q-gutter-sm"
+                >
+                  <!-- SEARCH -->
+                  <q-input
+                    v-model="searchRepQuery"
+                    label="SEARCH"
+                    dense
+                    outlined
+                    class="search-input"
+                  >
+                    <template v-slot:append>
+                      <q-icon name="search" color="info" />
+                    </template>
+                  </q-input>
+
+                  <!-- FILTER -->
+                  <q-btn-dropdown
+                    color="secondary"
+                    :label="selectedAreaValue?.division || 'FILTER AREA'"
+                    split
+                    class="filter-btn"
+                  >
+                    <q-list>
+                      <q-item v-for="option in areaValueOptions" :key="option.divisionCode" clickable @click="selectArea(option)">
+                        <q-item-section>{{ option.division }}</q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-btn-dropdown>
+
+                </q-card-section>
+
+                <hrRepComponentsTable
+                  v-show="showTable"
+                  :items="filteredRepDisAll"
+                  :pagination="{ rowsPerPage: 8 }"
+                  :columns="disRepColumns"
+                  style="border-collapse: collapse; border-radius: 10px;"
+                  :loading="loading"
+                />
+              </q-tab-panel>
+
+              <q-tab-panel name="hrReferral">
+                <q-card-section
+                  class="row items-center justify-end q-gutter-sm"
+                >
+                  <!-- SEARCH -->
+                  <q-input
+                    v-model="searchRefQuery"
+                    label="SEARCH"
+                    dense
+                    outlined
+                    class="search-input"
+                  >
+                    <template v-slot:append>
+                      <q-icon name="search" color="info" />
+                    </template>
+                  </q-input>
+
+                  <!-- FILTER -->
+                  <q-btn-dropdown
+                    color="secondary"
+                    :label="selectedAreaValue?.division || 'FILTER AREA'"
+                    split
+                    class="filter-btn"
+                  >
+                    <q-list>
+                      <q-item v-for="option in areaValueOptions" :key="option.divisionCode" clickable @click="selectArea(option)">
+                        <q-item-section>{{ option.division }}</q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-btn-dropdown>
+
+                </q-card-section>
+
+                <hrRefComponentsTable
+                  v-show="showTable"
+                  :items="filteredRefDisAll"
+                  :pagination="{ rowsPerPage: 8 }"
+                  :columns="disRefColumns"
+                  :hrStats="hrStats"
+                  :disCod="disCod"
+                  :disSpeOF="disSpeOF"
+                  :Occurrences="Occurrences"
+                  :Penalty="Penalty"
+                  style="border-collapse: collapse"
+                  :loading="loading"
+                />
+              </q-tab-panel>
+            </q-tab-panels>
+          </q-card-section>
+      </q-card>
     </div>
   </div>
+
   <img
-    src="../assets/OMBRE-GRAY.jpg"
+    src="../assets/BGCORE.png"
     style="
       position: absolute;
       top: 0;
@@ -383,8 +436,8 @@ export default {
 
     // 🔹 Auto fetch every 60 seconds
     this.interval = setInterval(() => {
-      this.getHR();
-      this.getForm();
+      this.getHRRepInc();
+      this.getHRRefInc();
     }, 60000);
   },
 
@@ -456,6 +509,41 @@ export default {
 </script>
 
 <style>
+/* //////////////////// HEADER //////////////////// */
+
+.dashboard-header {
+  width: 100%;
+  border-radius: 8px;
+  background: #ffffff;
+  text-align: left;
+}
+
+.icon-wrapper {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(2, 64, 137, 0.08);
+}
+
+.accent-line {
+  width: 60px;
+  height: 3px;
+  background: #024089;
+  border-radius: 2px;
+}
+
+.active-tab {
+  background-color: #ffc619; /* mint green */
+  font-weight: bold;
+  color: black;
+  border-radius: 10px;
+}
+
+/* //////////////////// /////////// //////////////////// */
+
 .my-card {
   height: 500px;
   width: 100%;

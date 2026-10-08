@@ -1,41 +1,57 @@
 <template>
   <div id="q-app" style="position: relative; z-index: 1">
     <div style="height: 100%; width: 100%" class="q-pa-lg">
-      <div
-        class="row items-center justify-between q-mb-md bg-white q-pa-sm rounded-borders shadow-1"
-        style="border-radius: 10px"
-      >
-        <div>
-          <div class="text-primary text-weight-bold" style="font-size: 30px">
-            PRIMARY DEPARTMENT MODULE
-          </div>
-          <div style="font-size: 18px; color: #333333">
-            Incident Report Details
-          </div>
-        </div>
-      </div>
 
-      <q-card-section
-        class="row q-mb-sm bg-white q-pa-md rounded-borders shadow-1"
-        style="border-radius: 10px"
+      <q-card
+        class="dashboard-header"
+        style="border: 2px solid #e0e0e0;"
       >
-        <div
+        <q-card-section class="row items-center no-wrap">
+          <div class="row items-center no-wrap">
+            <div class="icon-wrapper">
+              <q-icon
+                name="list_alt"
+                size="35px"
+                color="primary"
+              />
+            </div>
+
+            <div class="q-ml-md text-left">
+              <div class="text-h5 text-weight-medium text-primary text-uppercase">
+                PRIMARY DEPARTMENT MODULE
+              </div>
+
+              <div class="text-grey-7 q-mt-xs">
+                Welcome to the Incident Reporting & Unified Platform (IRUP) Primary Department!
+              </div>
+
+              <div class="accent-line q-mt-sm"></div>
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+
+      <q-card
+        class="dashboard-header q-mt-md q-pa-sm"
+        flat
+        bordered
+      >
+        <q-card-section
           v-if="acloading"
           class="fixed-full flex flex-center column q-gutter-md"
           style="background-color: rgba(255, 255, 255, 0.7); z-index: 9999"
         >
           <q-spinner-ball size="150px" color="primary" />
           <div class="text-subtitle1 text-primary">Please wait...</div>
-        </div>
+        </q-card-section>
 
-        <q-card-section class="column fit full-width">
-          <q-toolbar class="bg-transparent q-pa-sx">
+        <q-card-section style="border: 2px solid #e0e0e0;">
+          <q-toolbar class="bg-grey-1" style="border: 2px solid #f0f2f5; border-radius: 10px;">
             <q-tabs
               v-model="Primarytab"
               shrink
               stretch
-              class="bg-grey-1 q-mb-md text-dark q-pa-sm shadow-2"
-              style="width: 850px; margin: auto"
+              class="bg-grey-1 text-dark q-pa-xs"
               active-color="black"
               indicator-color="transparent"
             >
@@ -46,7 +62,7 @@
                 style="width: 450px"
               >
                 <template v-slot:default>
-                  <div class="column items-center q-pa-sm q-mr-md">
+                  <div class="column items-center q-mr-md">
                     <div>Very Low & Low Risk Incident Reports</div>
                     <div style="font-size: 12px;" class="text-primary">( Corrective Action Required ) </div>
                   </div>
@@ -57,56 +73,66 @@
               </q-tab>
 
               <q-tab
-                  name="rca"
-                  stack
-                  :class="['tab-equal', getTabClass('rca')]"
-                  style="width: 450px"
-                >
-                  <template v-slot:default>
-                    <div class="column items-center q-pa-sm q-mr-md">
-                      <div>Moderate, High & Very High Risk Incident Reports</div>
-                      <div style="font-size: 12px;" class="text-primary">( RCA & Corrective Action Required ) </div>
-                    </div>
-                    <q-badge color="primary" class="q-ml-xl" floating>
-                      {{ rcaItemsCount }}
-                    </q-badge>
-                  </template>
-                </q-tab>
+                name="rca"
+                stack
+                :class="['tab-equal', getTabClass('rca')]"
+                style="width: 450px"
+              >
+                <template v-slot:default>
+                  <div class="column items-center q-pa-sm q-mr-md">
+                    <div>Moderate, High & Very High Risk Incident Reports</div>
+                    <div style="font-size: 12px;" class="text-primary">( RCA & Corrective Action Required ) </div>
+                  </div>
+
+                  <q-badge color="primary" class="q-ml-xl" floating>
+                    {{ rcaItemsCount }}
+                  </q-badge>
+                </template>
+              </q-tab>
             </q-tabs>
           </q-toolbar>
 
-          <q-tab-panels
-            v-model="Primarytab"
-            animated
-            class="q-mt-sm tab-panels-bordered rounded-borders bg-warning shadow-4"
-          >
+          <q-tab-panels v-model="Primarytab" animated class="tab-panels-bordered" style="border: 2px solid #f0f2f5;">
             <q-tab-panel name="actions">
-              <div class="row items-center justify-between q-mb-md">
+              <q-card-section
+                class="row items-center justify-end q-gutter-sm"
+              >
+                <!-- SEARCH -->
+                <q-input
+                  v-model="searchQueryAction"
+                  label="SEARCH"
+                  dense
+                  outlined
+                  class="search-input"
+                >
+                  <template v-slot:append>
+                    <q-icon name="search" color="info" />
+                  </template>
+                </q-input>
+
+                <!-- FILTER -->
                 <q-btn-dropdown
-                  rounded
+                  color="secondary"
                   label="Filter Risk Score"
-                  menu-anchor="top right"
-                  style="width: 25ch"
-                  class="bg-info text-white"
+                  split
+                  class="filter-btn"
                 >
                   <q-list>
                     <q-item
                       v-for="option in actionFilter"
                       :key="option.value"
                       clickable
+                      v-close-popup
                       @click="selectAction(option)"
                     >
-                      <q-item-section>{{ option.label }}</q-item-section>
+                      <q-item-section>
+                        {{ option.label }}
+                      </q-item-section>
                     </q-item>
                   </q-list>
                 </q-btn-dropdown>
 
-                <q-input v-model="searchQueryAction" label="SEARCH " dense outlined rounded>
-                  <template v-slot:append>
-                    <q-icon name="search" color="info" />
-                  </template>
-                </q-input>
-              </div>
+              </q-card-section>
 
               <ActionPrimaryTab
                 v-show="showACTable"
@@ -120,33 +146,38 @@
               />
             </q-tab-panel>
 
-            <q-tab-panel name="rca">
-              <div class="row items-center justify-between q-mb-md">
+            <q-tab-panel name="rca" >
+              <q-card-section
+                class="row items-center justify-end q-gutter-sm"
+              >
+                <!-- SEARCH -->
+                <q-input
+                  v-model="searchQueryRCA"
+                  label="SEARCH"
+                  dense
+                  outlined
+                  class="search-input"
+                >
+                  <template v-slot:append>
+                    <q-icon name="search" color="info" />
+                  </template>
+                </q-input>
+
+                <!-- FILTER -->
                 <q-btn-dropdown
-                  rounded
+                  color="secondary"
                   label="Filter Risk Score"
-                  menu-anchor="top right"
-                  style="width: 25ch"
-                  class="bg-info text-white"
+                  split
+                  class="filter-btn"
                 >
                   <q-list>
-                    <q-item
-                      v-for="option in rcaFilter"
-                      :key="option.value"
-                      clickable
-                      @click="selectRCA(option)"
-                    >
+                    <q-item v-for="option in rcaFilter" :key="option.value" clickable @click="selectRCA(option)">
                       <q-item-section>{{ option.label }}</q-item-section>
                     </q-item>
                   </q-list>
                 </q-btn-dropdown>
 
-                <q-input v-model="searchQueryRCA" label="SEARCH " dense outlined rounded>
-                  <template v-slot:append>
-                    <q-icon name="search" color="info" />
-                  </template>
-                </q-input>
-              </div>
+              </q-card-section>
 
               <RCAPrimaryTab
                 :items="filteredPrimaryRCA"
@@ -159,7 +190,8 @@
             </q-tab-panel>
           </q-tab-panels>
         </q-card-section>
-      </q-card-section>
+      </q-card>
+
     </div>
   </div>
 
@@ -396,6 +428,45 @@ export default {
 </script>
 
 <style>
+
+/* //////////////////// HEADER //////////////////// */
+
+.dashboard-header {
+  width: 100%;
+  border-radius: 8px;
+  background: #ffffff;
+  text-align: left;
+}
+
+.icon-wrapper {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(2, 64, 137, 0.08);
+}
+
+.accent-line {
+  width: 60px;
+  height: 3px;
+  background: #024089;
+  border-radius: 2px;
+}
+
+.filter-btn {
+  width: 250px;
+  border-radius: 10px;
+}
+
+.search-input {
+  width: 600px;
+  border-radius: 10px;
+}
+
+/* ///////////////////////////////////////TABLE////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+
 .my-card {
   height: 500px;
   width: 100%;
@@ -412,34 +483,57 @@ export default {
   background-color: #083d73;
 }
 
-/* ///////////////////////////////////////TABLE////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+/* /////////////////////////////////////// TABLE /////////////////////////////////////// */
 
 .table-with-border {
   border-bottom: 2em solid hsl(220, 22%, 81%);
   border-collapse: collapse;
   margin-top: 25px;
 }
+
 .q-table-container {
   border-radius: 5px;
   overflow: hidden;
 }
-.q-table td,
-.q-table th {
-  padding: 8px;
-  border: 0.5px solid #ccc;
-  text-align: center;
-}
+
+/* TABLE HEADER */
 .q-table th {
   background-color: #0f4d91;
   color: #fff;
+  padding: 8px;
+  text-align: center;
+  border-bottom: 1px solid #ccc;
 }
+
+/* TABLE BODY */
+.q-table td {
+  padding: 8px;
+  text-align: center;
+
+  /* Horizontal line */
+  border-bottom: 1px solid #ccc;
+}
+
+/* Remove unnecessary vertical borders */
+.q-table td,
+.q-table th {
+  border-left: none;
+  border-right: none;
+}
+
+/* Alternating rows */
 .q-table tbody tr:nth-child(odd) {
   background-color: #f4f4f4;
-  padding: 8px;
 }
+
+/* Optional: hover effect */
+.q-table tbody tr:hover {
+  background-color: #eeeeee;
+}
+
 .q-table button {
-  height: 30px; /* Set your desired height */
-  width: 80px; /* Set your desired width */
+  height: 30px;
+  width: 80px;
   border-radius: 5px;
   margin: 0;
   padding: 0;
@@ -784,19 +878,24 @@ export default {
   background-color: #ffc619; /* mint green */
   font-weight: bold;
   color: black;
+  border-radius: 10px;
 }
 
 .rca-active {
   background-color: #ffc619; /* mint green */
   font-weight: bold;
   color: black;
+  border-radius: 10px;
 }
 
 .tab-panels-bordered {
-  border-top: 5px solid #003566;
-  border-radius: 0 0 8px 8px;
-  padding-top: 12px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  margin-top: 10px;
 }
+
+/* /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+
 
 .buttonCancelDesign {
   color: #166ecc;

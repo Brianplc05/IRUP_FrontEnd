@@ -1,19 +1,33 @@
 <template>
-  <div
-    class="flex-center column q-pa-s"
-    style="min-height: 100vh; position: relative; z-index: 1"
-  >
-    <q-spinner-cube
-      color="accent"
-      style="height: 10%; width: 10%; border: 0.2em solid #0f4d91"
-    />
-    <div class="q-mt-md loading-textwait">Authenticating, Please wait...</div>
-  </div>
-  <img
-    src="../../assets/B&W1.png"
-    alt="Loading Image"
-    class="background-image"
-  />
+  <q-layout>
+    <q-page-container>
+      <q-page class="loading-page">
+        <!-- Illustration -->
+        <img src="../../assets/LOGIN-IR.png" alt="Loading" class="loading-image" />
+
+        <!-- Loading Text -->
+        <div class="loading-content">
+          <div class="loading-title">Please wait...</div>
+
+          <div class="loading-subtitle">We're loading your data.</div>
+
+          <!-- Progress Bar -->
+          <div class="loading-progress">
+            <div class="loading-progress-bar"></div>
+          </div>
+
+          <div class="loading-message">This won't take long...</div>
+
+          <!-- Animated Dots -->
+          <div class="loading-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script>
@@ -45,22 +59,169 @@ export default {
 </script>
 
 <style scoped>
-.loading-textwait {
-  color: #0f4d91; /* Adjust if needed */
-  font-size: 28px;
-  font-weight: bold;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  text-align: center; /* Center text alignment */
+/* //////////////// LOGIN //////////////// */
+
+.loading-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  background: #ffffff;
+  overflow: hidden;
 }
 
-.background-image {
-  position: absolute;
-  top: 0;
-  left: 0;
+/* Illustration */
+.loading-image {
+  width: min(650px, 80vw);
+  max-height: 420px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Content */
+.loading-content {
+  width: min(500px, 80vw);
+  text-align: center;
+  margin-top: -10px;
+}
+
+/* Main title */
+.loading-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #012561;
+}
+
+/* Subtitle */
+.loading-subtitle {
+  margin-top: 8px;
+
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: #52627a;
+}
+
+/* Progress container */
+.loading-progress {
   width: 100%;
-  height: 100%; /* Adjusted height to cover the whole screen */
-  z-index: 0;
-  object-fit: cover;
-  opacity: 0.7; /* Added opacity for better text visibility */
+  height: 14px;
+
+  margin: 24px auto 0;
+
+  background: #e8edf5;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* Orange progress */
+.loading-progress-bar {
+  width: 65%;
+  height: 100%;
+
+  background: #ffaa00;
+  border-radius: 20px;
+
+  animation: loadingProgress 2s ease-in-out infinite;
+}
+
+/* Bottom message */
+.loading-message {
+  margin-top: 18px;
+
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  color: #52627a;
+}
+
+/* Dots */
+.loading-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+
+  margin-top: 14px;
+}
+
+.loading-dots span {
+  width: 9px;
+  height: 9px;
+
+  border-radius: 50%;
+  background: #aec9d1;
+
+  animation: dotAnimation 1.4s infinite ease-in-out;
+}
+
+.loading-dots span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.loading-dots span:nth-child(2) {
+  background: #ffaa00;
+  animation-delay: 0.2s;
+}
+
+.loading-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Progress animation */
+@keyframes loadingProgress {
+  0% {
+    width: 25%;
+  }
+
+  50% {
+    width: 75%;
+  }
+
+  100% {
+    width: 25%;
+  }
+}
+
+/* Dot animation */
+@keyframes dotAnimation {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.7);
+    opacity: 0.5;
+  }
+
+  40% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .loading-image {
+    width: 90vw;
+  }
+
+  .loading-title {
+    font-size: 32px;
+  }
+
+  .loading-subtitle {
+    font-size: 15px;
+  }
+
+  .loading-message {
+    font-size: 14px;
+  }
+
+  .loading-progress {
+    height: 11px;
+  }
 }
 </style>

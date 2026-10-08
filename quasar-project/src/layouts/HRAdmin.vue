@@ -6,6 +6,7 @@
           flat
           dense
           round
+          color="white"
           icon="menu"
           aria-label="Menu"
           @click="toggleLeftDrawer"
@@ -13,7 +14,7 @@
         <q-space />
 
         <!-- Date and Time -->
-        <div class="text-accent text-weight-bold text-right q-mr-md">
+        <div class="text-white text-weight-bold text-right q-mr-md">
           <div>{{ topLine }}</div>
           <div>{{ bottomLine }}</div>
         </div>
@@ -26,27 +27,31 @@
       bordered
       class="custom-drawer"
     >
-      <q-list v-if="isUserLoggedIn" class="custom-list">
-        <q-item class="custom-item">
-          <q-item-section>
-            <q-item-label>
-              <div class="column items-center q-mt-x">
-                <q-avatar size="120px">
-                  <img
-                    :src="avatarUrl + loggedInUser.EmployeeCode"
-                    style="border: 2px solid #6b7c93"
-                  />
-                </q-avatar>
-              </div>
-              <p class="item-lab" v-if="loggedInUser">
-                {{ loggedInUser.FullName }}
-              </p>
-              <p class="item-label1" v-if="loggedInUser">
-                {{ loggedInUser.Department_Description }}
-              </p>
-            </q-item-label>
-          </q-item-section>
+      <q-list v-if="isUserLoggedIn">
+        <q-item class="custom-item q-ma-md q-pa-xs shadow-7">
+          <q-card-section class="custom-item" style="border: 2px solid #e0e0e0;">
+            <q-avatar size="100px">
+              <img
+                :src="avatarUrl + loggedInUser.EmployeeCode"
+                style="border: 3px solid #ffc412;"
+              />
+            </q-avatar>
+
+            <span class="item-lab q-pt-md" v-if="loggedInUser">
+              {{ loggedInUser.FullName }}
+            </span>
+
+            <span class="item-label1 text-center" v-if="loggedInUser">
+              {{ formatDepartment(loggedInUser.Department_Description) }}
+            </span>
+          </q-card-section>
         </q-item>
+      </q-list>
+
+      <q-card-section class="q-pa-md q-ma-md q-gutter-xs text-white">
+        <q-item-label class="text-primary menuLabel text-bold">MAIN MENU</q-item-label>
+
+        <q-separator size="3px" class="q-ma-sm"></q-separator>
 
         <EssentialLink
           v-for="item in getAccessModule"
@@ -58,43 +63,19 @@
           :isSelected="selectedLink === item.link"
           @select="navigateTo(item.link)"
         />
-        <!-- <q-expansion-item class="custom-expansion-item">
-      <template v-slot:header>
-        <div class="icon-above-text">
-          <q-icon name="dvr" size="35px" />
-          <div>HR MODULE</div>
-        </div>
-      </template>
-      <EssentialLink
-        v-for="hrItem in hrList"
-        :key="hrItem.title"
-        :title="hrItem.title"
-        :link="hrItem.link"
-        :icon="hrItem.icon"
-        :isSelected="selectedLink === hrItem.link"
-        @select="navigateTo(hrItem.link)"
-      />
-    </q-expansion-item> -->
-      </q-list>
+      </q-card-section>
 
-      <footer class="footer">
+      <footer class="footer q-pa-sm">
         <div class="footer-content">
           <q-btn
             v-if="isUserLoggedIn"
             flat
             rounded
             push
-            icon="logout"
+            icon="exit_to_app"
             label="LOGOUT"
             @click="logout"
-            class="buttonLogoutDesign bg-negative text-white"
-            style="font-weight: bold; width: 200%"
-          />
-
-          <img
-            src="../assets/FINALPOST.png"
-            alt="Footer Logo"
-            class="footer-logo"
+            class="logout-btn bg-accent text-primary q-pa-xs"
           />
         </div>
       </footer>
@@ -174,6 +155,16 @@ export default {
   methods: {
     ...mapActions("ApplyStore", ["logoutAction"]),
 
+    formatDepartment(department) {
+      if (!department) {
+        return "";
+      }
+
+      return department
+        .toLowerCase()
+        .replace(/\b\w/g, char => char.toUpperCase());
+    },
+
     updateDateTime() {
       const now = new Date()
       const weekday = now
@@ -212,56 +203,6 @@ export default {
       this.leftDrawerOpen = !this.leftDrawerOpen;
     },
 
-    // getList() {
-    //   return [
-    //     {
-    //       title: "DASHBOARD",
-    //       icon: "dashboard",
-    //       link: "#/Dashboard",
-    //     },
-    //     {
-    //       title: "REPORT MODULE",
-    //       icon: "summarize",
-    //       link: "#/ReportTable",
-    //     },
-    //     {
-    //       title: "ASSISTANT QA MODULE",
-    //       icon: "inventory",
-    //       link: "#/AssistantQATable",
-    //     },
-    //     {
-    //       title: "QA MODULE",
-    //       icon: "assignment",
-    //       link: "#/QATable",
-    //     },
-    //     {
-    //       title: "DIRECTOR MODULE",
-    //       icon: "article",
-    //       link: "#/DirectorTable",
-    //     },
-    //     {
-    //       title: "AUDIT MODULE",
-    //       icon: "assessment",
-    //       link: "#/AuditTable",
-    //     },
-    //     {
-    //       title: "HR ADMIN REPORT",
-    //       icon: "chrome_reader_mode",
-    //       link: "#/HRTable",
-    //     },
-    //   ];
-    // },
-
-    // getHR() {
-    //   return [
-    //     // {
-    //     //   title: 'EMPLOYEE OFFENSES',
-    //     //   icon: 'summarize',
-    //     //   link: '#/EmployeeTab',
-    //     // },
-    //   ];
-    // },
-
     navigateTo(link) {
       this.selectedLink = link;
       localStorage.setItem("selectedLink", link); // Save the selected link to local storage
@@ -274,53 +215,30 @@ export default {
 
 <style>
 .custom-drawer {
-  background-color: #003566;
-  color: #fff;
+  background-color: #f9fafc;
 }
+
 .custom-item {
+  border: 3px solid #003566;
+  background: linear-gradient(135deg, #003566, #0f4d91);
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
-  border-radius: 10%;
   align-items: center;
-  margin: 5%;
-  height: auto;
-  background-color: #fff;
-  border: 0.3em solid #ffc412;
 }
 
 .item-lab {
+  font-size: 18px;
+  color: #f9fafc;
   font-weight: bold;
-  color: #003566;
-  font-size: 20px;
-  margin-top: 20px;
-  text-align: center;
 }
 
 .item-label1 {
-  font-weight: bold;
-  color: #333333;
-  font-size: 13px;
-  text-align: center;
+  color: #d9d9d9;
 }
 
-.essential-link {
-  color: inherit; /* Ensure link color matches theme */
-  text-decoration: none; /* Remove default underline */
+.menuLabel{
   font-size: 15px;
-}
-/* /...................................ICON.............................................../ */
-.icon-above-text {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  margin-left: 93px;
-  margin-right: 54px;
-}
-
-.icon-above-text .q-icon {
-  font-size: 32px; /* Adjust the icon size as needed */
 }
 
 /* /...................................FOOTER.............................................../ */
@@ -329,13 +247,13 @@ export default {
   position: fixed;
   bottom: 0;
   width: 100%;
-  padding: 16px;
-  background-color: #003566; /* optional, to separate from page background */
+  background: #fff; /* optional, to separate from page background */
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   z-index: 10;
+  border-top: 3px solid #003566;
 }
 
 .footer-content {
@@ -346,15 +264,16 @@ export default {
 }
 
 .logout-btn {
-  border-radius: 20px;
+  border-radius: 10px;
   width: 250px;
   font-weight: bold;
+  border: 2px solid #ffc412;
+  font-size: 15px;
 }
 
 .footer-logo {
   width: 100px;
   height: auto;
-  margin-top: 6px;
 }
 
 </style>

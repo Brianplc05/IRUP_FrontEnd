@@ -1,65 +1,94 @@
 <template>
-  <div
-    id="q-app"
-    style="min-height: 100vh; position: relative; z-index: 1;"
-  >
-      <div
-        class="row items-center justify-between q-ma-lg q-mb-md bg-white q-pa-sm rounded-borders shadow-1"
-        style="border-radius: 10px"
+  <div id="q-app" style="position: relative; z-index: 1">
+    <div style="height: 100%; width: 100%" class="q-pa-lg">
+      <q-card
+        class="dashboard-header"
+        style="border: 2px solid #e0e0e0;"
       >
-        <div>
-          <div class="text-primary text-weight-bold" style="font-size: 30px">
-            DIRECTORS & VPS MODULE
-          </div>
-          <div style="font-size: 18px; color: #333333">
-            Incident Report Details
-          </div>
-        </div>
-      </div>
+        <q-card-section class="row items-center no-wrap">
+          <div class="row items-center no-wrap">
+            <div class="icon-wrapper">
+              <q-icon
+                name="article"
+                size="35px"
+                color="primary"
+              />
+            </div>
 
-      <q-card-section
-        class="row q-mb-sm bg-white q-ma-lg q-pa-md rounded-borders shadow-1"
-        style="border-radius: 10px"
+            <div class="q-ml-md text-left">
+              <div class="text-h5 text-weight-medium text-primary text-uppercase">
+                DIRECTORS & VPS MODULE
+              </div>
+
+              <div class="text-grey-7 q-mt-xs">
+                Welcome to the Incident Reporting & Unified Platform (IRUP) Directors & VPS!
+              </div>
+
+              <div class="accent-line q-mt-sm"></div>
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+
+      <q-card
+        class="dashboard-header q-mt-md q-pa-sm"
+        flat
+        bordered
       >
-        <div
-          v-if="loading"
-          class="fixed-full flex flex-center column q-gutter-md"
-          style="background-color: rgba(255, 255, 255, 0.7); z-index: 9999"
-        >
-          <q-spinner-ball size="150px" color="primary" />
-          <div class="text-subtitle1 text-primary">Please wait...</div>
-        </div>
-
-        <q-card-section class="column fit full-width">
-
-          <div class="row items-end justify-end q-gutter-md q-pa-sm">
+        <q-card-section style="border: 2px solid #e0e0e0;">
+          <!-- SEARCH -->
+          <q-card-section class="q-pa-sm">
             <q-input
               v-model="searchContent"
-              label="SEARCH "
+              label="SEARCH"
               dense
               outlined
-              rounded
+              clearable
             >
-              <template v-slot:append>
-                <q-icon name="search" color="info" />
+              <template #append>
+                <q-icon
+                  name="search"
+                  color="info"
+                />
               </template>
             </q-input>
-          </div>
+          </q-card-section>
 
-            <DirectorTable
-            v-show="showTable"
-            :rows="filteredDisAll"
-            :pagination="{ rowsPerPage: 11 }"
-            :columns="disColumns"
-            row-key="IRNo"
-            :loading="loading"
-            :getDirectors="getDirectors"
-            />
+          <q-card-section
+            v-if="loading"
+            class="fixed-full flex flex-center column q-gutter-md"
+            style="background-color: rgba(255, 255, 255, 0.7); z-index: 9999"
+          >
+            <q-spinner-ball size="150px" color="primary" />
+            <div class="text-subtitle1 text-primary">Please wait...</div>
+          </q-card-section>
+
+          <!-- TABLE -->
+          <q-card-section class="q-pa-sm" v-else>
+            <q-card
+              class="bg-white q-pa-sm shadow-1"
+              style="border-radius: 10px"
+              flat
+              bordered
+            >
+              <DirectorTable
+                v-show="showTable"
+                :rows="filteredDisAll"
+                :pagination="{ rowsPerPage: 11 }"
+                :columns="disColumns"
+                row-key="IRNo"
+                :loading="loading"
+                :getDirectors="getDirectors"
+              />
+            </q-card>
+          </q-card-section>
         </q-card-section>
-      </q-card-section>
+      </q-card>
+    </div>
   </div>
+
   <img
-    src="../assets/OMBRE-GRAY.jpg"
+    src="../assets/BGCORE.png"
     style="
       position: absolute;
       top: 0;
@@ -118,16 +147,24 @@ export default {
 
     filteredDisAll() {
       const { disAllDirector, searchContent } = this;
-      let filteredData = [...disAllDirector];
+
+      let filteredData = Array.isArray(disAllDirector)
+        ? [...disAllDirector]
+        : [];
+
       if (searchContent && typeof searchContent === "string") {
-        const query = searchContent.toLowerCase();
+        const query = searchContent.toLowerCase().trim();
+
         filteredData = filteredData.filter((item) =>
           Object.values(item).some(
             (val) =>
-              typeof val === "string" && val.toLowerCase().includes(query)
+              val !== null &&
+              val !== undefined &&
+              String(val).toLowerCase().includes(query)
           )
         );
       }
+
       return filteredData;
     },
   },
@@ -142,7 +179,7 @@ export default {
 
     // 🔹 Auto fetch every 60 seconds
     this.interval = setInterval(() => {
-      this.getDirector();
+      this.getDirectors();
     }, 60000);
   },
 

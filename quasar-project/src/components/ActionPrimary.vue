@@ -10,7 +10,7 @@
           :ripple="{ center: true }"
           icon="description"
           class="bg-accent text-black text-bold text-center shadow-5"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
         >
           <q-tooltip class="bg-info text-white">
             View Report Details
@@ -545,7 +545,7 @@
           :ripple="{ center: true }"
           icon="lightbulb"
           class="bg-positive text-black text-center shadow-5"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
         >
           <q-tooltip class="bg-info text-white">
             Creating Action Items for the Incident Report
@@ -562,7 +562,7 @@
           :ripple="{ center: true }"
           icon="drafts"
           class="bg-accent text-black text-center shadow-5"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
         >
           <q-tooltip class="bg-info text-white">
             Creating Action Items for the Incident Report
@@ -578,7 +578,7 @@
           :ripple="{ center: true }"
           icon="lightbulb"
           class="bg-dark text-white text-center shadow-5"
-          style="border-radius: 20px; width: 125px"
+          style="border-radius: 10px; width: 125px"
         />
 
         <q-dialog maximized v-model="setActionItems" persistent>
@@ -1442,7 +1442,7 @@
           push
           :ripple="{ center: true }"
           label="SUBMITTED"
-          style="border-radius: 20px; width: 195px"
+          style="border-radius: 10px; width: 195px"
           v-if="props.row.actionSubStatus === 2"
           @click="viewActionItemVLDetails(props.row.iRNo)"
           class="bg-orange text-black text-bold text-center shadow-5"
@@ -1454,7 +1454,7 @@
           push
           :ripple="{ center: true }"
           label="RETURNED DECLINED"
-          style="border-radius: 20px; width: 195px"
+          style="border-radius: 10px; width: 195px"
           v-if="props.row.actionSubStatus === 3"
           @click="viewActionItemVLDetails(props.row.iRNo)"
           class="bg-accent text-black text-bold text-center shadow-5"
@@ -1466,7 +1466,7 @@
           push
           :ripple="{ center: true }"
           label="SUBMITTED FOR REVISED"
-          style="border-radius: 20px; width: 195px"
+          style="border-radius: 10px; width: 195px"
           v-if="props.row.actionSubStatus === 4"
           @click="viewActionItemVLDetails(props.row.iRNo)"
           class="bg-accent text-black text-bold text-center shadow-5"
@@ -1480,7 +1480,7 @@
           @click="viewApprovedAction(props.row.iRNo)"
           :ripple="{ center: true }"
           label="APPROVED"
-          style="border-radius: 20px; width: 195px"
+          style="border-radius: 10px; width: 195px"
           class="bg-positive text-black text-bold text-center shadow-5"
         />
 
